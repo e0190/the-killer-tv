@@ -21,6 +21,9 @@ function newGame() {
     hunterDone: {},         // so a hunter only ever fires once
     voteTied: false,
     voteCounts: {},
+    revotes: 0,             // ties send it back round
+    revoteNotice: false,
+    suspenseNext: '',       // what the three-second countdown is building up to
     firstNightDone: false,
     result: null,
     timer: { total: 0, remaining: 0, endsAt: 0, running: false },
@@ -137,7 +140,9 @@ function tallyVotes(state) {
   return counts;
 }
 
-/* Most votes swings. A tie means the village bottled it and nobody dies. */
+/* Most votes swings. A tie sends it back for a revote — see MAX_REVOTES. */
+const MAX_REVOTES = 2;
+
 function voteOutcome(state) {
   const counts = tallyVotes(state);
   let max = 0;
