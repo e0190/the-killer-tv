@@ -9,7 +9,7 @@ the TV puts the name on screen in letters a foot high. Do these once, never agai
 
 You don't have to touch the repo at all.
 
-1. Generate or record the 55 files. Name each one after its line id — `opening.mp3`,
+1. Generate or record the 55 files. Name each one after its line id — `opening_place.mp3`,
    `call_werewolf.mp3`, and so on, exactly as listed below.
 2. Open the site. There's a banner at the top of the setup page.
 3. Hit **install them**, then drag all 55 files onto the drop zone in one go.
@@ -51,11 +51,16 @@ second of silence at the top and tail of every file so the cuts don't clip.
 
 ## The lines
 
-### Opening
+### The prologue — six beats, tapped through before the first night
 
 | file | what it says |
 | --- | --- |
-| `opening.mp3` | This is a small place. Everyone here knows everyone, which is exactly the problem. Something has been getting in at night, and it is already sitting at the table. |
+| `opening_place.mp3` | Nobody comes here on purpose. There is one road in, and it closes when the snow does. Forty houses, a church nobody has used in years, and a forest that starts where the fences stop. |
+| `opening_animals.mp3` | It began with the animals. A dog in October, found in two places at once. Then the Aldritch herd, opened up and left where they fell — which no animal does, because no animal wastes meat. The men sat up three nights with lamps and rifles and saw absolutely nothing. |
+| `opening_first.mp3` | Then it was Marta. At the well. Forty feet from her own front door, with half the village asleep within earshot, and not one person heard her make a sound. |
+| `opening_inside.mp3` | Here is the part nobody wants to say out loud. There were tracks going to the well. There were no tracks leaving. Whatever did that to her walked back in among the houses, put on a coat, and went to bed. It eats with you. It says good morning. It is at this table right now, wearing a face you have known for years. |
+| `opening_rules.mp3` | So this is how it goes from tonight. When it gets dark you will all close your eyes, and things will move. When the sun comes up you will count yourselves and find out who is missing. And then, before the light goes again, you will choose one of your own and hang them, and hope very hard that you got it right. |
+| `opening_tonight.mp3` | Nobody is coming to help. The road is shut and it will stay shut. You have until you run out of people. Put your hands on the table where everyone can see them, and close your eyes. |
 
 ### Nightfall
 
