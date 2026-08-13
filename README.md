@@ -74,7 +74,7 @@ without eyes opening.
 
 ### The night, in order
 
-| | Role | What they do, every night |
+| | Role | What they do at night |
 | --- | --- | --- |
 | D | Doppelgänger | **First night only.** Takes one person’s role; if that role is called later the same night, they act on it. The Doppelgänger is gone by morning. |
 | M | Minion | Knows the Killer. The Killer never knows them. |
@@ -100,7 +100,7 @@ Three ways out, checked after every death:
 - **The killers have it down to one last villager** → the killers win.
 
 The Minion wins whenever the killers do, alive or dead. The Doppelgänger wins as
-whatever it last copied. The dead still win — Hunters especially.
+whatever it became. The dead still win — Hunters especially.
 
 ---
 
