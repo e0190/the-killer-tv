@@ -13,7 +13,7 @@
       const raw = localStorage.getItem('killer-tv:state');
       if (!raw) return null;
       const s = JSON.parse(raw);
-      if (!s || !s.players || !s.players.length || !s.deck || !s.deck.length) return null;
+      if (!s || s.v !== 2 || !s.players || !s.players.length) return null;
       return s;
     } catch (e) { return null; }
   }
