@@ -5,15 +5,15 @@
    village down to one last soul. Every role acts every night. */
 
 const ROLES = {
-  werewolf: {
-    name: 'Werewolf', mark: 'W', team: 'wolves', max: 2, step: 1,
-    short: 'Kills one villager each night.',
-    long: 'Wakes with the pack and chooses who does not see morning.',
+  killer: {
+    name: 'Killer', mark: 'K', team: 'killers', max: 2, step: 1,
+    short: 'Kills one person every night.',
+    long: 'Wakes last, when everything else has finished moving, and picks who does not see morning.',
   },
   minion: {
-    name: 'Minion', mark: 'M', team: 'wolves', max: 1, step: 1,
-    short: 'Knows the wolves. Wins with them.',
-    long: 'Sees the pack but is not one of them. Dies as a villager and wins as a wolf.',
+    name: 'Minion', mark: 'M', team: 'killers', max: 1, step: 1,
+    short: 'Knows the Killer. Wins with them.',
+    long: 'Sees who it is and says nothing. Dies like anyone else and wins like a Killer.',
   },
   mason: {
     name: 'Mason', mark: 'S', team: 'village', max: 2, step: 2,
