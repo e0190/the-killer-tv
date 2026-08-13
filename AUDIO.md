@@ -1,3 +1,52 @@
+# The audio pack
+
+The narrator reads the whole game aloud. There are **49 lines**, and that is the
+complete and final list — it never grows, because **no player names are ever
+spoken**. When somebody dies the voice says "there is a body in the square" and
+the TV puts the name on screen in letters a foot high. Record these once and
+you are done forever.
+
+## Where the files go
+
+```
+the-killer-tv/
+└── audio/
+    ├── manifest.json     ← lists what you've actually got
+    ├── opening.mp3
+    ├── night_first.mp3
+    └── … one file per line id below
+```
+
+- **Format:** MP3. Filename is the line id exactly as written below, lowercase, `.mp3`.
+- **Anything missing** falls back to the browser voice automatically, so you can
+  drop them in a few at a time and the game still runs.
+- After adding files, update `audio/manifest.json` so the app stops guessing:
+
+```bash
+node tools/generate-audio.js --manifest-only
+```
+
+## Generating them all at once
+
+If you want Google's British voice rather than your own, one command does the lot:
+
+```bash
+node tools/generate-audio.js
+```
+
+It needs `GOOGLE_TTS_KEY` in your environment, writes all 49 MP3s into `/audio`,
+skips any that already exist, and rewrites the manifest. Flags:
+`--force` to redo existing files, `--voice en-GB-Studio-B` to change voice,
+`--rate 0.9`, `--pitch -4`, `--only opening,day` for a subset.
+
+## Direction, if you're recording or prompting these
+
+Deep, unhurried, quiet — a man telling you something grim he's told a hundred
+times before. Not a whisper, not a shout, no relish. British. Leave about half a
+second of silence at the top and tail of every file so the cuts don't clip.
+
+## The lines
+
 ### Opening
 
 | file | what it says |
