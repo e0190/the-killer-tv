@@ -1,189 +1,201 @@
-/* the killer tv — the setup screen. This is the only screen that exists
-   before the split; after SPLIT it hands its config to the admin controller. */
+/* the killer tv — the setup sheet.
+
+   This is the only screen that exists before the split. It collects the cast
+   (every player and the role they're holding) and the house rules, then hands
+   the lot to the remote. */
 
 const Setup = (function () {
-  let playerCount = 5;
+  const MIN = 4, MAX = 12;
+  let count = 8;
   let names = [];
-  let deck = [];
+  let roles = [];
+  let reveal = 'full';
   let mounted = false;
 
   const $ = (id) => document.getElementById(id);
-
-  function target() { return requiredCards(playerCount); }
 
   function mount() {
     if (mounted) return;
     mounted = true;
 
-    document.querySelectorAll('[data-players]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const next = playerCount + Number(btn.dataset.players);
-        if (next < 3 || next > 10) return;
-        playerCount = next;
+    roles = (PRESETS[count] || []).slice();
+    names = [];
+
+    document.querySelectorAll('[data-players]').forEach((b) => {
+      b.addEventListener('click', () => {
+        const next = count + Number(b.dataset.players);
+        if (next < MIN || next > MAX) return;
+        readNames();
+        count = next;
+        roles = roles.slice(0, count);
+        while (roles.length < count) roles.push('villager');
         Sound.play('blip');
-        renderNames();
-        renderDeck();
+        render();
       });
     });
 
-    $('usePreset').addEventListener('click', () => {
-      deck = (PRESETS[playerCount] || []).slice();
+    $('autoCast').addEventListener('click', () => {
+      roles = (PRESETS[count] || []).slice();
       Sound.play('blip');
-      renderDeck();
+      render();
     });
-    $('clearDeck').addEventListener('click', () => {
-      deck = [];
-      renderDeck();
+    $('clearCast').addEventListener('click', () => {
+      roles = new Array(count).fill('');
+      render();
     });
 
-    buildRoleGrid();
-    $('splitBtn').addEventListener('click', split);
+    document.querySelectorAll('[data-reveal]').forEach((b) => {
+      b.addEventListener('click', () => {
+        reveal = b.dataset.reveal;
+        document.querySelectorAll('[data-reveal]').forEach((x) =>
+          x.setAttribute('aria-checked', String(x.dataset.reveal === reveal)));
+        Sound.play('blip');
+      });
+    });
 
     $('optVoiceName').addEventListener('change', () => {
       Narrator.setVoice($('optVoiceName').value);
-      previewVoice();
+      preview();
     });
-    $('testVoice').addEventListener('click', previewVoice);
+    $('testVoice').addEventListener('click', preview);
+    $('splitBtn').addEventListener('click', begin);
 
-    Narrator.warm().then(renderVoices);
-    renderVoices();
-    if ('speechSynthesis' in window) {
-      speechSynthesis.addEventListener('voiceschanged', renderVoices);
-    }
+    Narrator.warm().then(renderVoice);
+    renderVoice();
+    if ('speechSynthesis' in window) speechSynthesis.addEventListener('voiceschanged', renderVoice);
 
-    renderNames();
-    renderDeck();
+    render();
   }
 
-  function renderVoices() {
+  /* ---------- cast ---------- */
+
+  function readNames() {
+    const inputs = document.querySelectorAll('#castList input');
+    inputs.forEach((el, i) => { names[i] = el.value; });
+  }
+
+  function roleOptions(selected) {
+    return '<option value="">—</option>' + ROLE_IDS.map((id) =>
+      '<option value="' + id + '"' + (selected === id ? ' selected' : '') + '>' +
+      ROLES[id].name + '</option>').join('');
+  }
+
+  function render() {
+    const list = $('castList');
+    list.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+      const row = document.createElement('div');
+      row.className = 'cast-row';
+      const team = ROLES[roles[i]] ? ROLES[roles[i]].team : '';
+      row.dataset.team = team;
+      row.innerHTML =
+        '<span class="idx">' + String(i + 1).padStart(2, '0') + '</span>' +
+        '<input type="text" maxlength="14" autocomplete="off" placeholder="Player ' + (i + 1) + '" value="' +
+          esc(names[i] || '') + '">' +
+        '<select data-slot="' + i + '">' + roleOptions(roles[i]) + '</select>';
+      list.appendChild(row);
+    }
+
+    list.querySelectorAll('select').forEach((sel) => {
+      sel.addEventListener('change', () => {
+        const i = Number(sel.dataset.slot);
+        const wanted = sel.value;
+        readNames();
+        // Masons only make sense as a pair, so they come and go together.
+        if (wanted && ROLES[wanted].step === 2) {
+          const have = roles.filter((r) => r === wanted).length;
+          roles[i] = wanted;
+          if (have === 0) {
+            const spare = roles.findIndex((r, j) => j !== i && r !== wanted);
+            if (spare !== -1) roles[spare] = wanted;
+          }
+        } else {
+          const was = roles[i];
+          roles[i] = wanted;
+          // dropping one half of a pair drops the other
+          if (was && ROLES[was] && ROLES[was].step === 2) {
+            const other = roles.findIndex((r) => r === was);
+            if (other !== -1) roles[other] = '';
+          }
+        }
+        Sound.play('blip');
+        render();
+      });
+    });
+
+    list.querySelectorAll('input').forEach((el, i) => {
+      el.addEventListener('input', () => { names[i] = el.value; });
+    });
+
+    $('playerCount').textContent = count;
+    renderTally();
+  }
+
+  function renderTally() {
+    const counts = roleCounts(roles);
+    $('castTally').innerHTML = Object.keys(counts).sort().map((id) => {
+      const r = ROLES[id];
+      if (!r) return '';
+      const cls = r.team === 'wolves' ? ' class="wolves"' : r.team === 'tanner' ? ' class="tanner"' : '';
+      return '<span' + cls + '>' + r.name + (counts[id] > 1 ? ' ×' + counts[id] : '') + '</span>';
+    }).join('');
+
+    const problems = castProblems(roles);
+    $('castProblems').innerHTML = problems.map((p) => '<li>' + esc(p) + '</li>').join('');
+
+    const ok = problems.length === 0;
+    $('splitBtn').disabled = !ok;
+    const wolves = counts.werewolf || 0;
+    $('splitHint').textContent = ok
+      ? count + ' at the table, ' + wolves + (wolves === 1 ? ' wolf' : ' wolves') + ' among them. Hand nobody this screen.'
+      : 'Sort the cast out first.';
+  }
+
+  /* ---------- narrator ---------- */
+
+  function renderVoice() {
     const sel = $('optVoiceName');
     const keep = sel.value;
     const opts = Narrator.options();
     sel.innerHTML = opts.map((o) =>
-      '<option value="' + o.value.replace(/"/g, '&quot;') + '">' + o.label + '</option>').join('');
+      '<option value="' + esc(o.value) + '">' + esc(o.label) + '</option>').join('');
     if (opts.some((o) => o.value === keep)) sel.value = keep;
-
-    const v = Narrator.currentVoice();
-    const note = $('voiceNote');
-    if (Narrator.cloudReady() && sel.value !== '' && sel.value !== 'cloud') {
-      note.textContent = 'Using ' + v.name + '. The Google Cloud voice is available if you want it — pick it above.';
-    } else if (Narrator.cloudReady()) {
-      note.textContent = 'Google Cloud voice is live — deep British, and it actually sounds like a person.';
-    } else if (v && v.british) {
-      note.textContent = 'Using ' + v.name + ', pitched down. For something more convincing, set up the Google Cloud voice (see the README).';
-    } else {
-      note.textContent = 'No British voice is installed in this browser' + (v ? ' — you\'ll get ' + v.name + ' instead' : '') +
-        '. Add one via Windows Settings → Time & Language → Speech → Manage voices → English (United Kingdom), or set up the Google Cloud voice (see the README).';
-    }
+    $('voiceNote').textContent = Narrator.status().detail;
   }
 
-  function previewVoice() {
+  function preview() {
     Narrator.setEnabled(true);
     Narrator.setVoice($('optVoiceName').value);
-    Narrator.say('Everybody, close your eyes. Werewolves, wake up and look for each other.');
+    Narrator.preview(LINES.call_werewolf);
   }
 
-  function buildRoleGrid() {
-    const grid = $('roleGrid');
-    grid.innerHTML = '';
-    ROLE_IDS.forEach((id) => {
-      const r = ROLES[id];
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'role-chip';
-      b.dataset.role = id;
-      b.style.color = r.tint;
-      b.innerHTML =
-        '<span class="ico">' + r.icon + '</span>' +
-        '<span><span class="nm" style="color:var(--ink)">' + r.name + '</span>' +
-        '<span class="bl">' + r.blurb + '</span></span>' +
-        '<span class="pill" hidden></span>';
-      b.addEventListener('click', () => cycle(id));
-      grid.appendChild(b);
-    });
-  }
+  /* ---------- go ---------- */
 
-  /* click cycles 0 → 1 → … → max → 0 */
-  function cycle(id) {
-    const have = deck.filter((x) => x === id).length;
-    deck = deck.filter((x) => x !== id);
-    const next = have >= ROLES[id].max ? 0 : have + 1;
-    for (let i = 0; i < next; i++) deck.push(id);
-    Sound.play('blip');
-    renderDeck();
-  }
-
-  function renderNames() {
-    const box = $('nameList');
-    const current = Array.from(box.querySelectorAll('input')).map((i) => i.value);
-    names = [];
-    box.innerHTML = '';
-    for (let i = 0; i < playerCount; i++) {
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.maxLength = 14;
-      input.placeholder = 'Player ' + (i + 1);
-      input.value = current[i] || '';
-      input.autocomplete = 'off';
-      box.appendChild(input);
-    }
-    $('playerCount').textContent = playerCount;
-    $('cardsNeeded').textContent = target();
-  }
-
-  function renderDeck() {
-    const counts = deckCounts(deck);
-    document.querySelectorAll('.role-chip').forEach((chip) => {
-      const n = counts[chip.dataset.role] || 0;
-      const pill = chip.querySelector('.pill');
-      pill.hidden = n === 0;
-      pill.textContent = n > 1 ? '×' + n : '1';
-      chip.dataset.on = n ? '1' : '0';
-    });
-
-    const t = target();
-    const ok = deck.length === t;
-    $('deckPicked').textContent = deck.length;
-    $('deckTarget').textContent = t;
-    $('deckTarget').parentElement.classList.toggle('ok', ok);
-    const bar = $('deckBar');
-    bar.style.width = Math.min(100, (deck.length / t) * 100) + '%';
-    bar.classList.toggle('ok', ok);
-
-    const btn = $('splitBtn');
-    btn.disabled = !ok;
-    const wolves = counts.werewolf || 0;
-    let hint;
-    if (deck.length < t) hint = 'Add ' + (t - deck.length) + ' more card' + (t - deck.length === 1 ? '' : 's') + '.';
-    else if (deck.length > t) hint = 'Remove ' + (deck.length - t) + ' card' + (deck.length - t === 1 ? '' : 's') + '.';
-    else if (!wolves) hint = 'No werewolves in the deck. Bold. Ready when you are.';
-    else hint = 'Ready. ' + playerCount + ' players, ' + t + ' cards, ' + wolves + (wolves === 1 ? ' wolf' : ' wolves') + ' in the mix.';
-    $('splitHint').textContent = hint;
-  }
-
-  function collect() {
+  function begin() {
+    readNames();
     const state = newGame();
-    const inputs = Array.from(document.querySelectorAll('#nameList input'));
-    state.players = inputs.map((input, i) => ({
+    state.players = roles.map((role, i) => ({
       id: 'p' + i,
-      name: (input.value || '').trim() || 'Player ' + (i + 1),
+      name: (names[i] || '').trim() || 'Player ' + (i + 1),
+      role: role,
+      startRole: role,
+      alive: true,
+      diedRound: 0,
+      diedBy: '',
     }));
-    state.deck = deck.slice();
     state.settings.dayMs = Number($('optDay').value);
-    state.settings.nightScale = Number($('optNight').value);
+    state.settings.revealMode = reveal;
     state.settings.narration = $('optVoice').checked;
     state.settings.sfx = $('optSfx').checked;
     state.settings.voiceName = $('optVoiceName').value;
-    state.nightPhases = buildNightPhases(deck).map((p) => p.id);
-    state.stage = 'deal';
-    return state;
+
+    Sound.ensure();
+    Sound.play('toll');
+    Admin.launch(state, true);
   }
 
-  function split() {
-    const state = collect();
-    Sound.ensure();          // unlock audio on this user gesture
-    Sound.play('thud');
-    Admin.launch(state, true);
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   }
 
   return { mount };
