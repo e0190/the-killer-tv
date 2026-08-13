@@ -471,7 +471,8 @@ const Admin = (function () {
     $('admKicker').textContent = 'night ' + roman(S.round) + ' · ' + (S.beatIndex + 1) + ' of ' + S.nightBeats.length;
     $('admTitle').textContent = ROLES[b.role].name;
     if (S.round === 1) $('admStory').textContent = b.story;
-    $('admCall').textContent = b.call;
+    $('admCall').textContent = b.call +
+      (b.notes ? ' ' + b.notes.map((n) => LINES[n]).join(' ') : '');
 
     const others = (excludeIds) => alive(S).filter((p) => excludeIds.indexOf(p.id) === -1).map((p) => p.id);
 
