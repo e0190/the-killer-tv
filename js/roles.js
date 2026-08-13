@@ -75,47 +75,47 @@ const ROLE_IDS = Object.keys(ROLES);
 const NIGHT_ORDER = [
   {
     id: 'doppelganger', role: 'doppelganger', input: 'copy', scene: 'mask',
-    story: 'Something without a face of its own presses against a window, learning the shape of whoever sleeps behind it.',
-    call: 'Doppelgänger — open your eyes. Point at someone. You are what they are now.',
+    story: 'Something learns the shape of a face.',
+    call: 'Doppelgänger, wake. Point at someone. You are them now.',
   },
   {
     id: 'minion', role: 'minion', input: 'none', scene: 'watcher',
-    story: 'Someone loyal and entirely human watches from the treeline, taking notes, hoping to be useful enough to keep.',
-    call: 'Minion — open your eyes. Wolves, show yourself to your servant.',
+    story: 'Somebody is watching, and taking notes.',
+    call: 'Minion, wake. Killer, show yourself.',
   },
   {
     id: 'mason', role: 'mason', input: 'none', scene: 'hands',
-    story: 'Two builders meet in the dark where they always meet, and confirm what they already know about each other.',
-    call: 'Masons — open your eyes and find one another.',
+    story: 'Two people meet in the dark. They already trust each other.',
+    call: 'Masons, wake. Find each other.',
   },
   {
     id: 'seer', role: 'seer', input: 'look', scene: 'eye',
-    story: 'A candle burns in an upstairs room. Someone is looking hard at one name on a very short list.',
-    call: 'Seer — open your eyes. Choose one person. You will be told what they are.',
+    story: 'A candle. One name. A long look.',
+    call: 'Seer, wake. Point at one person.',
   },
   {
     id: 'robber', role: 'robber', input: 'steal', scene: 'key',
-    story: 'A door opens that was locked. Something is taken. Something worse is left behind in its place.',
-    call: 'Robber — open your eyes. Point at someone. Their role is yours now, and yours is theirs.',
+    story: 'A door opens that was locked.',
+    call: 'Robber, wake. Point at someone. Take what they are.',
   },
   {
     id: 'troublemaker', role: 'troublemaker', input: 'swap', scene: 'swap',
-    story: 'Two coats are swapped on their pegs by someone who thinks the whole business is very funny.',
-    call: 'Troublemaker — open your eyes. Point at two other people. They have traded places, and neither will be told.',
+    story: 'Two coats change pegs. Nobody is told.',
+    call: 'Troublemaker, wake. Swap two people.',
   },
   {
     id: 'insomniac', role: 'insomniac', input: 'self', scene: 'lamp',
-    story: 'One window never goes dark. Whoever is behind it has stopped trying to sleep and started keeping track.',
-    call: 'Insomniac — open your eyes. You will be shown what you have become.',
+    story: 'One window never goes dark.',
+    call: 'Insomniac, wake. Look at what you are.',
   },
-  /* The wolves go last, deliberately. Nothing acts after them, so the victim's
-     role is settled the moment it's chosen and the morning can't announce
-     somebody else's card. The Minion still sees them: thumbs go up without
-     eyes opening. */
+  /* The Killer goes last, deliberately. Nothing acts after them, so the
+     victim's role is settled the moment it's chosen and the morning can't
+     announce somebody else's card. The Minion still sees them earlier: a hand
+     goes up without eyes opening. */
   {
-    id: 'werewolf', role: 'werewolf', input: 'kill', scene: 'wolf',
-    story: 'Out past the last fence the wolves step out of their skins and count the houses with the lights off.',
-    call: 'Werewolves — open your eyes. Find each other. Then choose the one who will not see morning.',
+    id: 'killer', role: 'killer', input: 'kill', scene: 'killer',
+    story: 'Somebody in this room stops pretending.',
+    call: 'Killer, wake. Choose who dies tonight.',
   },
 ];
 
