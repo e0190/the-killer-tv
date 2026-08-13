@@ -176,7 +176,7 @@ const Admin = (function () {
       case 'day':
         S.phase = 'vote';
         S.votes = {};
-        stopTimer();
+        startTimer(5000);          // just the three-two-one on the TV
         break;
 
       case 'vote': {
@@ -316,7 +316,7 @@ const Admin = (function () {
 
   function render() {
     ['admPicker', 'admVotes', 'admOutcome', 'admAnswer'].forEach((id) => { $(id).hidden = true; });
-    $('admClockRow').hidden = !S.timer.total;
+    $('admClockRow').hidden = !S.timer.total || S.phase === 'vote';
     $('admPause').textContent = S.timer.running ? 'pause' : 'resume';
     $('admNext').disabled = false;
     $('admNext').textContent = 'next';
