@@ -41,13 +41,19 @@ const SCENES = {
     <path d="M198 40l6 10 10-4-6 12 12 2-12 6 8 10-13-3" stroke-width="1.3"/>
   </svg>`,
 
-  wolf: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M78 44 68 18l22 12a44 44 0 0 1 40 0l22-12-10 26"/>
-    <path d="M78 44c-6 14-6 30 2 42l18 26c4 6 10 9 22 9s18-3 22-9l18-26c8-12 8-28 2-42"/>
-    <path d="M120 88v14M108 104h24"/>
-    <path d="M92 66h16M132 66h16"/>
-    <path d="M104 108l6 8M136 108l-6 8"/>
-    <path d="M28 128l14-8M212 128l-14-8M18 104l16-3M222 104l-16-3"/>
+  /* a figure standing where it shouldn't be, holding something */
+  killer: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M0 130h240"/>
+    <path d="M120 130V72"/>
+    <path d="M120 72 98 88M120 72l22 16"/>
+    <path d="M120 130l-16 0M120 130l16 0"/>
+    <path d="M104 96V72a16 16 0 0 1 32 0v24"/>
+    <circle cx="120" cy="46" r="14"/>
+    <path d="M113 44h4M123 44h4"/>
+    <path d="M142 88v26M142 114l-5 8M142 114l5 8" stroke-width="1.3"/>
+    <path d="M96 92l-4 26" stroke-width="1.3"/>
+    <path d="M92 118l-3 -2 6-2Z" fill="currentColor"/>
+    <path d="M26 130V102l14-10 14 10v28M186 130V98l16-12 16 12v32" stroke-dasharray="4 6"/>
   </svg>`,
 
   eye: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
