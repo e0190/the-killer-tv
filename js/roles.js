@@ -122,6 +122,17 @@ const NIGHT_ORDER = [
 const NIGHT_BY_ID = {};
 NIGHT_ORDER.forEach((b) => { NIGHT_BY_ID[b.id] = b; });
 
+/* The prologue. Tapped through one beat at a time before the first night, so
+   the table gets the situation before anybody has to lie about it. */
+const PROLOGUE = [
+  { id: 'opening_place',   title: 'The village',        scene: 'village' },
+  { id: 'opening_animals', title: 'It started small',   scene: 'door' },
+  { id: 'opening_first',   title: 'Then it was Marta',  scene: 'body' },
+  { id: 'opening_inside',  title: 'It came back in',    scene: 'mask' },
+  { id: 'opening_rules',   title: 'How this goes now',  scene: 'vote' },
+  { id: 'opening_tonight', title: 'Tonight',            scene: 'night' },
+];
+
 /* Suggested casts, by head count. Every player holds exactly one role —
    there are no cards in the middle any more. */
 const PRESETS = {
