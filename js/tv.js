@@ -236,12 +236,27 @@ const TV = (function () {
         });
         break;
 
+      case 'wake':
+        paint({ scene: 'dawn', tint: 'gold', kicker: 'night ' + S.round + ' is over', title: 'Open your eyes', prose: LINES.dawn });
+        break;
+
+      case 'suspense':
+        renderSuspense();
+        break;
+
       case 'day':
         paint({ scene: 'vote', kicker: 'day ' + S.round, title: 'Talk', prose: LINES.day });
         break;
 
       case 'vote':
         renderCountdown();
+        break;
+
+      case 'tally':
+        paint({
+          scene: 'vote', tint: 'blood', kicker: 'day ' + S.round,
+          title: 'Hold it there', prose: 'Keep pointing until every hand is written down.', plain: true,
+        });
         break;
 
       case 'lynch':
