@@ -459,7 +459,14 @@ const Admin = (function () {
     if (S.round === 1) $('admStory').textContent = b.story;
     $('admCall').textContent = b.call;
 
-    const others = (excludeIds) => alive(S).filter((p) => excludeIds.indexOf(p.id) === -1).map((p) => p.id);
+    /* Once the wolves have marked somebody they're effectively already gone, so
+       later roles can't shuffle a corpse's card around. Without this you get a
+       Troublemaker swapping the victim into a werewolf after the fact, and the
+       morning announces the wrong thing entirely. */
+    const spoken = S.pendingKill ? [S.pendingKill] : [];
+    const others = (excludeIds) => alive(S)
+      .filter((p) => excludeIds.indexOf(p.id) === -1 && spoken.indexOf(p.id) === -1)
+      .map((p) => p.id);
     const actor = actorOf(b);
 
     switch (b.input) {
