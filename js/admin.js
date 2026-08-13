@@ -424,14 +424,22 @@ const Admin = (function () {
         $('admNext').textContent = 'call the vote';
         break;
 
-      case 'vote': {
-        head('day ' + roman(S.round), 'Everybody points');
-        $('admCall').textContent = 'The TV counts down. Then record who pointed at whom.';
+      case 'vote':
+        head('day ' + roman(S.round), S.revoteNotice ? 'Again — everybody points' : 'Everybody points');
+        $('admStory').textContent = S.revoteNotice
+          ? 'Nobody had a majority, so the village votes again. Attempt ' + (S.revotes + 1) + '.'
+          : '';
+        $('admCall').textContent = 'The TV counts three, two, one. Keep your hands up until it\'s all written down.';
+        $('admNext').textContent = 'take the tally';
+        break;
+
+      case 'tally':
+        head('day ' + roman(S.round), 'Who pointed where?');
+        $('admCall').textContent = 'Tap each voter, then their target.';
         renderVotes();
         $('admNext').disabled = !votesIn();
-        $('admNext').textContent = 'hang them';
+        $('admNext').textContent = 'lock it in';
         break;
-      }
 
       case 'lynch': renderLynch(); break;
 
