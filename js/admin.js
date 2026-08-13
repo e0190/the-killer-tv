@@ -475,11 +475,11 @@ const Admin = (function () {
 
     const others = (excludeIds) => alive(S).filter((p) => excludeIds.indexOf(p.id) === -1).map((p) => p.id);
 
-    /* Once the wolves have marked somebody, that person's role is settled — later
+    /* Once the Killer has marked somebody, that person's role is settled — later
        roles can't shuffle a corpse's card around. Without this a Troublemaker can
-       swap the victim into a werewolf after the fact and the morning announces the
+       swap the victim into the Killer after the fact and the morning announces the
        wrong thing entirely. The Seer is deliberately exempt: dropping the name from
-       their list would tell the table who the wolves picked. */
+       their list would tell the table who the Killer picked. */
     const swappable = (excludeIds) => others(excludeIds).filter((id) => id !== S.pendingKill);
     const actor = actorOf(b);
 

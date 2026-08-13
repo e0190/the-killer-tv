@@ -1,7 +1,7 @@
 /* the killer tv — the cast.
 
    This is no longer a one-night game. Play runs night → day → vote → night
-   until the tanner dies, the wolves are wiped out, or the wolves have the
+   until the tanner dies, the killers are wiped out, or the killers have the
    village down to one last soul. Every role acts every night. */
 
 const ROLES = {
@@ -66,7 +66,7 @@ const ROLE_IDS = Object.keys(ROLES);
 
 /* The night, in order. Each beat runs only if a living player holds that role.
    `input` is what the moderator has to tell the app:
-     kill  — the wolves' victim
+     kill  — the Killer's victim
      look  — one player, answer shown to the moderator only
      steal — one player, roles swap with the actor
      swap  — two players, their roles trade
