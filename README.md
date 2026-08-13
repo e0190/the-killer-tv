@@ -153,8 +153,7 @@ Zero config, no build step, no `package.json`. Import at
 root as static files and turns `api/tts.js` into a serverless function on its own.
 
 Add `GOOGLE_TTS_KEY` in Settings → Environment Variables and redeploy if you want
-tier 2. Optional: `TTS_VOICE` (default `en-GB-Chirp3-HD-Charon`), `TTS_LANG`,
-`TTS_RATE`, `TTS_PITCH`.
+generated speech — see the key table above.
 
 ### Layout
 
