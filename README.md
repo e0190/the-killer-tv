@@ -103,23 +103,38 @@ whatever it last copied. The dead still win — Hunters especially.
 
 ## The narrator
 
-Read **[AUDIO.md](AUDIO.md)**. There are **49 lines**, that's the complete and final
+Read **[AUDIO.md](AUDIO.md)**. There are **50 lines**, that's the complete and final
 list, and it never grows — **no player names are ever spoken**, so the pack is fixed
-forever. Record them once, drop the MP3s in `/audio`, done.
+forever. Do it once.
 
-Three tiers, best available wins, each falling through to the next so the narrator
-is never silent:
+The quickest route: name your files after the line ids, open the setup page, and
+drag all 50 onto the banner at the top. They're stored in the browser and stay put.
 
-1. **Your files** in `/audio` — see AUDIO.md.
-2. **Google Cloud TTS** via `api/tts.js`, if `GOOGLE_TTS_KEY` is set. The key lives
-   in a Vercel environment variable and is **never sent to the browser**.
-3. **The browser's own voice**, hunting for a British male and pitching it down.
+Four tiers, best available wins, each falling through to the next so the narrator is
+never silent:
 
-To generate the whole pack with Google's British voice in one command:
+1. **Files you dropped into the setup page** — stored in this browser.
+2. **Files committed to `/audio`** — deploy with the site, work for everyone.
+3. **Generated speech** via `api/tts.js`, if `GOOGLE_TTS_KEY` is set. The key lives in
+   a Vercel environment variable and is **never sent to the browser**.
+4. **The browser's own voice**, hunting for a British male and pitching it down.
 
-```bash
-node tools/generate-audio.js
-```
+### Which Google key you have matters
+
+There are two, they look identical, and they are not interchangeable:
+
+| Key from | Works with | Set |
+| --- | --- | --- |
+| [aistudio.google.com](https://aistudio.google.com/apikey) | Gemini TTS | `GOOGLE_TTS_KEY`, and optionally `TTS_BACKEND=gemini` |
+| Google Cloud console | Cloud Text-to-Speech (must be enabled on the project) | `GOOGLE_TTS_KEY`, and optionally `TTS_BACKEND=cloud` |
+
+`TTS_BACKEND` defaults to `auto`, which tries Gemini first and falls back to Cloud if
+the key is rejected — so either kind should just work. An AI Studio key sent to Cloud
+TTS fails with `API_KEY_INVALID`, which is the usual way to get this wrong. `GET
+/api/tts` reports which backend is live; a failed `POST` tells you why.
+
+Other optional vars: `TTS_VOICE` (Gemini default `Charon`, Cloud default
+`en-GB-Chirp3-HD-Charon`), `TTS_STYLE`, `TTS_LANG`, `TTS_RATE`, `TTS_PITCH`.
 
 ---
 
