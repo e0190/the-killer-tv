@@ -127,7 +127,7 @@ const Admin = (function () {
     renderClock();
     if (S.timer.running && timerRemaining(S.timer) <= 0) {
       S.timer.running = false;
-      if (S.phase === 'day') next();
+      if (['day', 'vote', 'suspense'].indexOf(S.phase) !== -1) next();
     }
   }
 
