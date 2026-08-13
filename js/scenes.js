@@ -17,6 +17,30 @@ const SCENES = {
     <path d="M92 116v-14h34v14M100 102V94h18v8M106 110h6"/>
   </svg>`,
 
+  village: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M0 122h240"/>
+    <path d="M14 122V96l16-13 16 13v26M26 122v-14h8v14"/>
+    <path d="M56 122V88l18-15 18 15v34M68 122v-16h12v16"/>
+    <path d="M104 122V74l20-17 20 17v48M118 122v-18h12v18M120 84h8"/>
+    <path d="M124 57V40h-8"/>
+    <path d="M156 122V90l17-14 17 14v32M168 122v-15h10v15"/>
+    <path d="M202 122V98l14-11 14 11v24"/>
+    <path d="M6 92 0 96M234 92l6 4" stroke-dasharray="3 5"/>
+    <path d="M96 30a18 18 0 1 0 17 24 19 19 0 0 1-17-24Z"/>
+  </svg>`,
+
+  door: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M0 124h240"/>
+    <path d="M62 124V26h56v98"/>
+    <path d="M118 26l44 22v76"/>
+    <path d="M118 124h44"/>
+    <circle cx="108" cy="78" r="3" fill="currentColor" stroke="none"/>
+    <path d="M78 44h24v22H78z"/>
+    <path d="M20 124V70M40 124V70M20 70h20M18 60h24l-12-10Z"/>
+    <path d="M186 108l14-10M198 116l16-14M190 92l18-12" stroke-dasharray="3 6"/>
+    <path d="M198 40l6 10 10-4-6 12 12 2-12 6 8 10-13-3" stroke-width="1.3"/>
+  </svg>`,
+
   wolf: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
     <path d="M78 44 68 18l22 12a44 44 0 0 1 40 0l22-12-10 26"/>
     <path d="M78 44c-6 14-6 30 2 42l18 26c4 6 10 9 22 9s18-3 22-9l18-26c8-12 8-28 2-42"/>
