@@ -79,11 +79,6 @@ const NIGHT_ORDER = [
     call: 'Doppelgänger — open your eyes. Point at someone. You are what they are now.',
   },
   {
-    id: 'werewolf', role: 'werewolf', input: 'kill', scene: 'wolf',
-    story: 'Out past the last fence the wolves step out of their skins and count the houses with the lights off.',
-    call: 'Werewolves — open your eyes. Find each other. Then choose the one who will not see morning.',
-  },
-  {
     id: 'minion', role: 'minion', input: 'none', scene: 'watcher',
     story: 'Someone loyal and entirely human watches from the treeline, taking notes, hoping to be useful enough to keep.',
     call: 'Minion — open your eyes. Wolves, show yourself to your servant.',
