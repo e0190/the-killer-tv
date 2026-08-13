@@ -29,14 +29,18 @@ const TV = (function () {
     });
     Bus.send('hello', {});
 
+    /* Nothing can make a sound until somebody has interacted with this window,
+       so the whole screen is a switch until they do. Otherwise the opening
+       story plays to an empty room. */
     const unlock = () => {
       if (audioUnlocked) return;
       audioUnlocked = true;
+      $('tvWake').classList.add('gone');
       Sound.ensure();
-      $('tvHint').textContent = 'F for fullscreen';
       if (S) cue();
     };
-    ['click', 'keydown', 'touchstart'].forEach((e) => window.addEventListener(e, unlock));
+    $('tvWake').addEventListener('click', unlock);
+    ['keydown', 'touchstart'].forEach((e) => window.addEventListener(e, unlock));
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'f' || e.key === 'F') {
