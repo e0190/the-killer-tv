@@ -33,7 +33,7 @@ remote. Nobody types a URL twice.
 - **`#tv`** — the show. Story, line art, the night calls, the countdown, and the
   bodies. It renders what the remote sends and decides nothing.
 - **`#admin`** — the control panel. It knows every player's role, runs the night
-  in order, takes the wolves' choice and the Seer's answer, records the vote, and
+  in order, takes the Killer's choice and the Seer's answer, records the vote, and
   calls the ending. **Nobody but the moderator should look at it.**
 
 Both halves must be **the same browser on the same machine** — that's what
@@ -59,7 +59,7 @@ enter the whole cast at setup, and the app runs the rest.
    safe for long. **The Killer goes last**, and nobody dies until morning.
 2. **Wake up.** Everyone opens their eyes, then the TV counts **three, two, one**
    before it shows who didn't make it — name in letters a foot high, and what they
-   were, or just whether they were a wolf, your call.
+   were, or just whether they were the Killer, your call.
 3. **Day.** A timer runs on the TV while the village argues.
 4. **The vote.** The TV counts down, everyone points, *then* the tally sheet appears
    on the remote. Most votes hangs, after another three-count. **A tie sends it back
@@ -96,7 +96,7 @@ Three ways out, checked after every death:
 
 - **The Tanner dies**, by any hand → the Tanner wins alone and it stops there.
 - **No killers left standing** → the village wins.
-- **The killers have it down to one last villager** → the wolves win.
+- **The killers have it down to one last villager** → the killers win.
 
 The Minion wins whenever the killers do, alive or dead. The Doppelgänger wins as
 whatever it last copied. The dead still win — Hunters especially.
