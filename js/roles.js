@@ -1,203 +1,156 @@
-/* the killer tv — role definitions and night order.
-   Inspired by one-night social deduction games. The Drunk has been cut.
-   All narration text here is original to this project. */
+/* the killer tv — the cast.
+
+   This is no longer a one-night game. Play runs night → day → vote → night
+   until the tanner dies, the wolves are wiped out, or the wolves have the
+   village down to one last soul. Every role acts every night. */
 
 const ROLES = {
-  doppelganger: {
-    name: 'Doppelgänger',
-    team: 'unknown',
-    max: 1,
-    icon: '🎭',
-    tint: '#b98cff',
-    blurb: 'Copy another player\'s card and become that role, then act on it immediately.',
-    order: 10,
-  },
   werewolf: {
-    name: 'Werewolf',
-    team: 'wolves',
-    max: 2,
-    icon: '🐺',
-    tint: '#ff3b30',
-    blurb: 'Find your pack. If you are alone, peek at one centre card.',
-    order: 20,
+    name: 'Werewolf', mark: 'W', team: 'wolves', max: 2, step: 1,
+    short: 'Kills one villager each night.',
+    long: 'Wakes with the pack and chooses who does not see morning.',
   },
   minion: {
-    name: 'Minion',
-    team: 'wolves',
-    max: 1,
-    icon: '👁',
-    tint: '#ff7a45',
-    blurb: 'You see the wolves. They do not see you. Die for them if you must.',
-    order: 30,
+    name: 'Minion', mark: 'M', team: 'wolves', max: 1, step: 1,
+    short: 'Knows the wolves. Wins with them.',
+    long: 'Sees the pack but is not one of them. Dies as a villager and wins as a wolf.',
   },
   mason: {
-    name: 'Mason',
-    team: 'village',
-    max: 2,
-    icon: '⛏',
-    tint: '#4fc3f7',
-    blurb: 'You know the other Mason. If you see none, the other Mason is in the centre.',
-    order: 40,
+    name: 'Mason', mark: 'S', team: 'village', max: 2, step: 2,
+    short: 'Knows the other Mason for certain.',
+    long: 'Two builders who have seen each other\'s faces. Each is the other\'s only proof.',
   },
   seer: {
-    name: 'Seer',
-    team: 'village',
-    max: 1,
-    icon: '🔮',
-    tint: '#7ee8c0',
-    blurb: 'Look at one player\'s card, or two of the centre cards.',
-    order: 50,
+    name: 'Seer', mark: 'E', team: 'village', max: 1, step: 1,
+    short: 'Inspects one player each night.',
+    long: 'Learns whether one person is a wolf. Knowing is easy. Being believed is not.',
   },
   robber: {
-    name: 'Robber',
-    team: 'village',
-    max: 1,
-    icon: '🗝',
-    tint: '#ffd166',
-    blurb: 'Swap your card with another player\'s, then look at what you stole.',
-    order: 60,
+    name: 'Robber', mark: 'R', team: 'village', max: 1, step: 1,
+    short: 'Steals a role each night.',
+    long: 'Takes another player\'s role and leaves their own behind. Neither of them chose it.',
   },
   troublemaker: {
-    name: 'Troublemaker',
-    team: 'village',
-    max: 1,
-    icon: '🔀',
-    tint: '#ff8fd0',
-    blurb: 'Swap two other players\' cards without looking at either.',
-    order: 70,
+    name: 'Troublemaker', mark: 'T', team: 'village', max: 1, step: 1,
+    short: 'Swaps two other players each night.',
+    long: 'Trades two people\'s roles without looking. Nobody is told. Not even them.',
   },
   insomniac: {
-    name: 'Insomniac',
-    team: 'village',
-    max: 1,
-    icon: '☕',
-    tint: '#a0e57c',
-    blurb: 'At the end of the night, look at your own card to see what you became.',
-    order: 80,
+    name: 'Insomniac', mark: 'I', team: 'village', max: 1, step: 1,
+    short: 'Checks what they currently are.',
+    long: 'Never sleeps, so always knows what they have become by morning.',
   },
-  villager: {
-    name: 'Villager',
-    team: 'village',
-    max: 3,
-    icon: '🏠',
-    tint: '#9aa7b8',
-    blurb: 'No powers. No information. Just a mouth and a hunch.',
-    order: 999,
-  },
-  tanner: {
-    name: 'Tanner',
-    team: 'tanner',
-    max: 1,
-    icon: '💀',
-    tint: '#c9a227',
-    blurb: 'You hate your life. You only win if the village kills you.',
-    order: 999,
+  doppelganger: {
+    name: 'Doppelgänger', mark: 'D', team: 'village', max: 1, step: 1,
+    short: 'Copies a role each night.',
+    long: 'Becomes whoever they look at, every night, over and over.',
   },
   hunter: {
-    name: 'Hunter',
-    team: 'village',
-    max: 1,
-    icon: '🏹',
-    tint: '#e0785a',
-    blurb: 'If you die, whoever you pointed at dies with you.',
-    order: 999,
+    name: 'Hunter', mark: 'H', team: 'village', max: 1, step: 1,
+    short: 'Takes someone down when they die.',
+    long: 'Dies with a loaded weapon and one last decision to make.',
+  },
+  tanner: {
+    name: 'Tanner', mark: 'X', team: 'tanner', max: 1, step: 1,
+    short: 'Wins by dying. Ends the game.',
+    long: 'Wants out. If the tanner dies by any hand, the tanner wins and everyone else goes home empty.',
+  },
+  villager: {
+    name: 'Villager', mark: 'V', team: 'village', max: 4, step: 1,
+    short: 'No power. Just a vote and an opinion.',
+    long: 'Sleeps through everything and still has to decide who hangs.',
   },
 };
 
 const ROLE_IDS = Object.keys(ROLES);
 
-/* Night script. `key` is the role that must be in the deck (centre counts too —
-   silence is information, so every card in the game gets called). */
-const NIGHT_SCRIPT = [
+/* The night, in order. Each beat runs only if a living player holds that role.
+   `input` is what the moderator has to tell the app:
+     kill  — the wolves' victim
+     look  — one player, answer shown to the moderator only
+     steal — one player, roles swap with the actor
+     swap  — two players, their roles trade
+     self  — no target; the moderator just signals the answer
+*/
+const NIGHT_ORDER = [
   {
-    id: 'doppelganger',
-    key: 'doppelganger',
-    wake: 'Doppelgänger, wake up. Look at another player\'s card. You are that role now — act on it.',
-    sleep: 'Doppelgänger, close your eyes.',
-    seconds: 20,
+    id: 'doppelganger', role: 'doppelganger', input: 'copy', scene: 'mask',
+    story: 'Something without a face of its own presses against a window, learning the shape of whoever sleeps behind it.',
+    call: 'Doppelgänger — open your eyes. Point at someone. You are what they are now.',
   },
   {
-    id: 'werewolf',
-    key: 'werewolf',
-    wake: 'Werewolves, wake up and look for each other. If you are alone, take one card from the centre.',
-    sleep: 'Werewolves, close your eyes.',
-    seconds: 12,
+    id: 'werewolf', role: 'werewolf', input: 'kill', scene: 'wolf',
+    story: 'Out past the last fence the wolves step out of their skins and count the houses with the lights off.',
+    call: 'Werewolves — open your eyes. Find each other. Then choose the one who will not see morning.',
   },
   {
-    id: 'minion',
-    key: 'minion',
-    wake: 'Minion, wake up. Werewolves, thumbs up so your servant can see you.',
-    sleep: 'Werewolves, thumbs down. Minion, close your eyes.',
-    seconds: 10,
+    id: 'minion', role: 'minion', input: 'none', scene: 'watcher',
+    story: 'Someone loyal and entirely human watches from the treeline, taking notes, hoping to be useful enough to keep.',
+    call: 'Minion — open your eyes. Wolves, show yourself to your servant.',
   },
   {
-    id: 'mason',
-    key: 'mason',
-    wake: 'Masons, wake up and look for one another.',
-    sleep: 'Masons, close your eyes.',
-    seconds: 8,
+    id: 'mason', role: 'mason', input: 'none', scene: 'hands',
+    story: 'Two builders meet in the dark where they always meet, and confirm what they already know about each other.',
+    call: 'Masons — open your eyes and find one another.',
   },
   {
-    id: 'seer',
-    key: 'seer',
-    wake: 'Seer, wake up. Look at one player\'s card, or two cards from the centre.',
-    sleep: 'Seer, close your eyes.',
-    seconds: 16,
+    id: 'seer', role: 'seer', input: 'look', scene: 'eye',
+    story: 'A candle burns in an upstairs room. Someone is looking hard at one name on a very short list.',
+    call: 'Seer — open your eyes. Choose one person. You will be told what they are.',
   },
   {
-    id: 'robber',
-    key: 'robber',
-    wake: 'Robber, wake up. Trade your card with another player\'s, then look at your new one.',
-    sleep: 'Robber, close your eyes.',
-    seconds: 16,
+    id: 'robber', role: 'robber', input: 'steal', scene: 'key',
+    story: 'A door opens that was locked. Something is taken. Something worse is left behind in its place.',
+    call: 'Robber — open your eyes. Point at someone. Their role is yours now, and yours is theirs.',
   },
   {
-    id: 'troublemaker',
-    key: 'troublemaker',
-    wake: 'Troublemaker, wake up. Swap two other players\' cards. Do not look at them.',
-    sleep: 'Troublemaker, close your eyes.',
-    seconds: 16,
+    id: 'troublemaker', role: 'troublemaker', input: 'swap', scene: 'swap',
+    story: 'Two coats are swapped on their pegs by someone who thinks the whole business is very funny.',
+    call: 'Troublemaker — open your eyes. Point at two other people. They have traded places, and neither will be told.',
   },
   {
-    id: 'insomniac',
-    key: 'insomniac',
-    wake: 'Insomniac, wake up and look at your own card.',
-    sleep: 'Insomniac, close your eyes.',
-    seconds: 8,
-  },
-  {
-    id: 'doppelganger2',
-    key: 'doppelganger',
-    label: 'Doppelgänger · encore',
-    wake: 'Doppelgänger — if you became the Insomniac, look at your card now.',
-    sleep: 'Doppelgänger, close your eyes.',
-    seconds: 8,
+    id: 'insomniac', role: 'insomniac', input: 'self', scene: 'lamp',
+    story: 'One window never goes dark. Whoever is behind it has stopped trying to sleep and started keeping track.',
+    call: 'Insomniac — open your eyes. You will be shown what you have become.',
   },
 ];
 
-/* Suggested decks. Each deck is playerCount + 3 cards. */
+const NIGHT_BY_ID = {};
+NIGHT_ORDER.forEach((b) => { NIGHT_BY_ID[b.id] = b; });
+
+/* Suggested casts, by head count. Every player holds exactly one role —
+   there are no cards in the middle any more. */
 const PRESETS = {
-  3: ['werewolf', 'werewolf', 'seer', 'robber', 'troublemaker', 'villager'],
-  4: ['werewolf', 'werewolf', 'seer', 'robber', 'troublemaker', 'villager', 'villager'],
-  5: ['werewolf', 'werewolf', 'minion', 'seer', 'robber', 'troublemaker', 'villager', 'villager'],
-  6: ['werewolf', 'werewolf', 'minion', 'seer', 'robber', 'troublemaker', 'insomniac', 'villager', 'villager'],
-  7: ['werewolf', 'werewolf', 'minion', 'mason', 'mason', 'seer', 'robber', 'troublemaker', 'insomniac', 'villager'],
-  8: ['doppelganger', 'werewolf', 'werewolf', 'minion', 'mason', 'mason', 'seer', 'robber', 'troublemaker', 'insomniac', 'tanner'],
-  9: ['doppelganger', 'werewolf', 'werewolf', 'minion', 'mason', 'mason', 'seer', 'robber', 'troublemaker', 'insomniac', 'tanner', 'hunter'],
-  10: ['doppelganger', 'werewolf', 'werewolf', 'minion', 'mason', 'mason', 'seer', 'robber', 'troublemaker', 'insomniac', 'tanner', 'hunter', 'villager'],
+  4: ['werewolf', 'seer', 'villager', 'villager'],
+  5: ['werewolf', 'seer', 'robber', 'villager', 'villager'],
+  6: ['werewolf', 'seer', 'robber', 'troublemaker', 'villager', 'villager'],
+  7: ['werewolf', 'werewolf', 'seer', 'robber', 'insomniac', 'villager', 'villager'],
+  8: ['werewolf', 'werewolf', 'minion', 'seer', 'robber', 'troublemaker', 'villager', 'villager'],
+  9: ['werewolf', 'werewolf', 'minion', 'seer', 'robber', 'troublemaker', 'insomniac', 'hunter', 'villager'],
+  10: ['werewolf', 'werewolf', 'minion', 'mason', 'mason', 'seer', 'robber', 'troublemaker', 'hunter', 'tanner'],
+  11: ['werewolf', 'werewolf', 'minion', 'mason', 'mason', 'seer', 'robber', 'troublemaker', 'insomniac', 'hunter', 'tanner'],
+  12: ['werewolf', 'werewolf', 'minion', 'mason', 'mason', 'seer', 'robber', 'troublemaker', 'insomniac', 'doppelganger', 'hunter', 'tanner'],
 };
 
-function deckCounts(deck) {
-  const counts = {};
-  deck.forEach((id) => { counts[id] = (counts[id] || 0) + 1; });
-  return counts;
+function roleCounts(list) {
+  const c = {};
+  list.forEach((r) => { if (r) c[r] = (c[r] || 0) + 1; });
+  return c;
 }
 
-function deckHas(deck, roleId) {
-  return deck.indexOf(roleId) !== -1;
-}
-
-/* Phases the narrator will actually run, given a deck. */
-function buildNightPhases(deck) {
-  return NIGHT_SCRIPT.filter((step) => deckHas(deck, step.key));
+function castProblems(list) {
+  const problems = [];
+  const counts = roleCounts(list);
+  Object.keys(counts).forEach((id) => {
+    if (!ROLES[id]) return;
+    if (counts[id] > ROLES[id].max) {
+      problems.push('Too many ' + ROLES[id].name + 's — the most you can have is ' + ROLES[id].max + '.');
+    }
+  });
+  if (counts.mason === 1) problems.push('Masons come in twos. One Mason alone has nobody to recognise.');
+  if (!counts.werewolf) problems.push('There are no werewolves. Nobody can lose.');
+  if (list.some((r) => !r)) problems.push('Somebody has not been given a role yet.');
+  const wolves = counts.werewolf || 0;
+  if (wolves && list.length - wolves <= 1) problems.push('The wolves already outnumber the village. Add more villagers.');
+  return problems;
 }
