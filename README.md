@@ -163,6 +163,7 @@ index.html          all three views; a hash picks which one you get
 css/app.css
 js/roles.js         the cast, the night order, suggested line-ups
 js/lines.js         every word the narrator says — the audio pack's source of truth
+js/pack.js          dropped-in narration files, stored in the browser
 js/scenes.js        the line art
 js/game.js          state, night actions, votes, and the three endings
 js/bus.js           the wire between the two windows
