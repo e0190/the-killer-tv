@@ -60,11 +60,116 @@ const Setup = (function () {
     $('testVoice').addEventListener('click', preview);
     $('splitBtn').addEventListener('click', begin);
 
-    Narrator.warm().then(renderVoice);
+    wirePack();
+
+    Narrator.warm().then(() => { renderVoice(); renderPack(); });
     renderVoice();
+    renderPack();
     if ('speechSynthesis' in window) speechSynthesis.addEventListener('voiceschanged', renderVoice);
 
     render();
+  }
+
+  /* ---------- the narration pack ---------- */
+
+  function wirePack() {
+    const block = $('packBlock');
+    $('packOpen').addEventListener('click', () => {
+      block.hidden = !block.hidden;
+      if (!block.hidden) block.scrollIntoView({ block: 'start' });
+    });
+    $('packClose').addEventListener('click', () => { block.hidden = true; });
+
+    $('packClear').addEventListener('click', () => {
+      if (!confirm('Remove every narration file from this browser?')) return;
+      Pack.clear().then(() => Narrator.refreshPack()).then(() => { renderPack(); renderVoice(); });
+    });
+
+    $('packCopy').addEventListener('click', () => {
+      const text = LINE_IDS.map((id) => id + '.mp3\t' + LINES[id]).join('\n');
+      navigator.clipboard.writeText(text)
+        .then(() => { $('packReport').textContent = 'All ' + LINE_IDS.length + ' lines copied — filename, tab, script.'; })
+        .catch(() => { $('packReport').textContent = 'Clipboard blocked. The list is below.'; });
+    });
+
+    $('packFiles').addEventListener('change', (e) => take(e.target.files));
+
+    const zone = $('packDrop');
+    ['dragenter', 'dragover'].forEach((ev) => zone.addEventListener(ev, (e) => {
+      e.preventDefault(); zone.classList.add('over');
+    }));
+    ['dragleave', 'drop'].forEach((ev) => zone.addEventListener(ev, (e) => {
+      e.preventDefault(); zone.classList.remove('over');
+    }));
+    zone.addEventListener('drop', (e) => {
+      if (e.dataTransfer && e.dataTransfer.files) take(e.dataTransfer.files);
+    });
+  }
+
+  function take(files) {
+    if (!files || !files.length) return;
+    $('packReport').textContent = 'Installing…';
+    Pack.install(files)
+      .then((res) => Narrator.refreshPack().then(() => res))
+      .then((res) => {
+        renderPack();
+        renderVoice();
+        const bits = [];
+        if (res.taken.length) bits.push(res.taken.length + ' installed');
+        if (res.skipped.length) bits.push(res.skipped.length + " didn't match a line id (" + res.skipped.slice(0, 3).join(', ') + (res.skipped.length > 3 ? '…' : '') + ')');
+        $('packReport').textContent = bits.join(' · ') || 'Nothing usable in that lot.';
+        Sound.play('blip');
+      })
+      .catch(() => { $('packReport').textContent = 'This browser refused to store them.'; });
+  }
+
+  function renderPack() {
+    const have = Narrator.installed();
+    const total = LINE_IDS.length;
+    $('packTotal').textContent = total;
+    $('packBar').style.width = Math.round((have.length / total) * 100) + '%';
+
+    const banner = $('packBanner');
+    const st = Narrator.status();
+    banner.hidden = false;
+    banner.classList.toggle('done', have.length >= total);
+    if (have.length >= total) {
+      $('packBannerTitle').textContent = 'Your narration pack is installed';
+      $('packBannerSub').textContent = 'All ' + total + ' lines, stored in this browser.';
+      $('packOpen').textContent = 'review';
+    } else if (have.length > 0) {
+      $('packBannerTitle').textContent = have.length + ' of ' + total + ' narration files installed';
+      $('packBannerSub').textContent = 'The missing ones fall back to ' + (st.tier === 'cloud' ? 'the generated voice.' : 'the browser voice.');
+      $('packOpen').textContent = 'finish it';
+    } else {
+      $('packBannerTitle').textContent = 'No narration files installed';
+      $('packBannerSub').textContent = st.tier === 'cloud'
+        ? 'Using the generated voice. Drop your own recordings in to replace it.'
+        : 'The browser will read the game aloud. Drop your own recordings in for something better.';
+      $('packOpen').textContent = 'install them';
+    }
+
+    const list = $('packList');
+    if (!list.childElementCount || list.dataset.count !== String(have.length)) {
+      list.dataset.count = String(have.length);
+      list.innerHTML = LINE_IDS.map((id) => {
+        const got = have.indexOf(id) !== -1;
+        return '<li class="' + (got ? 'have' : '') + '">' +
+          '<div><code>' + id + '.mp3</code><span class="pack-state">' + (got ? 'installed' : 'missing') + '</span></div>' +
+          '<p>' + esc(LINES[id]) + '</p>' +
+          '<label>' + (got ? 'replace' : 'add') + '<input type="file" accept="audio/*" data-line="' + id + '" hidden></label>' +
+          '</li>';
+      }).join('');
+      list.querySelectorAll('input[data-line]').forEach((input) => {
+        input.addEventListener('change', () => {
+          const f = input.files && input.files[0];
+          if (!f) return;
+          Pack.put(input.dataset.line, f)
+            .then(() => Narrator.refreshPack())
+            .then(() => { renderPack(); renderVoice(); Sound.play('blip'); });
+        });
+      });
+    }
   }
 
   /* ---------- cast ---------- */
