@@ -474,12 +474,13 @@ const Admin = (function () {
         showPicker('Who the Seer inspects', others([actor]), b.targets, 1,
           (sel) => { if (sel.length) apply(b, sel); else undo(b); push(); render(); });
         if (S.seerAnswer) {
+          const def = ROLES[S.seerAnswer.role];
           const box = $('admAnswer');
           box.hidden = false;
           box.className = 'answer ' + (S.seerAnswer.isWolf ? 'wolf' : 'clear');
-          box.innerHTML = '<p class="micro">Signal this to the Seer — do not say it aloud</p><strong>' +
-            esc(nameOf(S, S.seerAnswer.targetId)) + ' is ' +
-            (S.seerAnswer.isWolf ? 'A WEREWOLF' : 'not a werewolf') + '</strong>';
+          box.innerHTML = '<p class="micro">Show this to the Seer — do not say it aloud</p><strong>' +
+            esc(nameOf(S, S.seerAnswer.targetId)) + ' is the ' +
+            esc(def ? def.name : '?') + '</strong>';
         }
         $('admNext').disabled = !b.applied;
         break;
