@@ -101,6 +101,16 @@ const TV = (function () {
         break;
       }
 
+      case 'wake':
+        Sound.stopDrone();
+        Sound.play('dawn');
+        Narrator.say('dawn');
+        break;
+
+      case 'suspense':
+        Sound.play('riser');
+        break;
+
       case 'dawn':
         Sound.stopDrone();
         if (S.lastDeaths.length) {
