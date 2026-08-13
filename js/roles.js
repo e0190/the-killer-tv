@@ -22,8 +22,8 @@ const ROLES = {
   },
   seer: {
     name: 'Seer', mark: 'E', team: 'village', max: 1, step: 1,
-    short: 'Inspects one player each night.',
-    long: 'Learns whether one person is a wolf. Knowing is easy. Being believed is not.',
+    short: 'Learns what one person is each night.',
+    long: 'Finds out exactly what somebody is. Knowing is easy. Being believed is not.',
   },
   robber: {
     name: 'Robber', mark: 'R', team: 'village', max: 1, step: 1,
