@@ -187,21 +187,23 @@ const Admin = (function () {
       case 'day':
         S.phase = 'vote';
         S.votes = {};
+        S.revotes = 0;
+        S.revoteNotice = false;
         startTimer(5000);          // just the three-two-one on the TV
         break;
 
-      case 'vote': {
-        if (!votesIn()) return;
-        const out = voteOutcome(S);
-        S.lastDeaths = [];
-        S.lastCause = 'vote';
-        S.voteTied = out.tied;
-        S.voteCounts = out.counts;
-        if (out.id) { kill(S, out.id, 'vote'); S.lastDeaths = [out.id]; }
-        S.phase = 'lynch';
-        Sound.play(out.id ? 'stab' : 'toll');
+      case 'vote':                 // the countdown; the tally sheet comes after
+        S.phase = 'tally';
+        S.revoteNotice = false;
+        stopTimer();
         break;
-      }
+
+      case 'tally':
+        if (!votesIn()) return;
+        S.phase = 'suspense';
+        S.suspenseNext = 'lynch';
+        startTimer(3000);
+        break;
 
       case 'lynch':
         afterDeaths('nightfall');
