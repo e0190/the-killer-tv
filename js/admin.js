@@ -493,19 +493,19 @@ const Admin = (function () {
         break;
 
       case 'copy':
-        showPicker('Who the Doppelgänger becomes', others([actor]), b.targets, 1,
+        showPicker('Who the Doppelgänger becomes', swappable([actor]), b.targets, 1,
           (sel) => { if (sel.length) apply(b, sel); else undo(b); push(); render(); });
         $('admNext').disabled = !b.applied;
         break;
 
       case 'steal':
-        showPicker('Who the Robber steals from', others([actor]), b.targets, 1,
+        showPicker('Who the Robber steals from', swappable([actor]), b.targets, 1,
           (sel) => { if (sel.length) apply(b, sel); else undo(b); push(); render(); });
         $('admNext').disabled = !b.applied;
         break;
 
       case 'swap':
-        showPicker('The two being swapped — pick two', others([actor]), b.targets, 2,
+        showPicker('The two being swapped — pick two', swappable([actor]), b.targets, 2,
           (sel) => { if (sel.length === 2) apply(b, sel); else { undo(b); b.targets = sel; } push(); render(); });
         $('admNext').disabled = !b.applied;
         break;
