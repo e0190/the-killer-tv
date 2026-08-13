@@ -153,11 +153,22 @@ const Admin = (function () {
           S.beatIndex++;
           S.seerAnswer = null;
         } else {
-          S.phase = 'dawn';
-          resolveDawn();
+          S.phase = 'wake';
         }
         break;
       }
+
+      case 'wake':
+        S.phase = 'suspense';
+        S.suspenseNext = 'dawn';
+        startTimer(3000);
+        break;
+
+      case 'suspense':
+        stopTimer();
+        if (S.suspenseNext === 'dawn') { resolveDawn(); S.phase = 'dawn'; }
+        else resolveVote();
+        break;
 
       case 'dawn':
         afterDeaths('day');
