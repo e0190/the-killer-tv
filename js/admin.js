@@ -390,6 +390,19 @@ const Admin = (function () {
 
       case 'nightbeat': renderBeat(); break;
 
+      case 'wake':
+        head('night ' + roman(S.round) + ' · over', 'Everybody, wake up');
+        $('admStory').textContent = LINES.dawn;
+        $('admCall').textContent = 'Wait for everyone to open their eyes. Next starts a three-second count, then the TV shows who didn\'t make it.';
+        $('admNext').textContent = 'count them down';
+        break;
+
+      case 'suspense':
+        head(S.suspenseNext === 'dawn' ? 'dawn' : 'the rope', 'Three…');
+        $('admCall').textContent = 'Eyes on the television.';
+        $('admNext').disabled = true;
+        break;
+
       case 'dawn': renderDawn(); break;
 
       case 'hunter': {
