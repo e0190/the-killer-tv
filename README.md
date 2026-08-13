@@ -77,7 +77,7 @@ missing from their list would give the game away.
 | W | Werewolf ×2 | Find each other, then choose who doesn't see morning. |
 | M | Minion | Sees the wolves. The wolves never see them. |
 | S | Mason ×2 | Recognise each other. Always added and removed as a pair. |
-| E | Seer | Inspects one player; the moderator signals wolf or not. |
+| E | Seer | Inspects one player; the moderator is shown **exactly what they are**, to signal in silence. |
 | R | Robber | Swaps roles with someone. Both of them are now something else. |
 | T | Troublemaker | Swaps two *other* people's roles. Neither is told. |
 | I | Insomniac | Is shown what they have become. |
