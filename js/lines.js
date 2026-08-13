@@ -50,6 +50,9 @@ const LINES = {
 
   /* ---- calls: every night ---- */
   call_doppelganger: 'Doppelgänger, wake. Point at someone. You are them now.',
+  /* said straight after the call — the Doppelgänger only ever wakes once */
+  dg_act:  'If that role is called tonight, act on it.',
+  dg_keep: 'You are that role from now on.',
   call_minion:       'Minion, wake. Killer, show yourself.',
   call_mason:        'Masons, wake. Find each other.',
   call_seer:         'Seer, wake. Point at one person.',
