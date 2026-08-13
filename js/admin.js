@@ -138,7 +138,8 @@ const Admin = (function () {
   function next() {
     switch (S.phase) {
       case 'opening':
-        startNight();
+        if (S.prologueIndex < PROLOGUE.length - 1) S.prologueIndex++;
+        else startNight();
         break;
 
       case 'nightfall':

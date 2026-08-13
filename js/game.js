@@ -5,6 +5,7 @@ function newGame() {
   return {
     v: 2,
     phase: 'opening',
+    prologueIndex: 0,
     round: 1,
     players: [],            // {id, name, role, startRole, alive, diedRound, diedBy}
     nightBeats: [],         // role beats for the night now running
