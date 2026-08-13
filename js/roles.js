@@ -42,8 +42,9 @@ const ROLES = {
   },
   doppelganger: {
     name: 'Doppelgänger', mark: 'D', team: 'village', max: 1, step: 1,
-    short: 'Copies a role each night.',
-    long: 'Becomes whoever they look at, every night, over and over.',
+    short: 'Becomes someone else on the first night.',
+    long: 'Points at one person and takes their role. If that role is called later the same ' +
+          'night, they act on it. The Doppelgänger is gone by morning — they are simply that role now.',
   },
   hunter: {
     name: 'Hunter', mark: 'H', team: 'village', max: 1, step: 1,
