@@ -168,9 +168,9 @@ function castProblems(list) {
     }
   });
   if (counts.mason === 1) problems.push('Masons come in twos. One Mason alone has nobody to recognise.');
-  if (!counts.werewolf) problems.push('There are no werewolves. Nobody can lose.');
+  if (!counts.killer) problems.push('There is no Killer. Nobody can lose.');
   if (list.some((r) => !r)) problems.push('Somebody has not been given a role yet.');
-  const wolves = counts.werewolf || 0;
-  if (wolves && list.length - wolves <= 1) problems.push('The wolves already outnumber the village. Add more villagers.');
+  const killers = counts.killer || 0;
+  if (killers && list.length - killers <= 1) problems.push('The killers already outnumber everyone else. Add more villagers.');
   return problems;
 }
