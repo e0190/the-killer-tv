@@ -256,6 +256,28 @@ const Admin = (function () {
     stopTimer();
   }
 
+  /* A tie means the village couldn't agree, so they go again. After a couple of
+     rounds of that, the rope goes back on the hook and the night comes anyway. */
+  function resolveVote() {
+    const out = voteOutcome(S);
+    if (out.tied && S.revotes < MAX_REVOTES) {
+      S.revotes++;
+      S.votes = {};
+      S.revoteNotice = true;
+      S.phase = 'vote';
+      startTimer(5000);
+      Sound.play('toll');
+      return;
+    }
+    S.lastDeaths = [];
+    S.lastCause = 'vote';
+    S.voteTied = out.tied;
+    S.voteCounts = out.counts;
+    if (out.id) { kill(S, out.id, 'vote'); S.lastDeaths = [out.id]; }
+    S.phase = 'lynch';
+    Sound.play(out.id ? 'stab' : 'toll');
+  }
+
   function resolveDawn() {
     S.lastDeaths = [];
     S.lastCause = 'wolves';
