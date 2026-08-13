@@ -502,6 +502,7 @@ const Admin = (function () {
           box.innerHTML = '<p class="micro">Show this to the Seer — do not say it aloud</p><strong>' +
             esc(nameOf(S, S.seerAnswer.targetId)) + ' is the ' +
             esc(def ? def.name : '?') + '</strong>';
+          box.classList.toggle('killer', S.seerAnswer.isKiller);
         }
         $('admNext').disabled = !b.applied;
         break;
