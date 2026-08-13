@@ -76,13 +76,13 @@ without eyes opening.
 | | Role | What they do, every night |
 | --- | --- | --- |
 | D | Doppelgänger | Points at someone and becomes their role. Again. And again. |
-| W | Werewolf ×2 | Find each other, then choose who doesn't see morning. |
 | M | Minion | Sees the wolves. The wolves never see them. |
 | S | Mason ×2 | Recognise each other. Always added and removed as a pair. |
 | E | Seer | Inspects one player; the moderator is shown **exactly what they are**, to signal in silence. |
 | R | Robber | Swaps roles with someone. Both of them are now something else. |
 | T | Troublemaker | Swaps two *other* people's roles. Neither is told. |
-| I | Insomniac | Is shown what they have become. |
+| I | Insomniac | Is shown what they have become — after everything above has moved. |
+| W | Werewolf ×2 | **Last.** Find each other, then choose who doesn't see morning. |
 
 Three more never wake: **Hunter** (when they die, they take somebody with them),
 **Tanner** (wants to die), **Villager** (up to four; no powers, just a vote).
