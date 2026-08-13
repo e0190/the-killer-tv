@@ -80,10 +80,13 @@ const TV = (function () {
     Narrator.shush();
 
     switch (S.phase) {
-      case 'opening':
-        Sound.play('toll');
-        Narrator.say('opening');
+      case 'opening': {
+        const p = PROLOGUE[S.prologueIndex];
+        Sound.play(S.prologueIndex === 0 ? 'toll' : 'thud');
+        if (S.prologueIndex === PROLOGUE.length - 1) Sound.startDrone();
+        Narrator.say(p.id);
         break;
+      }
 
       case 'nightfall':
         Sound.startDrone();
