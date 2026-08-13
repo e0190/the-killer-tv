@@ -52,9 +52,11 @@ is what it's built for.
 There are no cards in the middle any more. Everyone holds exactly one role, you
 enter the whole cast at setup, and the app runs the rest.
 
+0. **The prologue.** Six beats of story before the first night — the village, what's
+   been happening to it, and how badly this is about to go. Tap through at reading pace.
 1. **Night.** The TV calls each role in turn. **There is no night clock** — you tap
    through at the table's pace. Every role acts **every night**, so nobody's role is
-   safe for long.
+   safe for long. **The wolves go last**, and nobody dies until morning.
 2. **Wake up.** Everyone opens their eyes, then the TV counts **three, two, one**
    before it shows who didn't make it — name in letters a foot high, and what they
    were, or just whether they were a wolf, your call.
