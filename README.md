@@ -106,12 +106,12 @@ whatever it became. The dead still win — Hunters especially.
 
 ## The narrator
 
-Read **[AUDIO.md](AUDIO.md)**. There are **60 lines**, that's the complete and final
+Read **[AUDIO.md](AUDIO.md)**. There are **62 lines**, that's the complete and final
 list, and it never grows — **no player names are ever spoken**, so the pack is fixed
 forever. Do it once.
 
 The quickest route: name your files after the line ids, open the setup page, and
-drag all 60 onto the banner at the top. They're stored in the browser and stay put.
+drag all 62 onto the banner at the top. They're stored in the browser and stay put.
 
 Four tiers, best available wins, each falling through to the next so the narrator is
 never silent:

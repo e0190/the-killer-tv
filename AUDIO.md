@@ -1,6 +1,6 @@
 # The narration pack
 
-The narrator reads the whole game aloud. There are **60 lines**, and that is the
+The narrator reads the whole game aloud. There are **62 lines**, and that is the
 complete and final list. Two rules keep it that way:
 
 **Every line is short.** Average six words, longest eleven. Nobody at a party
@@ -15,10 +15,10 @@ in letters a foot high. Do these once, never again.
 
 You don't have to touch the repo at all.
 
-1. Generate or record the 60 files. Name each one after its line id —
+1. Generate or record the 62 files. Name each one after its line id —
    `opening_road.mp3`, `call_killer.mp3`, and so on, exactly as listed below.
 2. Open the site. There's a banner at the top of the setup page.
-3. Hit **install them**, then drag all 60 files onto the drop zone in one go.
+3. Hit **install them**, then drag all 62 files onto the drop zone in one go.
 
 They're matched by filename, stored in this browser, and they stay there — you
 only do it once per machine. The TV window reads the same store, so both halves
@@ -45,7 +45,7 @@ node tools/generate-audio.js --manifest-only
 node tools/generate-audio.js
 ```
 
-Needs `GOOGLE_TTS_KEY`. Writes all 60 MP3s into `/audio`, skips any that already
+Needs `GOOGLE_TTS_KEY`. Writes all 62 MP3s into `/audio`, skips any that already
 exist, rewrites the manifest. Flags: `--force`, `--voice`, `--rate`, `--pitch`,
 `--only a,b,c`.
 
@@ -108,6 +108,13 @@ Resist the urge to perform them. They're short on purpose; let them land flat.
 | `call_troublemaker.mp3` | Troublemaker, wake. Swap two people. |
 | `call_insomniac.mp3` | Insomniac, wake. Look at what you are. |
 | `call_killer.mp3` | Killer, wake. Choose who dies tonight. |
+
+### The Doppelgänger’s rules — said straight after its call
+
+| file | what it says |
+| --- | --- |
+| `dg_act.mp3` | If that role is called tonight, act on it. |
+| `dg_keep.mp3` | You are that role from now on. |
 
 ### Morning
 
