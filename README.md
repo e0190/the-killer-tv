@@ -5,7 +5,7 @@ that **splits into two screens**: a big, slow, unpleasant TV for the room, and a
 quiet control panel for whoever is running it.
 
 Inspired by the one-night werewolf format, but it is not a one-night game. It runs
-night after night until somebody wins. **The Drunk has been cut.**
+night after night until somebody wins. **The Drunk has been cut, and the werewolf is now simply the Killer.**
 
 The game itself needs no server — the two halves talk to each other directly, and
 it works offline. The only optional backend is a serverless function that fetches
@@ -52,11 +52,11 @@ is what it's built for.
 There are no cards in the middle any more. Everyone holds exactly one role, you
 enter the whole cast at setup, and the app runs the rest.
 
-0. **The prologue.** Six beats of story before the first night — the village, what's
-   been happening to it, and how badly this is about to go. Tap through at reading pace.
+0. **The prologue.** Eleven short beats of story before the first night — the village, what's
+   been happening to it, and how badly this is about to go. A line or two each.
 1. **Night.** The TV calls each role in turn. **There is no night clock** — you tap
    through at the table's pace. Every role acts **every night**, so nobody's role is
-   safe for long. **The wolves go last**, and nobody dies until morning.
+   safe for long. **The Killer goes last**, and nobody dies until morning.
 2. **Wake up.** Everyone opens their eyes, then the TV counts **three, two, one**
    before it shows who didn't make it — name in letters a foot high, and what they
    were, or just whether they were a wolf, your call.
@@ -66,9 +66,9 @@ enter the whole cast at setup, and the app runs the rest.
    for a revote** — twice, and if they still can't agree, nobody hangs.
 5. Repeat until it's over.
 
-The wolves waking **last** is what keeps the morning honest: nothing acts after
-them, so the victim's role is settled the instant it's chosen and can't be swapped
-out from under the announcement. The Minion still sees the pack — thumbs go up
+The Killer waking **last** is what keeps the morning honest: nothing acts after
+them, so the victim's role is settled the instant it's chosen and cannot be swapped
+out from under the announcement. The Minion still sees who it is — a hand goes up
 without eyes opening.
 
 ### The night, in order
@@ -76,13 +76,13 @@ without eyes opening.
 | | Role | What they do, every night |
 | --- | --- | --- |
 | D | Doppelgänger | Points at someone and becomes their role. Again. And again. |
-| M | Minion | Sees the wolves. The wolves never see them. |
+| M | Minion | Knows the Killer. The Killer never knows them. |
 | S | Mason ×2 | Recognise each other. Always added and removed as a pair. |
 | E | Seer | Inspects one player; the moderator is shown **exactly what they are**, to signal in silence. |
 | R | Robber | Swaps roles with someone. Both of them are now something else. |
 | T | Troublemaker | Swaps two *other* people's roles. Neither is told. |
 | I | Insomniac | Is shown what they have become — after everything above has moved. |
-| W | Werewolf ×2 | **Last.** Find each other, then choose who doesn't see morning. |
+| K | Killer ×2 | **Last.** Choose who does not see morning. |
 
 Three more never wake: **Hunter** (when they die, they take somebody with them),
 **Tanner** (wants to die), **Villager** (up to four; no powers, just a vote).
@@ -95,22 +95,22 @@ order shrinks as people die, and silence is never a tell.
 Three ways out, checked after every death:
 
 - **The Tanner dies**, by any hand → the Tanner wins alone and it stops there.
-- **No wolves left standing** → the village wins.
-- **The wolves have it down to one last villager** → the wolves win.
+- **No killers left standing** → the village wins.
+- **The killers have it down to one last villager** → the wolves win.
 
-The Minion wins whenever the wolves do, alive or dead. The Doppelgänger wins as
+The Minion wins whenever the killers do, alive or dead. The Doppelgänger wins as
 whatever it last copied. The dead still win — Hunters especially.
 
 ---
 
 ## The narrator
 
-Read **[AUDIO.md](AUDIO.md)**. There are **55 lines**, that's the complete and final
+Read **[AUDIO.md](AUDIO.md)**. There are **60 lines**, that's the complete and final
 list, and it never grows — **no player names are ever spoken**, so the pack is fixed
 forever. Do it once.
 
 The quickest route: name your files after the line ids, open the setup page, and
-drag all 55 onto the banner at the top. They're stored in the browser and stay put.
+drag all 60 onto the banner at the top. They're stored in the browser and stay put.
 
 Four tiers, best available wins, each falling through to the next so the narrator is
 never silent:
