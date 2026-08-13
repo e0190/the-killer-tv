@@ -96,6 +96,8 @@ const LINES = {
   /* ---- the vote ---- */
   vote_call:
     'Enough talking. Hands up. On three, point at the one you want swinging.',
+  vote_again:
+    'No majority. That is not good enough. Hands up — you will do this again until you agree.',
   vote_three: 'Three.',
   vote_two: 'Two.',
   vote_one: 'One.',
