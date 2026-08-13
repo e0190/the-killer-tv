@@ -16,6 +16,11 @@ function newGame() {
     lastDeaths: [],         // ids that died in the beat just resolved
     lastCause: '',          // 'wolves' | 'vote' | 'hunter'
     hunterPending: null,    // a hunter died and owes the village a bullet
+    hunterTarget: null,
+    hunterReturn: '',       // where to carry on once the shot is fired
+    hunterDone: {},         // so a hunter only ever fires once
+    voteTied: false,
+    voteCounts: {},
     firstNightDone: false,
     result: null,
     timer: { total: 0, remaining: 0, endsAt: 0, running: false },
