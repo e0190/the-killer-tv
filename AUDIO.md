@@ -1,43 +1,47 @@
-# The audio pack
+# The narration pack
 
-The narrator reads the whole game aloud. There are **49 lines**, and that is the
+The narrator reads the whole game aloud. There are **50 lines**, and that is the
 complete and final list — it never grows, because **no player names are ever
 spoken**. When somebody dies the voice says "there is a body in the square" and
-the TV puts the name on screen in letters a foot high. Record these once and
-you are done forever.
+the TV puts the name on screen in letters a foot high. Do these once, never again.
 
-## Where the files go
+## The easy way: drop them into the setup page
 
-```
-the-killer-tv/
-└── audio/
-    ├── manifest.json     ← lists what you've actually got
-    ├── opening.mp3
-    ├── night_first.mp3
-    └── … one file per line id below
-```
+You don't have to touch the repo at all.
 
-- **Format:** MP3. Filename is the line id exactly as written below, lowercase, `.mp3`.
-- **Anything missing** falls back to the browser voice automatically, so you can
-  drop them in a few at a time and the game still runs.
-- After adding files, update `audio/manifest.json` so the app stops guessing:
+1. Generate or record the 50 files. Name each one after its line id — `opening.mp3`,
+   `call_werewolf.mp3`, and so on, exactly as listed below.
+2. Open the site. There's a banner at the top of the setup page.
+3. Hit **install them**, then drag all 50 files onto the drop zone in one go.
+
+They're matched by filename, stored in this browser, and they stay there — you
+only do it once per machine. The TV window reads the same store, so both halves
+get them. Messy filenames are tolerated: `03 Call_Werewolf.MP3` still lands on
+`call_werewolf`.
+
+Anything you skip falls back to the generated voice, then the browser voice, so a
+half-finished pack plays fine. **copy the script** on that panel puts the whole
+list on your clipboard as `filename<tab>text`, ready to paste into whatever you're
+generating with.
+
+## The other way: commit them
+
+Put the MP3s in `/audio` in the repo and push. They deploy with the site and work
+for everyone, not just your browser. Then run this so the app stops probing:
 
 ```bash
 node tools/generate-audio.js --manifest-only
 ```
 
-## Generating them all at once
-
-If you want Google's British voice rather than your own, one command does the lot:
+## Or have Google generate the lot
 
 ```bash
 node tools/generate-audio.js
 ```
 
-It needs `GOOGLE_TTS_KEY` in your environment, writes all 49 MP3s into `/audio`,
-skips any that already exist, and rewrites the manifest. Flags:
-`--force` to redo existing files, `--voice en-GB-Studio-B` to change voice,
-`--rate 0.9`, `--pitch -4`, `--only opening,day` for a subset.
+Needs `GOOGLE_TTS_KEY`. Writes all 50 MP3s into `/audio`, skips any that already
+exist, rewrites the manifest. Flags: `--force`, `--voice`, `--rate`, `--pitch`,
+`--only a,b,c`.
 
 ## Direction, if you're recording or prompting these
 
@@ -119,6 +123,7 @@ second of silence at the top and tail of every file so the cuts don't clip.
 | --- | --- |
 | `day.mp3` | The sun is up and there is a body to explain. Talk. Accuse. Lie if it helps. Before the light goes, this village will hang somebody. |
 | `vote_call.mp3` | Enough talking. Hands up. On three, point at the one you want swinging. |
+| `vote_again.mp3` | No majority. That is not good enough. Hands up — you will do this again until you agree. |
 | `vote_three.mp3` | Three. |
 | `vote_two.mp3` | Two. |
 | `vote_one.mp3` | One. |
