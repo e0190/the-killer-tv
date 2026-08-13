@@ -108,6 +108,15 @@ const NIGHT_ORDER = [
     story: 'One window never goes dark. Whoever is behind it has stopped trying to sleep and started keeping track.',
     call: 'Insomniac — open your eyes. You will be shown what you have become.',
   },
+  /* The wolves go last, deliberately. Nothing acts after them, so the victim's
+     role is settled the moment it's chosen and the morning can't announce
+     somebody else's card. The Minion still sees them: thumbs go up without
+     eyes opening. */
+  {
+    id: 'werewolf', role: 'werewolf', input: 'kill', scene: 'wolf',
+    story: 'Out past the last fence the wolves step out of their skins and count the houses with the lights off.',
+    call: 'Werewolves — open your eyes. Find each other. Then choose the one who will not see morning.',
+  },
 ];
 
 const NIGHT_BY_ID = {};
