@@ -159,6 +159,9 @@ module.exports = async function handler(req, res) {
       ok: !!KEY,
       backend: proven || BACKEND,
       voice: proven === 'cloud' ? CLOUD_VOICE : GEMINI_VOICE,
+      // enough to spot a truncated or mangled paste without leaking the key
+      keyLength: KEY.length,
+      keyLooksRight: /^AIza[\w-]{30,}$/.test(KEY),
     });
   }
 
