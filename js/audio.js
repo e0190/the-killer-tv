@@ -316,14 +316,16 @@ const Narrator = (function () {
     a.play().then(() => { settled = true; }).catch(bail);
   }
 
-  function sayLocal(id) {
+  function sayLocal(id, token, onDone) {
     const text = LINES[id];
-    if (!text || !('speechSynthesis' in window)) return;
+    if (!text || !('speechSynthesis' in window)) { if (onDone) onDone(); return; }
     if (!voice) pickVoice();
     const u = new SpeechSynthesisUtterance(text);
     if (voice) u.voice = voice;
     u.rate = RATE;
     u.pitch = PITCH;
+    u.onend = () => { if (token === seq && onDone) onDone(); };
+    u.onerror = () => { if (token === seq && onDone) onDone(); };
     speechSynthesis.speak(u);
   }
 
