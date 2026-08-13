@@ -296,7 +296,13 @@ const Admin = (function () {
         else S.phase = 'nightfall';
         break;
       }
-      case 'nightfall': if (S.round === 1) S.phase = 'opening'; break;
+      case 'opening':
+        if (S.prologueIndex > 0) S.prologueIndex--;
+        else return;
+        break;
+      case 'nightfall':
+        if (S.round === 1) { S.phase = 'opening'; S.prologueIndex = PROLOGUE.length - 1; }
+        break;
       case 'wake':
         S.phase = 'nightbeat';
         S.beatIndex = Math.max(0, S.nightBeats.length - 1);
