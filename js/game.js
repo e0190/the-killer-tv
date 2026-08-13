@@ -185,5 +185,5 @@ function finish(state, team, headline, line, scene) {
 }
 
 function teamLabel(team) {
-  return { village: 'The Village', wolves: 'The Wolves', tanner: 'The Tanner' }[team] || team;
+  return { village: 'The Village', killers: 'The Killer', tanner: 'The Tanner' }[team] || team;
 }
