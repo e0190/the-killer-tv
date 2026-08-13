@@ -183,72 +183,108 @@ const Narrator = (function () {
     speechSynthesis.addEventListener('voiceschanged', pickVoice);
   }
 
-  /* Find out what we've got to work with. Cheap: one optional manifest and
-     one probe request. */
+  /* Find out what we've got to work with: what's been dropped into the
+     browser, what's sitting in /audio, and whether the cloud voice answers. */
   function warm() {
     const jobs = [
+      refreshPack(),
       fetch(DIR + 'manifest.json', { cache: 'no-cache' })
         .then((r) => (r.ok ? r.json() : null))
         .then((m) => {
           if (!m || !Array.isArray(m.lines)) return;
           m.lines.forEach((id) => { fileState[id] = 'ok'; });
-          packCount = m.lines.length;
         })
         .catch(() => {}),
       fetch('api/tts', { method: 'GET' })
         .then((r) => (r.ok ? r.json() : { ok: false }))
-        .then((j) => { cloudReady = !!j.ok; })
+        .then((j) => { cloudReady = !!j.ok; cloudBackend = j.backend || ''; })
         .catch(() => { cloudReady = false; }),
     ];
-    return Promise.all(jobs).then(() => ({ pack: packCount, cloud: cloudReady }));
+    return Promise.all(jobs).then(() => ({ pack: packIds.length, cloud: cloudReady }));
   }
 
-  /* ---- the ladder ---- */
+  function refreshPack() {
+    if (!Pack.available) return Promise.resolve([]);
+    return Pack.ids().then((k) => { packIds = k; return k; }).catch(() => []);
+  }
+
+  /* ---- the ladder ----
+
+     pack (dropped in) → /audio file → cloud → the browser's own voice.
+     Every tier falls through to the next exactly once. `seq` is what stops a
+     failed tier from being retried by a stale callback and speaking twice. */
+
+  const TIERS = ['pack', 'file', 'cloud', 'voice'];
 
   function say(id) {
     if (!enabled || !id) return;
     shush();
-    if (fileState[id] !== 'missing') playFile(id);
-    else next(id);
+    step(id, seq, 0);
   }
 
-  function next(id) {
-    if (cloudReady && (!choice || choice === 'cloud')) sayCloud(id);
-    else sayLocal(id);
+  function step(id, token, i) {
+    if (token !== seq) return;
+    const tier = TIERS[i];
+    if (!tier) return;
+    const fall = () => step(id, token, i + 1);
+
+    switch (tier) {
+      case 'pack':
+        if (!Pack.available || packIds.indexOf(id) === -1) return fall();
+        Pack.get(id).then((blob) => {
+          if (token !== seq) return;
+          if (!blob) return fall();
+          playMedia(URL.createObjectURL(blob), token, fall, true);
+        }).catch(fall);
+        return;
+
+      case 'file':
+        if (fileState[id] === 'missing') return fall();
+        playMedia(DIR + id + EXT, token, () => { fileState[id] = 'missing'; fall(); }, false);
+        return;
+
+      case 'cloud': {
+        if (!cloudReady || (choice && choice !== 'cloud')) return fall();
+        const hit = cloudCache.get(id);
+        if (hit) return playMedia(hit, token, fall, false);
+        const text = LINES[id];
+        if (!text) return fall();
+        fetch('api/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: text }),
+        })
+          .then((r) => { if (!r.ok) throw new Error('tts ' + r.status); return r.blob(); })
+          .then((b) => {
+            if (token !== seq) return;
+            const u = URL.createObjectURL(b);
+            cloudCache.set(id, u);
+            playMedia(u, token, fall, false);
+          })
+          .catch(() => { cloudReady = false; fall(); });
+        return;
+      }
+
+      default:
+        sayLocal(id);
+    }
   }
 
-  function playFile(id) {
-    const a = new Audio(DIR + id + EXT);
+  /* One outcome per attempt. A 404 fires both an error event and a rejected
+     play() promise, which is how this used to say every line twice. */
+  function playMedia(src, token, onFail, revoke) {
+    const a = new Audio(src);
     current = a;
-    a.addEventListener('error', () => {
-      fileState[id] = 'missing';
-      if (current === a) next(id);
-    });
-    a.play().then(() => { fileState[id] = 'ok'; }).catch(() => {
-      fileState[id] = 'missing';
-      if (current === a) next(id);
-    });
-  }
-
-  function sayCloud(id) {
-    const text = LINES[id];
-    if (!text) return;
-    const hit = cloudCache.get(id);
-    if (hit) return playUrl(hit, id);
-    fetch('api/tts', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: text }),
-    })
-      .then((r) => { if (!r.ok) throw new Error('tts'); return r.blob(); })
-      .then((b) => { const u = URL.createObjectURL(b); cloudCache.set(id, u); playUrl(u, id); })
-      .catch(() => { cloudReady = false; sayLocal(id); });
-  }
-
-  function playUrl(url, id) {
-    const a = new Audio(url);
-    current = a;
-    a.play().catch(() => sayLocal(id));
+    let settled = false;
+    const finish = () => { settled = true; if (revoke) URL.revokeObjectURL(src); };
+    const bail = () => {
+      if (settled) return;
+      finish();
+      if (token === seq) onFail();
+    };
+    a.addEventListener('error', bail);
+    a.addEventListener('ended', finish);
+    a.play().then(() => { settled = true; }).catch(bail);
   }
 
   function sayLocal(id) {
