@@ -53,7 +53,7 @@ const ROLES = {
   tanner: {
     name: 'Tanner', mark: 'X', team: 'tanner', max: 1, step: 1,
     short: 'Wins by dying. Ends the game.',
-    long: 'Wants out. If the tanner dies by any hand, the tanner wins and everyone else goes home empty.',
+    long: 'Wants out. Dies by any hand and wins alone, and everybody else goes home with nothing.',
   },
   villager: {
     name: 'Villager', mark: 'V', team: 'village', max: 4, step: 1,
