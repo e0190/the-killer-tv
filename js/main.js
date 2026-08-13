@@ -36,4 +36,13 @@
   }
 
   route();
+
+  /* Changing the hash is a same-document navigation, so nothing re-runs on its
+     own. Someone editing the URL by hand should still land where they asked. */
+  let current = location.hash;
+  window.addEventListener('hashchange', () => {
+    if (location.hash === current) return;
+    current = location.hash;
+    location.reload();
+  });
 })();
