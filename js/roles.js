@@ -78,6 +78,10 @@ const NIGHT_ORDER = [
     id: 'doppelganger', role: 'doppelganger', input: 'copy', scene: 'mask',
     story: 'Something learns the shape of a face.',
     call: 'Doppelgänger, wake. Point at someone. You are them now.',
+    /* Spoken straight after the call. The copy overwrites rather than swaps, so
+       nobody holds the Doppelgänger afterwards and this beat never runs again —
+       the table needs telling that up front. */
+    notes: ['dg_act', 'dg_keep'],
   },
   {
     id: 'minion', role: 'minion', input: 'none', scene: 'watcher',
