@@ -44,7 +44,7 @@ const byId = (s, id) => s.players.find((p) => p.id === id) || null;
 const nameOf = (s, id) => { const p = byId(s, id); return p ? p.name : '—'; };
 const alive = (s) => s.players.filter((p) => p.alive);
 const aliveWith = (s, role) => alive(s).filter((p) => p.role === role);
-const isWolf = (s, id) => { const p = byId(s, id); return !!p && p.role === 'werewolf'; };
+const isKiller = (s, id) => { const p = byId(s, id); return !!p && p.role === 'killer'; };
 
 /* ---------- timers ---------- */
 
