@@ -125,11 +125,16 @@ NIGHT_ORDER.forEach((b) => { NIGHT_BY_ID[b.id] = b; });
 /* The prologue. Tapped through one beat at a time before the first night, so
    the table gets the situation before anybody has to lie about it. */
 const PROLOGUE = [
-  { id: 'opening_place',   title: 'The village',        scene: 'village' },
-  { id: 'opening_animals', title: 'It started small',   scene: 'door' },
-  { id: 'opening_first',   title: 'Then it was Marta',  scene: 'body' },
-  { id: 'opening_inside',  title: 'It came back in',    scene: 'mask' },
-  { id: 'opening_rules',   title: 'How this goes now',  scene: 'vote' },
+  { id: 'opening_road',    title: 'One road in',        scene: 'village' },
+  { id: 'opening_shut',    title: 'Nine days',          scene: 'village' },
+  { id: 'opening_dog',     title: 'First the animals',  scene: 'door' },
+  { id: 'opening_lamps',   title: 'Three nights',       scene: 'door' },
+  { id: 'opening_marta',   title: 'Then Marta',         scene: 'body' },
+  { id: 'opening_quiet',   title: 'Nobody heard',       scene: 'body' },
+  { id: 'opening_tracks',  title: 'The tracks',         scene: 'mask' },
+  { id: 'opening_inside',  title: 'It never left',      scene: 'mask' },
+  { id: 'opening_rules',   title: 'How this goes',      scene: 'vote' },
+  { id: 'opening_rope',    title: 'And then the rope',  scene: 'vote' },
   { id: 'opening_tonight', title: 'Tonight',            scene: 'night' },
 ];
 
