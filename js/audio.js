@@ -151,6 +151,7 @@ const Narrator = (function () {
   let current = null;
   let packIds = [];        // line ids dropped into the browser
   let seq = 0;             // bumps on every shush; stale callbacks check it
+  let queue = [];          // lines still to speak in this run
 
   const fileState = {};    // line id -> 'ok' | 'missing'
   const cloudCache = new Map();
@@ -373,5 +374,5 @@ const Narrator = (function () {
 
   const installed = () => packIds.slice();
 
-  return { say, preview, shush, setEnabled, setVoice, warm, refreshPack, options, status, installed };
+  return { say, sayAll, preview, shush, setEnabled, setVoice, warm, refreshPack, options, status, installed };
 })();
