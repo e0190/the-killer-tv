@@ -1,6 +1,6 @@
 # The narration pack
 
-The narrator reads the whole game aloud. There are **50 lines**, and that is the
+The narrator reads the whole game aloud. There are **55 lines**, and that is the
 complete and final list — it never grows, because **no player names are ever
 spoken**. When somebody dies the voice says "there is a body in the square" and
 the TV puts the name on screen in letters a foot high. Do these once, never again.
@@ -9,10 +9,10 @@ the TV puts the name on screen in letters a foot high. Do these once, never agai
 
 You don't have to touch the repo at all.
 
-1. Generate or record the 50 files. Name each one after its line id — `opening.mp3`,
+1. Generate or record the 55 files. Name each one after its line id — `opening.mp3`,
    `call_werewolf.mp3`, and so on, exactly as listed below.
 2. Open the site. There's a banner at the top of the setup page.
-3. Hit **install them**, then drag all 50 files onto the drop zone in one go.
+3. Hit **install them**, then drag all 55 files onto the drop zone in one go.
 
 They're matched by filename, stored in this browser, and they stay there — you
 only do it once per machine. The TV window reads the same store, so both halves
@@ -39,7 +39,7 @@ node tools/generate-audio.js --manifest-only
 node tools/generate-audio.js
 ```
 
-Needs `GOOGLE_TTS_KEY`. Writes all 50 MP3s into `/audio`, skips any that already
+Needs `GOOGLE_TTS_KEY`. Writes all 55 MP3s into `/audio`, skips any that already
 exist, rewrites the manifest. Flags: `--force`, `--voice`, `--rate`, `--pitch`,
 `--only a,b,c`.
 
