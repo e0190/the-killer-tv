@@ -1,3 +1,7 @@
-# generated narration — see AUDIO.md. Delete this line if you'd rather
-# commit the pack so it deploys with the site.
-audio/*.mp3
+# Nothing here excludes audio/*.mp3 on purpose — commit the narration pack so it
+# deploys with the site. Generate it once, push it once, never think about it again.
+
+node_modules/
+.vercel/
+.DS_Store
+Thumbs.db
