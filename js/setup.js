@@ -212,7 +212,7 @@ const Setup = (function () {
           roles[i] = wanted;
           if (have === 0) {
             // take the cheapest seat going: an empty one, then a villager,
-            // then whatever's left — never quietly eat the last wolf.
+            // then whatever's left — never quietly eat the last Killer.
             const free = (test) => roles.findIndex((r, j) => j !== i && test(r));
             const spare = [
               free((r) => !r),
@@ -249,7 +249,7 @@ const Setup = (function () {
     $('castTally').innerHTML = Object.keys(counts).sort().map((id) => {
       const r = ROLES[id];
       if (!r) return '';
-      const cls = r.team === 'wolves' ? ' class="wolves"' : r.team === 'tanner' ? ' class="tanner"' : '';
+      const cls = r.team === 'killers' ? ' class="killers"' : r.team === 'tanner' ? ' class="tanner"' : '';
       return '<span' + cls + '>' + r.name + (counts[id] > 1 ? ' ×' + counts[id] : '') + '</span>';
     }).join('');
 
@@ -258,9 +258,9 @@ const Setup = (function () {
 
     const ok = problems.length === 0;
     $('splitBtn').disabled = !ok;
-    const wolves = counts.werewolf || 0;
+    const killers = counts.killer || 0;
     $('splitHint').textContent = ok
-      ? count + ' at the table, ' + wolves + (wolves === 1 ? ' wolf' : ' wolves') + ' among them. Hand nobody this screen.'
+      ? count + ' at the table, ' + killers + (killers === 1 ? ' killer' : ' killers') + ' among them. Hand nobody this screen.'
       : 'Sort the cast out first.';
   }
 
@@ -279,7 +279,7 @@ const Setup = (function () {
   function preview() {
     Narrator.setEnabled(true);
     Narrator.setVoice($('optVoiceName').value);
-    Narrator.preview(LINES.call_werewolf);
+    Narrator.preview(LINES.call_killer);
   }
 
   /* ---------- go ---------- */

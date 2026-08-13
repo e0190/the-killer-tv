@@ -10,12 +10,12 @@ function newGame() {
     players: [],            // {id, name, role, startRole, alive, diedRound, diedBy}
     nightBeats: [],         // role beats for the night now running
     beatIndex: 0,
-    pendingKill: null,      // who the wolves chose, resolves at dawn
-    seerAnswer: null,       // {targetId, isWolf} — moderator's eyes only
+    pendingKill: null,      // who the Killer chose, resolves at dawn
+    seerAnswer: null,       // {targetId, isKiller} — moderator's eyes only
     nightLog: [],           // what actually happened, for the debrief
     votes: {},
     lastDeaths: [],         // ids that died in the beat just resolved
-    lastCause: '',          // 'wolves' | 'vote' | 'hunter'
+    lastCause: '',          // 'killers' | 'vote' | 'hunter'
     hunterPending: null,    // a hunter died and owes the village a bullet
     hunterTarget: null,
     hunterReturn: '',       // where to carry on once the shot is fired
@@ -30,7 +30,7 @@ function newGame() {
     timer: { total: 0, remaining: 0, endsAt: 0, running: false },
     settings: {
       dayMs: 5 * 60 * 1000,
-      revealMode: 'full',   // 'full' = say the role, 'wolf' = only wolf or not
+      revealMode: 'full',   // 'full' = say the role, 'killer' = only whether they were the Killer
       narration: true,
       sfx: true,
       voiceName: '',

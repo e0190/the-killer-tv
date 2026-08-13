@@ -219,7 +219,7 @@ const TV = (function () {
         const b = S.nightBeats[S.beatIndex];
         if (!b) break;
         paint({
-          scene: b.scene, tint: b.role === 'werewolf' ? 'blood' : 'bone',
+          scene: b.scene, tint: b.role === 'killer' ? 'blood' : 'bone',
           kicker: 'night ' + S.round,
           title: ROLES[b.role].name,
           prose: S.round === 1 ? b.story : b.call,
@@ -288,7 +288,7 @@ const TV = (function () {
 
       case 'over':
         paint({
-          scene: S.result.scene, tint: S.result.team === 'wolves' ? 'blood' : 'gold',
+          scene: S.result.scene, tint: S.result.team === 'killers' ? 'blood' : 'gold',
           kicker: 'after ' + S.round + (S.round === 1 ? ' night' : ' nights'),
           title: S.result.headline, small: true,
           prose: LINES[S.result.line],

@@ -40,7 +40,7 @@ const Pack = (function () {
   const clear = () => tx('readwrite', (s) => s.clear());
   const ids = () => tx('readonly', (s) => s.getAllKeys()).then((k) => k || []);
 
-  /* Turn a dropped filename into a line id: "call_werewolf.mp3" -> call_werewolf.
+  /* Turn a dropped filename into a line id: "call_killer.mp3" -> call_killer.
      Tolerates numbering, spaces and case, because file pickers are messy. */
   function idFor(filename) {
     const base = String(filename).replace(/\.[a-z0-9]+$/i, '');

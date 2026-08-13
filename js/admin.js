@@ -281,8 +281,8 @@ const Admin = (function () {
 
   function resolveDawn() {
     S.lastDeaths = [];
-    S.lastCause = 'wolves';
-    if (S.pendingKill && kill(S, S.pendingKill, 'wolves')) S.lastDeaths = [S.pendingKill];
+    S.lastCause = 'killers';
+    if (S.pendingKill && kill(S, S.pendingKill, 'killers')) S.lastDeaths = [S.pendingKill];
     S.firstNightDone = true;
     Sound.play(S.lastDeaths.length ? 'stab' : 'dawn');
   }
@@ -485,8 +485,8 @@ const Admin = (function () {
 
     switch (b.input) {
       case 'kill':
-        showPicker('Who the wolves take',
-          alive(S).filter((p) => p.role !== 'werewolf').map((p) => p.id),
+        showPicker('Who the Killer takes',
+          alive(S).filter((p) => p.role !== 'killer').map((p) => p.id),
           b.targets, 1, (sel) => { if (sel.length) apply(b, sel); else undo(b); push(); render(); });
         $('admNext').disabled = !b.applied;
         break;
@@ -498,7 +498,7 @@ const Admin = (function () {
           const def = ROLES[S.seerAnswer.role];
           const box = $('admAnswer');
           box.hidden = false;
-          box.className = 'answer ' + (S.seerAnswer.isWolf ? 'wolf' : 'clear');
+          box.className = 'answer ' + (S.seerAnswer.isKiller ? 'killer' : 'clear');
           box.innerHTML = '<p class="micro">Show this to the Seer — do not say it aloud</p><strong>' +
             esc(nameOf(S, S.seerAnswer.targetId)) + ' is the ' +
             esc(def ? def.name : '?') + '</strong>';
@@ -651,7 +651,7 @@ const Admin = (function () {
     $('rosterCount').textContent = living + '/' + S.players.length;
     $('rosterList').innerHTML = S.players.map((p) => {
       const r = ROLES[p.role] || { name: '?', mark: '?', team: '' };
-      const cls = [p.alive ? '' : 'dead', r.team === 'wolves' ? 'wolf' : '', r.team === 'tanner' ? 'tan' : ''].join(' ');
+      const cls = [p.alive ? '' : 'dead', r.team === 'killers' ? 'killer' : '', r.team === 'tanner' ? 'tan' : ''].join(' ');
       return '<li class="' + cls + '"><span class="mark">' + r.mark + '</span>' +
         '<span class="who">' + esc(p.name) + '</span>' +
         '<span class="micro">' + r.name + '</span></li>';
