@@ -66,10 +66,10 @@ enter the whole cast at setup, and the app runs the rest.
    for a revote** — twice, and if they still can't agree, nobody hangs.
 5. Repeat until it's over.
 
-Once the wolves have marked somebody, later roles can't swap that person's card —
-otherwise a Troublemaker could turn the victim into a werewolf after the fact and
-the morning would announce the wrong thing. The Seer is exempt, because a name
-missing from their list would give the game away.
+The wolves waking **last** is what keeps the morning honest: nothing acts after
+them, so the victim's role is settled the instant it's chosen and can't be swapped
+out from under the announcement. The Minion still sees the pack — thumbs go up
+without eyes opening.
 
 ### The night, in order
 
