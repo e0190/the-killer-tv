@@ -292,9 +292,24 @@ const TV = (function () {
     const left = Math.ceil(timerRemaining(S.timer) / 1000);
     const n = Math.max(0, Math.min(3, left - 1));
     paint({
-      scene: 'vote', tint: 'blood', kicker: 'day ' + S.round,
+      scene: 'vote', tint: 'blood',
+      kicker: S.revoteNotice ? 'day ' + S.round + ' · again' : 'day ' + S.round,
       title: n > 0 ? String(n) : 'Point', name: true,
-      prose: 'Point at the one you want swinging.', plain: true,
+      prose: S.revoteNotice
+        ? 'Nobody had a majority. Point again.'
+        : 'Point at the one you want swinging.',
+      plain: true,
+    });
+  }
+
+  /* The three seconds before a body is shown. */
+  function renderSuspense() {
+    const n = Math.max(1, Math.ceil(timerRemaining(S.timer) / 1000));
+    paint({
+      scene: S.suspenseNext === 'dawn' ? 'body' : 'vote', tint: 'blood',
+      kicker: S.suspenseNext === 'dawn' ? 'the village counts itself' : 'the village has decided',
+      title: String(n), name: true,
+      prose: '', plain: true,
     });
   }
 
@@ -319,6 +334,7 @@ const TV = (function () {
 
     const ms = timerRemaining(S.timer);
     if (S.phase === 'vote') renderCountdown();
+    if (S.phase === 'suspense') renderSuspense();
 
     const low = ms <= 15000;
     $('tvClock').textContent = fmtClock(ms);
