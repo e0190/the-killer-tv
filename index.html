@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0507">
+<title>the killer tv</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📺</text></svg>">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body data-view="setup">
+
+<!-- ============================ SETUP ============================ -->
+<main id="view-setup" class="view">
+  <div class="wrap">
+    <header class="brand">
+      <div class="brand-mark">📺</div>
+      <h1>the killer<span>tv</span></h1>
+      <p class="tag">one screen for the room. one screen for you.</p>
+    </header>
+
+    <section class="card">
+      <h2><span class="num">1</span> Who's playing</h2>
+      <div class="row">
+        <label class="stepper">
+          <button type="button" data-players="-1" aria-label="fewer players">−</button>
+          <output id="playerCount">5</output>
+          <button type="button" data-players="1" aria-label="more players">+</button>
+        </label>
+        <p class="hint">3–10 players. You'll deal <strong id="cardsNeeded">8</strong> cards: one each, three face-down in the middle.</p>
+      </div>
+      <div id="nameList" class="names"></div>
+    </section>
+
+    <section class="card">
+      <h2><span class="num">2</span> Build the deck</h2>
+      <div class="deck-status">
+        <div class="deck-count"><span id="deckPicked">0</span> / <span id="deckTarget">8</span></div>
+        <div class="deck-bar"><i id="deckBar"></i></div>
+        <button type="button" class="ghost" id="usePreset">use the suggested deck</button>
+        <button type="button" class="ghost" id="clearDeck">clear</button>
+      </div>
+      <div id="roleGrid" class="role-grid"></div>
+      <p class="hint">Every card in the deck gets called in the night — including the three in the middle. Silence would be a tell.</p>
+    </section>
+
+    <section class="card">
+      <h2><span class="num">3</span> House rules</h2>
+      <div class="opts">
+        <label class="opt">
+          <span>Day length</span>
+          <select id="optDay">
+            <option value="180000">3 minutes</option>
+            <option value="300000" selected>5 minutes</option>
+            <option value="420000">7 minutes</option>
+            <option value="600000">10 minutes</option>
+            <option value="0">no timer</option>
+          </select>
+        </label>
+        <label class="opt">
+          <span>Night pace</span>
+          <select id="optNight">
+            <option value="0.7">brisk</option>
+            <option value="1" selected>normal</option>
+            <option value="1.4">generous</option>
+            <option value="0">manual — I'll tap through</option>
+          </select>
+        </label>
+        <label class="opt">
+          <span>Narrator voice</span>
+          <select id="optVoiceName"></select>
+        </label>
+        <div class="opt">
+          <span>&nbsp;</span>
+          <button type="button" class="ghost" id="testVoice">🔊 hear it</button>
+        </div>
+        <label class="opt switch">
+          <input type="checkbox" id="optVoice" checked>
+          <span>TV reads the night aloud</span>
+        </label>
+        <label class="opt switch">
+          <input type="checkbox" id="optSfx" checked>
+          <span>Sound effects</span>
+        </label>
+      </div>
+      <p class="hint" id="voiceNote"></p>
+    </section>
+
+    <div class="split-zone">
+      <button type="button" id="splitBtn" class="huge" disabled>
+        <em>SPLIT</em>
+        <small>opens the TV screen · this device becomes the remote</small>
+      </button>
+      <p class="hint centred" id="splitHint">Pick your deck to continue.</p>
+      <details class="howto">
+        <summary>how do I get it on the actual TV?</summary>
+        <ul>
+          <li><strong>HDMI / second display:</strong> drag the TV window onto the big screen and press <kbd>F</kbd> for fullscreen.</li>
+          <li><strong>Chromecast:</strong> Chrome menu → Cast → <em>Cast tab</em>, and pick the TV window.</li>
+          <li><strong>Smart TV browser:</strong> open this same page on the TV and go to <code>#tv</code>, then keep the remote on your phone — both must be the same browser profile, so this works best with a laptop plugged into the TV.</li>
+        </ul>
+      </details>
+    </div>
+  </div>
+</main>
+
+<!-- ============================ ADMIN ============================ -->
+<main id="view-admin" class="view">
+  <header class="bar">
+    <div class="bar-left">
+      <span class="dot" id="linkDot"></span>
+      <span id="linkText">looking for the TV…</span>
+    </div>
+    <div class="bar-right">
+      <button type="button" class="chip" id="reopenTv">re-open TV</button>
+      <button type="button" class="chip" id="quitBtn">quit</button>
+    </div>
+  </header>
+
+  <div class="popup-warn" id="popupWarn" hidden>
+    <span>Your browser blocked the TV window.</span>
+    <a href="#tv" target="killer_tv_screen" id="tvOpenLink">open the TV screen →</a>
+  </div>
+
+  <div class="admin-body">
+    <div class="stage-head">
+      <p class="kicker" id="admKicker">stage</p>
+      <h2 id="admTitle">—</h2>
+      <p class="sub" id="admSub"></p>
+    </div>
+
+    <div class="clock-row" id="admClockRow" hidden>
+      <div class="clock" id="admClock">0:00</div>
+      <div class="clock-btns">
+        <button type="button" class="chip" id="admPause">pause</button>
+        <button type="button" class="chip" id="admPlus">+30s</button>
+      </div>
+    </div>
+
+    <!-- panel: night list -->
+    <div class="panel" id="panelNight" hidden>
+      <ol class="night-list" id="nightList"></ol>
+    </div>
+
+    <!-- panel: votes -->
+    <div class="panel" id="panelVotes" hidden>
+      <p class="panel-hint">Tap each player, then tap who they pointed at.</p>
+      <div id="voteEntry" class="vote-entry"></div>
+      <button type="button" class="ghost" id="clearVotes">clear votes</button>
+    </div>
+
+    <!-- panel: reveal entry -->
+    <div class="panel" id="panelReveal" hidden>
+      <p class="panel-hint">Everyone flip their card. Enter what people <em>ended up</em> as.</p>
+      <div id="revealEntry" class="reveal-entry"></div>
+      <div class="centre-entry">
+        <p class="panel-hint">The three in the middle:</p>
+        <div id="centreEntry" class="reveal-entry"></div>
+      </div>
+    </div>
+
+    <!-- panel: result -->
+    <div class="panel" id="panelResult" hidden>
+      <div id="resultSummary" class="result-summary"></div>
+      <button type="button" class="ghost" id="playAgain">deal a new round</button>
+      <button type="button" class="ghost" id="newSetup">change the deck</button>
+    </div>
+
+    <div class="deck-mini" id="deckMini"></div>
+  </div>
+
+  <footer class="controls">
+    <button type="button" class="ctl back" id="admBack">↺ back</button>
+    <button type="button" class="ctl next" id="admNext">next →</button>
+  </footer>
+</main>
+
+<!-- ============================== TV ============================== -->
+<main id="view-tv" class="view">
+  <div class="tv-grain" aria-hidden="true"></div>
+  <div class="tv-vignette" aria-hidden="true"></div>
+
+  <div class="tv-inner">
+    <header class="tv-top">
+      <span class="tv-logo">📺 the killer tv</span>
+      <span class="tv-link" id="tvLink">•</span>
+    </header>
+
+    <div class="tv-stage" id="tvStage">
+      <p class="tv-kicker" id="tvKicker"></p>
+      <h1 class="tv-title" id="tvTitle">the killer tv</h1>
+      <p class="tv-line" id="tvLine">waiting for the remote…</p>
+
+      <div class="tv-clock-wrap" id="tvClockWrap" hidden>
+        <div class="tv-clock" id="tvClock">0:00</div>
+        <div class="tv-bar"><i id="tvBar"></i></div>
+      </div>
+
+      <div class="tv-grid" id="tvGrid" hidden></div>
+      <div class="tv-result" id="tvResult" hidden></div>
+    </div>
+
+    <footer class="tv-deck" id="tvDeck" hidden></footer>
+  </div>
+
+  <div class="tv-hint" id="tvHint">press <kbd>F</kbd> for fullscreen</div>
+</main>
+
+<script src="js/roles.js"></script>
+<script src="js/bus.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/game.js"></script>
+<script src="js/setup.js"></script>
+<script src="js/admin.js"></script>
+<script src="js/tv.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
