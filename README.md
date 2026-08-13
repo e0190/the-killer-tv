@@ -75,7 +75,7 @@ without eyes opening.
 
 | | Role | What they do, every night |
 | --- | --- | --- |
-| D | Doppelgänger | Points at someone and becomes their role. Again. And again. |
+| D | Doppelgänger | **First night only.** Takes one person’s role; if that role is called later the same night, they act on it. The Doppelgänger is gone by morning. |
 | M | Minion | Knows the Killer. The Killer never knows them. |
 | S | Mason ×2 | Recognise each other. Always added and removed as a pair. |
 | E | Seer | Inspects one player; the moderator is shown **exactly what they are**, to signal in silence. |
