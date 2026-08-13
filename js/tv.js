@@ -99,13 +99,13 @@ const TV = (function () {
         const b = S.nightBeats[S.beatIndex];
         if (!b) break;
         Sound.play('thud');
-        // the first night gets the full story; later nights just get the call
-        if (S.round === 1) {
-          Narrator.say('story_' + b.role);
-          setTimeout(() => { if (S && S.phase === 'nightbeat') Narrator.say('call_' + b.role); }, 6200);
-        } else {
-          Narrator.say('call_' + b.role);
-        }
+        // first night gets the atmosphere too; every night gets the call and
+        // any rules the role needs spelling out
+        const run = [];
+        if (S.round === 1) run.push('story_' + b.role);
+        run.push('call_' + b.role);
+        if (b.notes) b.notes.forEach((n) => run.push(n));
+        Narrator.sayAll(run);
         break;
       }
 
