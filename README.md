@@ -1,13 +1,15 @@
-# 📺 the killer tv
+# The Killer TV
 
-A one-night social deduction party game. One website that **splits into two screens**: a
-loud, ugly TV for the room, and a quiet remote for whoever's running it.
+A social deduction party game for 4–12 people around one television. One website
+that **splits into two screens**: a big, slow, unpleasant TV for the room, and a
+quiet control panel for whoever is running it.
 
-No accounts, no install, no asset files. Everything is one static page — the sound is
-synthesised on the fly and the two halves talk to each other over `BroadcastChannel`, so the
-game itself runs with no server at all. The only backend is one optional serverless function
-that fetches a proper British narrator voice from Google Cloud; without it the browser's own
-voice steps in and the game plays exactly the same.
+Inspired by the one-night werewolf format, but it is not a one-night game. It runs
+night after night until somebody wins. **The Drunk has been cut.**
+
+The game itself needs no server — the two halves talk to each other directly, and
+it works offline. The only optional backend is a serverless function that fetches
+a narrator voice, and even that has a fallback.
 
 ---
 
@@ -16,125 +18,100 @@ voice steps in and the game plays exactly the same.
 You set the game up **once**, on one device:
 
 ```
- index.html  ──►  pick players ──►  build the deck ──►  [ SPLIT ]
-                                                            │
-                                            ┌───────────────┴───────────────┐
-                                            ▼                               ▼
-                                     #tv  the big screen           #admin  the remote
-                                     (new window — drag             (this window stays
-                                      it onto the TV)                in your hand)
+ index.html  ──►  the cast ──►  house rules ──►  [ BEGIN ]
+                                                     │
+                                     ┌───────────────┴───────────────┐
+                                     ▼                               ▼
+                              #tv  the big screen          #admin  the remote
+                              (new window — drag            (stays in your hand;
+                               it onto the television)        shows every role)
 ```
 
-Hitting **SPLIT** pops open the TV window and turns the window you were using into the
-remote. Nobody has to type a URL twice.
+**BEGIN** pops open the TV window and turns the window you were using into the
+remote. Nobody types a URL twice.
 
-- **`#tv`** — the show. Night phases in enormous type, a countdown, the vote tally, and the
-  kill. It renders whatever the remote sends it and decides nothing on its own.
-- **`#admin`** — the control. Next / back / pause / +30s, the running order, vote entry,
-  role entry, and the verdict.
+- **`#tv`** — the show. Story, line art, the night calls, the countdown, and the
+  bodies. It renders what the remote sends and decides nothing.
+- **`#admin`** — the control panel. It knows every player's role, runs the night
+  in order, takes the wolves' choice and the Seer's answer, records the vote, and
+  calls the ending. **Nobody but the moderator should look at it.**
 
-### Getting it onto an actual TV
+Both halves must be **the same browser on the same machine** — that's what
+`BroadcastChannel` spans. A laptop plugged into the telly, this page in your hand,
+is what it's built for.
 
 | Setup | How |
 | --- | --- |
-| **Laptop → HDMI** | Drag the TV window onto the big screen, press <kbd>F</kbd> for fullscreen. |
+| **Laptop → HDMI** | Drag the TV window across, press <kbd>F</kbd> for fullscreen. |
 | **Chromecast** | Chrome ⋮ → Cast → *Cast tab* → pick the TV window. |
-| **Second monitor** | Same as HDMI. |
-
-Both halves must be **the same browser on the same machine** — that's what `BroadcastChannel`
-spans. A laptop plugged into the TV with the remote in a browser window on the laptop screen
-is the intended setup. There's no server, so there's nothing to sync across devices.
 
 ---
 
-## Playing
+## How a game runs
 
-Bring physical cards, or print/write your own — the app is the narrator and the scoreboard,
-not the dealer. Roles stay secret in people's hands where they belong.
+There are no cards in the middle any more. Everyone holds exactly one role, you
+enter the whole cast at setup, and the app runs the rest.
 
-1. **Deal.** One card face-down per player, three face-down in the middle.
-2. **Night.** The TV calls each role in order and times it. Every card in the deck gets
-   called, *including the three in the middle* — otherwise silence would be a tell.
-3. **Day.** Argue. The clock runs down on the TV.
-4. **The vote.** On three, everyone points. The remote records who pointed where; the TV
-   tallies it live.
-5. **The kill.** Most votes dies. Ties all die. If every single player takes exactly one
-   vote, the mob can't agree and nobody dies.
-6. **The reveal.** Everyone flips. Enter what people *ended up* holding — the Robber and
-   Troublemaker will have moved things around. The TV declares the winner.
+1. **Night.** The TV calls each role in turn. **There is no night clock** — you tap
+   through at the table's pace. Every role acts **every night**, so nobody's role is
+   safe for long.
+2. **Dawn.** Whoever the wolves chose is dead. The TV puts the name up in letters a
+   foot high and says what they were — or just whether they were a wolf, your call.
+3. **Day.** A timer runs on the TV while the village argues.
+4. **The vote.** Everyone points. Most votes hangs. **A tie means nobody hangs.**
+5. Repeat until it's over.
 
-### The roles
+### The night, in order
 
-15 cards. **The Drunk has been cut.**
+| | Role | What they do, every night |
+| --- | --- | --- |
+| D | Doppelgänger | Points at someone and becomes their role. Again. And again. |
+| W | Werewolf ×2 | Find each other, then choose who doesn't see morning. |
+| M | Minion | Sees the wolves. The wolves never see them. |
+| S | Mason ×2 | Recognise each other. Always added and removed as a pair. |
+| E | Seer | Inspects one player; the moderator signals wolf or not. |
+| R | Robber | Swaps roles with someone. Both of them are now something else. |
+| T | Troublemaker | Swaps two *other* people's roles. Neither is told. |
+| I | Insomniac | Is shown what they have become. |
 
-| | Role | × | |
-| --- | --- | --- | --- |
-| 🎭 | Doppelgänger | 1 | Copy another player's card and become that role, then act on it immediately. |
-| 🐺 | Werewolf | 2 | Find your pack. If you're alone, peek at one centre card. |
-| 👁 | Minion | 1 | You see the wolves. They don't see you. |
-| ⛏ | Mason | 2 | You know the other Mason. See none? The other one is in the middle. |
-| 🔮 | Seer | 1 | Look at one player's card, or two of the centre cards. |
-| 🗝 | Robber | 1 | Swap your card with another player's, then look at what you stole. |
-| 🔀 | Troublemaker | 1 | Swap two *other* players' cards without looking at either. |
-| ☕ | Insomniac | 1 | At the end of the night, look at your own card to see what you became. |
-| 🏠 | Villager | 3 | No powers. No information. Just a mouth and a hunch. |
-| 💀 | Tanner | 1 | You hate your life. You only win if the village kills you. |
-| 🏹 | Hunter | 1 | If you die, whoever you pointed at dies with you. |
+Three more never wake: **Hunter** (when they die, they take somebody with them),
+**Tanner** (wants to die), **Villager** (up to four; no powers, just a vote).
 
-The deck is always **players + 3**. Suggested decks are built in for 3–10 players, or pick
-your own cards — the app runs the night order for whatever you choose.
+A role is only called if somebody **still alive** is holding it — so the running
+order shrinks as people die, and silence is never a tell.
 
-### Who wins
+### How it ends
 
-- **Nobody dies** → the village only gets away with it if there were no wolves among the
-  players to begin with. Otherwise the wolves walk free.
-- **A wolf dies** → the village wins.
-- **No wolf dies** → the wolves win, and the Minion wins with them, even dead.
-- **The Tanner dies** → the Tanner wins, and takes the wolves' win away with them. If a wolf
-  died too, the village wins as well.
-- **No wolves in the game at all and the Minion gets lynched** → the village wins.
-- **No wolves in the game and an innocent gets lynched** → everybody loses.
+Three ways out, checked after every death:
 
-The Doppelgänger wins and loses as whatever they copied.
+- **The Tanner dies**, by any hand → the Tanner wins alone and it stops there.
+- **No wolves left standing** → the village wins.
+- **The wolves have it down to one last villager** → the wolves win.
+
+The Minion wins whenever the wolves do, alive or dead. The Doppelgänger wins as
+whatever it last copied. The dead still win — Hunters especially.
 
 ---
 
-## The narrator's voice
+## The narrator
 
-The TV reads the night aloud. There are two engines, and it picks the best one available.
+Read **[AUDIO.md](AUDIO.md)**. There are **49 lines**, that's the complete and final
+list, and it never grows — **no player names are ever spoken**, so the pack is fixed
+forever. Record them once, drop the MP3s in `/audio`, done.
 
-**1. Google Cloud Text-to-Speech** — a real, deep British male voice. This is the one you
-want. It runs through `api/tts.js`, a serverless function, so **the API key stays on the
-server and is never sent to the browser.** Players receive MP3 bytes and nothing else.
+Three tiers, best available wins, each falling through to the next so the narrator
+is never silent:
 
-To turn it on:
+1. **Your files** in `/audio` — see AUDIO.md.
+2. **Google Cloud TTS** via `api/tts.js`, if `GOOGLE_TTS_KEY` is set. The key lives
+   in a Vercel environment variable and is **never sent to the browser**.
+3. **The browser's own voice**, hunting for a British male and pitching it down.
 
-1. In [Google Cloud Console](https://console.cloud.google.com/), enable the **Cloud
-   Text-to-Speech API** and create an **API key**.
-2. Restrict that key to the Text-to-Speech API only.
-3. In Vercel → your project → **Settings → Environment Variables**, add:
+To generate the whole pack with Google's British voice in one command:
 
-   | Name | Value |
-   | --- | --- |
-   | `GOOGLE_TTS_KEY` | your API key — **required** |
-   | `TTS_VOICE` | optional. Default `en-GB-Chirp3-HD-Charon` (deep British male). Also good: `en-GB-Studio-B`, `en-GB-Neural2-D` |
-   | `TTS_LANG` | optional, default `en-GB` |
-   | `TTS_RATE` | optional, default `0.88` — a touch slower than natural |
-   | `TTS_PITCH` | optional, default `-4.0` semitones, so it sits low. Ignored by Chirp3-HD voices, which don't take a pitch |
-
-4. Redeploy. The setup screen will say the Cloud voice is live.
-
-A whole game is around 1,500 characters of speech, and lines are cached after first use, so
-this sits inside the free tier comfortably.
-
-**2. The browser's own voice** — the automatic fallback, used whenever no key is set, and
-also if the network call fails mid-game. It hunts for a British male (`Google UK English
-Male`, Ryan, George, Thomas, Daniel…) and pitches it down. If your machine has no en-GB voice
-installed the setup screen tells you so — on Windows you can add one via **Settings → Time &
-Language → Speech → Manage voices → English (United Kingdom)**.
-
-Either way it's slowed and pitched down: low and deep, not a whisper. You can override the
-voice, and preview it, on the setup screen.
+```bash
+node tools/generate-audio.js
+```
 
 ---
 
@@ -146,59 +123,49 @@ Locally it's just a folder — open `index.html`, or serve it:
 npx --yes serve
 ```
 
-The `/api/tts` route needs a host that runs serverless functions; without one the game
-quietly falls back to the browser voice, so local play works fine.
-
 ### Deploying to Vercel
 
-Zero config — no build step, no `package.json`. Import the repo at
-[vercel.com/new](https://vercel.com/new), take every default, deploy. Vercel serves the root
-as static files and turns `api/tts.js` into a serverless function on its own.
+Zero config, no build step, no `package.json`. Import at
+[vercel.com/new](https://vercel.com/new) and take every default. Vercel serves the
+root as static files and turns `api/tts.js` into a serverless function on its own.
 
-Then add `GOOGLE_TTS_KEY` (above) and redeploy to get the good voice.
-
-Or from the CLI:
-
-```bash
-npm i -g vercel
-```
-
-```bash
-vercel --prod
-```
+Add `GOOGLE_TTS_KEY` in Settings → Environment Variables and redeploy if you want
+tier 2. Optional: `TTS_VOICE` (default `en-GB-Chirp3-HD-Charon`), `TTS_LANG`,
+`TTS_RATE`, `TTS_PITCH`.
 
 ### Layout
 
 ```
-index.html      all three views; a hash picks which one you get
+index.html          all three views; a hash picks which one you get
 css/app.css
-js/roles.js     the 15 cards, the night order, the suggested decks
-js/game.js      state shape, timers, and the rulebook (votes, deaths, who won)
-js/bus.js       the wire between the two windows
-js/audio.js     synthesised sound + the narrator's voice
-js/setup.js     the pre-split screen
-js/admin.js     the remote — owns the game state
-js/tv.js        the big screen — renders it
-js/main.js      routing
-api/tts.js      Google Cloud TTS proxy — keeps the API key off the client
+js/roles.js         the cast, the night order, suggested line-ups
+js/lines.js         every word the narrator says — the audio pack's source of truth
+js/scenes.js        the line art
+js/game.js          state, night actions, votes, and the three endings
+js/bus.js           the wire between the two windows
+js/audio.js         synthesised effects + the three-tier narrator
+js/setup.js         the pre-split sheet
+js/admin.js         the remote — owns the game
+js/tv.js            the big screen — renders it
+js/main.js          routing
+api/tts.js          Google Cloud TTS proxy — keeps the key off the client
+tools/generate-audio.js   builds the whole audio pack in one go
 ```
 
-The remote is the single source of truth. It broadcasts the whole state object on every
-change; the TV holds a copy and re-renders. Timers ship as an absolute `endsAt` so both
-screens count down in step without chattering at each other.
+The remote is the single source of truth and broadcasts the whole state on every
+change. Timers ship as an absolute `endsAt` so both screens count down in step.
 
 ### Keyboard
 
 | | |
 | --- | --- |
 | <kbd>Space</kbd> / <kbd>→</kbd> | next (remote) |
-| <kbd>←</kbd> | back (remote) |
-| <kbd>P</kbd> | pause the clock (remote) |
+| <kbd>←</kbd> | back — undoes the current night action (remote) |
 | <kbd>F</kbd> | fullscreen (TV) |
 
-Click the TV window once before you start — browsers won't let a page make noise until
-someone has interacted with it.
+Click the TV window once before you start; browsers won't let a page make noise
+until somebody has interacted with it.
 
 ---
 
-Inspired by the one-night werewolf format. All text, code, and art here are original.
+All text, code, and art here are original.
