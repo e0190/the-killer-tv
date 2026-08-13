@@ -368,7 +368,7 @@ const Admin = (function () {
     $('admCall').textContent = '';
     $('roundLabel').textContent =
       (S.phase === 'over' ? 'Finished'
-        : ['day', 'vote', 'lynch'].indexOf(S.phase) !== -1 ? 'Day ' + roman(S.round)
+        : ['day', 'vote', 'tally', 'lynch'].indexOf(S.phase) !== -1 ? 'Day ' + roman(S.round)
         : 'Night ' + roman(S.round));
 
     const head = (kicker, title) => { $('admKicker').textContent = kicker; $('admTitle').textContent = title; };
