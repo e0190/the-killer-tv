@@ -158,22 +158,22 @@ function voteOutcome(state) {
 
 /* Three ways out, checked in this order:
      1. the tanner dies — tanner wins, everyone else went to a lot of trouble for nothing
-     2. no wolves left standing — the village wins
-     3. the wolves have it down to one last villager — the wolves win  */
+     2. no killers left standing — the village wins
+     3. the killers have it down to one last villager — the killers win  */
 function checkEnd(state) {
   const tanner = state.players.find((p) => p.role === 'tanner');
   if (tanner && !tanner.alive) {
     return finish(state, 'tanner', 'THE TANNER WINS', 'win_tanner', 'tanner_win');
   }
 
-  const wolves = aliveWith(state, 'werewolf');
-  if (wolves.length === 0) {
+  const killers = aliveWith(state, 'killer');
+  if (killers.length === 0) {
     return finish(state, 'village', 'THE VILLAGE WINS', 'win_village', 'village_win');
   }
 
-  const others = alive(state).filter((p) => p.role !== 'werewolf');
+  const others = alive(state).filter((p) => p.role !== 'killer');
   if (others.length <= 1) {
-    return finish(state, 'wolves', 'THE WOLVES WIN', 'win_wolves', 'wolves_win');
+    return finish(state, 'killers', 'THE KILLER WINS', 'win_killers', 'killer_win');
   }
 
   return null;
