@@ -1,28 +1,27 @@
-/* the killer tv — the big screen. Renders whatever the remote sends and
-   makes a meal of it. Holds no game logic of its own. */
+/* the killer tv — the big screen.
+
+   Renders whatever the remote sends and makes a meal of it. Holds no game
+   logic: it never decides who dies, only how loudly it says so. */
 
 const TV = (function () {
   let S = null;
   let lastKey = '';
-  let raf = null;
-  let audioReady = false;
+  let audioUnlocked = false;
   let lastTickSecond = -1;
-  let sleepTimer = null;
+  let voteTimer = null;
 
   const $ = (id) => document.getElementById(id);
   const nameOf = (id) => {
-    if (!S) return '?';
+    if (!S) return '';
     const p = S.players.find((x) => x.id === id);
-    return p ? p.name : '?';
+    return p ? p.name : '';
   };
 
   function mount() {
     document.body.dataset.view = 'tv';
-    Narrator.warm();   // find out early whether the good voice is available
+    Narrator.warm();
 
-    Link.start('tv', (up) => {
-      $('tvLink').classList.toggle('on', up);
-    });
+    Link.start('tv', (up) => { $('tvRound').style.opacity = up ? '1' : '.4'; });
 
     Bus.on((msg) => {
       if (msg.type === 'state') apply(msg.payload);
@@ -30,27 +29,25 @@ const TV = (function () {
     });
     Bus.send('hello', {});
 
-    // audio needs one gesture in this window before it will make a sound
     const unlock = () => {
-      if (audioReady) return;
-      audioReady = true;
+      if (audioUnlocked) return;
+      audioUnlocked = true;
       Sound.ensure();
-      $('tvHint').textContent = 'press F for fullscreen';
-      if (S) cue(true);
+      $('tvHint').textContent = 'F for fullscreen';
+      if (S) cue();
     };
-    ['click', 'keydown', 'touchstart'].forEach((ev) => window.addEventListener(ev, unlock, { once: false }));
+    ['click', 'keydown', 'touchstart'].forEach((e) => window.addEventListener(e, unlock));
 
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'f' || e.key === 'F') toggleFullscreen();
-      if (e.key === 'Escape' && document.fullscreenElement) document.exitFullscreen();
+      if (e.key === 'f' || e.key === 'F') {
+        if (document.fullscreenElement) document.exitFullscreen();
+        else document.documentElement.requestFullscreen().catch(() => {});
+      }
     });
     document.addEventListener('fullscreenchange', () => {
       $('tvHint').classList.toggle('hide', !!document.fullscreenElement);
     });
 
-    $('tvHint').textContent = 'click once for sound · press F for fullscreen';
-
-    // pick up a game already in progress if this window was re-opened
     try {
       const cached = localStorage.getItem('killer-tv:state');
       if (cached) apply(JSON.parse(cached), true);
@@ -59,244 +56,244 @@ const TV = (function () {
     loop();
   }
 
-  function toggleFullscreen() {
-    if (document.fullscreenElement) document.exitFullscreen();
-    else document.documentElement.requestFullscreen().catch(() => {});
-  }
-
   function apply(state, quiet) {
     S = state;
     Sound.setEnabled(!!S.settings.sfx);
     Narrator.setEnabled(!!S.settings.narration);
     Narrator.setVoice(S.settings.voiceName || '');
-    const key = S.stage + ':' + S.phaseIndex;
+
+    const key = [S.phase, S.round, S.beatIndex, S.lastDeaths.join(','), S.hunterPending].join('|');
     const changed = key !== lastKey;
-    lastKey = quiet ? '' : key;   // a cached restore should still cue when the real state lands
+    lastKey = quiet ? '' : key;
     render();
-    if (changed && !quiet) cue(false);
+    if (changed && !quiet) cue();
   }
 
-  /* ---------- sound + narration on entering a beat ---------- */
+  /* ---------- sound + narration when a beat opens ---------- */
 
-  function cue(replay) {
-    if (sleepTimer) { clearTimeout(sleepTimer); sleepTimer = null; }
-    if (!replay) Narrator.shush();
-    lastTickSecond = -1;
+  function cue() {
+    if (voteTimer) { clearTimeout(voteTimer); voteTimer = null; }
+    Narrator.shush();
 
-    switch (S.stage) {
-      case 'deal':
-        Sound.play('thud');
-        Narrator.say('Shuffle the deck. One card each, three in the middle.');
+    switch (S.phase) {
+      case 'opening':
+        Sound.play('toll');
+        Narrator.say('opening');
         break;
 
-      case 'night': {
-        const p = S.phases[S.phaseIndex];
-        if (!p) break;
-        if (S.phaseIndex === 0) Sound.startDrone();
+      case 'nightfall':
+        Sound.startDrone();
         Sound.play('thud');
-        Narrator.say(p.say);
-        if (p.sleep && S.timer.total > 4000) {
-          const wait = Math.max(1200, timerRemaining(S.timer) - 2600);
-          sleepTimer = setTimeout(() => Narrator.say(p.sleep), wait);
+        Narrator.say(S.round === 1 ? 'night_first' : 'night_again');
+        break;
+
+      case 'nightbeat': {
+        const b = S.nightBeats[S.beatIndex];
+        if (!b) break;
+        Sound.play('thud');
+        // the first night gets the full story; later nights just get the call
+        if (S.round === 1) {
+          Narrator.say('story_' + b.role);
+          setTimeout(() => { if (S && S.phase === 'nightbeat') Narrator.say('call_' + b.role); }, 6200);
+        } else {
+          Narrator.say('call_' + b.role);
         }
         break;
       }
 
-      case 'day':
+      case 'dawn':
         Sound.stopDrone();
-        Sound.play('chime');
-        Narrator.say('The sun is up. Somebody at this table is lying. Find them.');
+        if (S.lastDeaths.length) {
+          Sound.play('stab');
+          Narrator.say('dawn_body');
+          sayRevealAfter(S.lastDeaths[0], 5200);
+        } else {
+          Sound.play('dawn');
+          Narrator.say('dawn_quiet');
+        }
+        break;
+
+      case 'hunter':
+        Sound.play('toll');
+        Narrator.say('hunter_dies');
+        break;
+
+      case 'day':
+        Sound.play('dawn');
+        Narrator.say('day');
         break;
 
       case 'vote':
         Sound.play('riser');
-        Narrator.say('Hands ready. On three, point at the one you want dead.');
+        Narrator.say('vote_call');
         break;
 
-      case 'tally':
-        Sound.play('thud');
-        Narrator.say('Point!');
-        break;
-
-      case 'kill':
-        if (S.deaths.length) {
+      case 'lynch':
+        if (S.lastDeaths.length) {
           Sound.play('stab');
-          Narrator.say('The village has killed ' + S.deaths.map(nameOf).join(' and ') + '.');
+          Narrator.say('lynch_body');
+          sayRevealAfter(S.lastDeaths[0], 4200);
         } else {
-          Sound.play('thud');
-          Narrator.say('Nobody could agree. Nobody dies.');
+          Sound.play('toll');
+          Narrator.say('lynch_none');
         }
         break;
 
-      case 'reveal':
-        Sound.play('thud');
-        Narrator.say('Everybody — flip your card.');
-        break;
-
-      case 'result':
-        Sound.play('fanfare');
-        Narrator.say(S.result ? S.result.headline : '');
+      case 'over':
+        Sound.stopDrone();
+        Sound.play('toll');
+        Narrator.say(S.result.line);
         break;
     }
   }
 
+  function sayRevealAfter(id, delay) {
+    const r = deathReveal(S, id);
+    voteTimer = setTimeout(() => {
+      if (S && (S.phase === 'dawn' || S.phase === 'lynch')) Narrator.say(r.line);
+    }, delay);
+  }
+
   /* ---------- render ---------- */
 
-  function set(kicker, title, line, opts) {
-    opts = opts || {};
-    $('tvKicker').textContent = kicker || '';
-    $('tvTitle').textContent = title || '';
-    $('tvTitle').className = 'tv-title' + (opts.small ? ' small' : '');
-    $('tvLine').textContent = line || '';
-    $('tvLine').className = 'tv-line' + (opts.bigLine ? ' big' : '');
+  function paint(o) {
+    $('tvKicker').textContent = o.kicker || '';
+    $('tvTitle').textContent = o.title || '';
+    $('tvTitle').className = 'tv-title' + (o.name ? ' name' : '') + (o.small ? ' small' : '');
+    $('tvProse').textContent = o.prose || '';
+    $('tvProse').className = 'tv-prose' + (o.plain ? ' plain' : '');
+    $('tvScene').innerHTML = sceneFor(o.scene);
+    $('tvScene').className = 'tv-scene ' + (o.tint || '');
   }
 
   function render() {
     if (!S) return;
-    $('tvClockWrap').hidden = !S.timer.total || S.stage === 'vote';
-    $('tvGrid').hidden = true;
-    $('tvResult').hidden = true;
-    $('tvDeck').hidden = !(S.settings.showDeck && ['night', 'day', 'vote', 'tally'].indexOf(S.stage) !== -1);
+    $('tvClockWrap').hidden = !S.timer.total || S.phase === 'vote';
+    $('tvTally').hidden = true;
+    $('tvRound').textContent = S.phase === 'over' ? 'finished'
+      : (['day', 'vote', 'lynch'].indexOf(S.phase) !== -1 ? 'day ' : 'night ') + S.round;
 
-    switch (S.stage) {
-      case 'deal':
-        set('round ' + S.round, 'DEAL THE CARDS',
-          'One card each, face down. Three in the middle. Nobody looks.');
+    switch (S.phase) {
+      case 'opening':
+        paint({ scene: 'night', kicker: '', title: 'The Killer TV', prose: LINES.opening });
         break;
 
-      case 'night': {
-        const p = S.phases[S.phaseIndex];
-        if (!p) break;
-        set(p.id === 'nightstart' || p.id === 'nightend' ? 'the night' : 'night · wake up',
-          p.icon + '  ' + p.title.toUpperCase(), p.line, { small: p.title.length > 13, bigLine: true });
+      case 'nightfall':
+        paint({
+          scene: 'night', kicker: 'night ' + S.round,
+          title: 'Close your eyes',
+          prose: S.round === 1 ? LINES.night_first : LINES.night_again,
+        });
+        break;
+
+      case 'nightbeat': {
+        const b = S.nightBeats[S.beatIndex];
+        if (!b) break;
+        paint({
+          scene: b.scene, tint: b.role === 'werewolf' ? 'blood' : 'bone',
+          kicker: 'night ' + S.round,
+          title: ROLES[b.role].name,
+          prose: S.round === 1 ? b.story : b.call,
+          plain: S.round !== 1,
+          small: ROLES[b.role].name.length > 12,
+        });
         break;
       }
 
+      case 'dawn':
+        if (S.lastDeaths.length) {
+          const id = S.lastDeaths[0];
+          paint({
+            scene: 'body', tint: 'blood', kicker: 'the village wakes',
+            title: nameOf(id), name: true,
+            prose: deathReveal(S, id).text, plain: true,
+          });
+        } else {
+          paint({ scene: 'dawn', tint: 'gold', kicker: 'the village wakes', title: 'Everyone lived', prose: LINES.dawn_quiet });
+        }
+        break;
+
+      case 'hunter':
+        paint({
+          scene: 'hunter', tint: 'blood', kicker: 'one shot left',
+          title: nameOf(S.hunterPending), name: true,
+          prose: 'The Hunter is taking somebody with them.', plain: true,
+        });
+        break;
+
       case 'day':
-        set('daybreak', 'TALK', 'Accuse. Deny. Lie. The clock is running.');
+        paint({ scene: 'vote', kicker: 'day ' + S.round, title: 'Talk', prose: LINES.day });
         break;
 
       case 'vote':
         renderCountdown();
         break;
 
-      case 'tally':
-        set('the vote', 'POINT NOW', 'Hold your finger where it is.');
-        renderTallyGrid();
-        break;
-
-      case 'kill':
-        if (S.deaths.length) {
-          set('the village has spoken',
-            S.deaths.map(nameOf).join('  &  ').toUpperCase(),
-            S.deaths.length > 1 ? 'They are dead.' : 'Dead.',
-            { small: S.deaths.length > 1, bigLine: true });
+      case 'lynch':
+        if (S.lastDeaths.length) {
+          const id = S.lastDeaths[0];
+          paint({
+            scene: 'body', tint: 'blood', kicker: 'the village has spoken',
+            title: nameOf(id), name: true,
+            prose: deathReveal(S, id).text, plain: true,
+          });
         } else {
-          set('the village has spoken', 'NOBODY DIES', 'You couldn\'t agree. Live with it.', { bigLine: true });
+          paint({ scene: 'vote', kicker: 'the village has spoken', title: 'Nobody hangs', prose: LINES.lynch_none });
         }
-        renderDeathGrid();
         break;
 
-      case 'reveal':
-        set('the reveal', 'FLIP YOUR CARDS', 'Show the table what you really were.', { bigLine: true });
-        break;
-
-      case 'result':
-        renderResult();
+      case 'over':
+        paint({
+          scene: S.result.scene, tint: S.result.team === 'wolves' ? 'blood' : 'gold',
+          kicker: 'after ' + S.round + (S.round === 1 ? ' night' : ' nights'),
+          title: S.result.headline, small: true,
+          prose: LINES[S.result.line],
+        });
         break;
 
       default:
-        set('', 'THE KILLER TV', 'waiting for the remote…');
+        paint({ scene: 'night', title: 'The Killer TV', prose: 'waiting for the remote' });
     }
 
-    renderDeck();
+    renderRoster();
   }
 
   function renderCountdown() {
     const left = Math.ceil(timerRemaining(S.timer) / 1000);
     const n = Math.max(0, Math.min(3, left - 1));
-    set('the vote', n > 0 ? String(n) : 'POINT',
-      'Point at the player you want dead.', { bigLine: true });
+    paint({
+      scene: 'vote', tint: 'blood', kicker: 'day ' + S.round,
+      title: n > 0 ? String(n) : 'Point', name: true,
+      prose: 'Point at the one you want swinging.', plain: true,
+    });
   }
 
-  function renderTallyGrid() {
-    const grid = $('tvGrid');
-    grid.hidden = false;
-    const counts = tallyVotes(S);
-    grid.innerHTML = S.players.map((p) => {
-      const v = counts[p.id] || 0;
-      return '<div class="tv-card"><b>' + esc(p.name) + '</b>' +
-        '<span class="votes">' + (v || '·') + '</span></div>';
+  function renderRoster() {
+    const winners = S.result ? S.result.winners : [];
+    $('tvRoster').innerHTML = S.players.map((p) => {
+      const cls = [p.alive ? '' : 'dead', winners.indexOf(p.id) !== -1 ? 'won' : ''].join(' ').trim();
+      const suffix = (S.phase === 'over') ? ' · ' + ROLES[p.role].name : '';
+      return '<li class="' + cls + '">' + esc(p.name) + suffix + '</li>';
     }).join('');
-  }
-
-  function renderDeathGrid() {
-    const grid = $('tvGrid');
-    if (!S.deaths.length) return;
-    grid.hidden = false;
-    grid.innerHTML = S.players.map((p) => {
-      const dead = S.deaths.indexOf(p.id) !== -1;
-      return '<div class="tv-card' + (dead ? ' dead' : '') + '"><b>' + esc(p.name) + '</b>' +
-        (dead ? '<span class="tag">dead</span>' : '') + '</div>';
-    }).join('');
-  }
-
-  function renderResult() {
-    const r = S.result;
-    if (!r) return;
-    set('', r.headline, '', { small: r.headline.length > 22 });
-    const box = $('tvResult');
-    box.hidden = false;
-
-    const teams = r.teams.length
-      ? '<div class="teams">' + r.teams.map((t) => '<span class="team">' + teamLabel(t) + '</span>').join('') + '</div>'
-      : '';
-
-    const cards = S.players.map((p) => {
-      const role = effectiveRole(S, p.id);
-      const def = ROLES[role] || { icon: '?', name: '?' };
-      const won = r.winners.indexOf(p.id) !== -1;
-      const dead = S.deaths.indexOf(p.id) !== -1;
-      return '<div class="tv-card' + (dead ? ' dead' : '') + (won ? ' win' : '') + '">' +
-        '<b>' + esc(p.name) + '</b><i>' + def.icon + ' ' + def.name + '</i>' +
-        '<span class="tag">' + (dead ? 'dead' : '') + (dead && won ? ' · ' : '') + (won ? 'winner' : '') + '</span></div>';
-    }).join('');
-
-    const middle = '<div class="tv-deck" style="margin-top:1.4vmin">' +
-      S.centreRoles.map((c) => '<span>middle · ' + (ROLES[c] ? ROLES[c].name : '?') + '</span>').join('') + '</div>';
-
-    box.innerHTML = teams + '<div class="tv-grid" style="margin-top:1vmin">' + cards + '</div>' + middle;
-  }
-
-  function renderDeck() {
-    if ($('tvDeck').hidden) return;
-    const counts = deckCounts(S.deck);
-    $('tvDeck').innerHTML = Object.keys(counts).map((id) =>
-      '<span>' + ROLES[id].icon + ' ' + ROLES[id].name +
-      (counts[id] > 1 ? ' <span class="n">×' + counts[id] + '</span>' : '') + '</span>').join('');
   }
 
   function esc(s) {
     return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   }
 
-  /* ---------- the clock, driven per frame so it stays smooth ---------- */
+  /* ---------- the clock, per frame so it stays smooth ---------- */
 
   function loop() {
-    raf = requestAnimationFrame(loop);
+    requestAnimationFrame(loop);
     if (!S || !S.timer.total) return;
 
     const ms = timerRemaining(S.timer);
+    if (S.phase === 'vote') renderCountdown();
 
-    if (S.stage === 'vote') { renderCountdown(); }
-
-    const clock = $('tvClock');
-    const bar = $('tvBar');
-    const low = ms <= 10000;
-    clock.textContent = fmtClock(ms);
-    clock.classList.toggle('low', low);
-    bar.style.width = Math.max(0, Math.min(100, (ms / S.timer.total) * 100)) + '%';
-    bar.classList.toggle('low', low);
+    const low = ms <= 15000;
+    $('tvClock').textContent = fmtClock(ms);
+    $('tvClock').classList.toggle('low', low);
+    $('tvBar').style.width = Math.max(0, Math.min(100, (ms / S.timer.total) * 100)) + '%';
 
     const sec = Math.ceil(ms / 1000);
     if (S.timer.running && sec !== lastTickSecond && sec <= 5 && sec > 0) {
