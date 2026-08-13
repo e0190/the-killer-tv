@@ -459,14 +459,14 @@ const Admin = (function () {
     if (S.round === 1) $('admStory').textContent = b.story;
     $('admCall').textContent = b.call;
 
-    /* Once the wolves have marked somebody they're effectively already gone, so
-       later roles can't shuffle a corpse's card around. Without this you get a
-       Troublemaker swapping the victim into a werewolf after the fact, and the
-       morning announces the wrong thing entirely. */
-    const spoken = S.pendingKill ? [S.pendingKill] : [];
-    const others = (excludeIds) => alive(S)
-      .filter((p) => excludeIds.indexOf(p.id) === -1 && spoken.indexOf(p.id) === -1)
-      .map((p) => p.id);
+    const others = (excludeIds) => alive(S).filter((p) => excludeIds.indexOf(p.id) === -1).map((p) => p.id);
+
+    /* Once the wolves have marked somebody, that person's role is settled — later
+       roles can't shuffle a corpse's card around. Without this a Troublemaker can
+       swap the victim into a werewolf after the fact and the morning announces the
+       wrong thing entirely. The Seer is deliberately exempt: dropping the name from
+       their list would tell the table who the wolves picked. */
+    const swappable = (excludeIds) => others(excludeIds).filter((id) => id !== S.pendingKill);
     const actor = actorOf(b);
 
     switch (b.input) {
