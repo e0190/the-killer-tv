@@ -121,12 +121,12 @@ function kill(state, id, cause) {
 function deathReveal(state, id) {
   const p = byId(state, id);
   if (!p) return { text: '', line: '' };
-  if (state.settings.revealMode === 'wolf') {
-    return p.role === 'werewolf'
-      ? { text: 'A WEREWOLF', line: 'reveal_wolf', wolf: true }
-      : { text: 'NOT A WEREWOLF', line: 'reveal_notwolf', wolf: false };
+  if (state.settings.revealMode === 'killer') {
+    return p.role === 'killer'
+      ? { text: 'THE KILLER', line: 'reveal_guilty', killer: true }
+      : { text: 'NOT THE KILLER', line: 'reveal_innocent', killer: false };
   }
-  return { text: ROLES[p.role].name.toUpperCase(), line: 'reveal_' + p.role, wolf: p.role === 'werewolf' };
+  return { text: ROLES[p.role].name.toUpperCase(), line: 'reveal_' + p.role, killer: p.role === 'killer' };
 }
 
 /* ---------- votes ---------- */
