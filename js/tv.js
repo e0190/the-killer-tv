@@ -194,7 +194,7 @@ const TV = (function () {
 
     switch (S.phase) {
       case 'opening':
-        paint({ scene: 'night', kicker: '', title: 'The Killer TV', prose: LINES.opening });
+        paint({ scene: 'night', kicker: 'before we begin', title: 'The Killer TV', prose: LINES.opening });
         break;
 
       case 'nightfall':
