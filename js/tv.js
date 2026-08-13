@@ -135,7 +135,12 @@ const TV = (function () {
 
       case 'vote':
         Sound.play('riser');
-        Narrator.say('vote_call');
+        Narrator.say(S.revoteNotice ? 'vote_again' : 'vote_call');
+        break;
+
+      case 'tally':
+        Sound.play('thud');
+        Narrator.say('vote_point');
         break;
 
       case 'lynch':
