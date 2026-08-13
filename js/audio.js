@@ -342,6 +342,7 @@ const Narrator = (function () {
 
   function shush() {
     seq++;                                     // anything in flight is now stale
+    queue = [];
     if ('speechSynthesis' in window) speechSynthesis.cancel();
     if (current) { try { current.pause(); } catch (e) {} current = null; }
   }
