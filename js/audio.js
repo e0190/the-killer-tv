@@ -147,8 +147,10 @@ const Narrator = (function () {
   let voice = null;
   let choice = '';
   let cloudReady = null;
+  let cloudBackend = '';
   let current = null;
-  let packCount = 0;
+  let packIds = [];        // line ids dropped into the browser
+  let seq = 0;             // bumps on every shush; stale callbacks check it
 
   const fileState = {};    // line id -> 'ok' | 'missing'
   const cloudCache = new Map();
