@@ -218,17 +218,40 @@ const Narrator = (function () {
 
   const TIERS = ['pack', 'file', 'cloud', 'voice'];
 
-  function say(id) {
-    if (!enabled || !id) return;
+  function say(id) { sayAll([id]); }
+
+  /* Several lines back to back, each starting when the one before it finishes.
+     Clip lengths aren't known ahead of time and vary by tier, so this waits for
+     the real end rather than guessing at a delay. */
+  function sayAll(ids) {
+    if (!enabled) return;
     shush();
-    step(id, seq, 0);
+    queue = (ids || []).filter(Boolean);
+    advance(seq);
   }
 
-  function step(id, token, i) {
+  function advance(token) {
+    if (token !== seq) return;
+    const id = queue.shift();
+    if (!id) return;
+    let moved = false;
+    const onDone = () => {
+      if (moved || token !== seq) return;
+      moved = true;
+      clearTimeout(guard);
+      advance(token);
+    };
+    /* If a tier never reports finishing — muted tab, speech engine that swallows
+       its own end event — don't strand the rest of the queue. */
+    const guard = setTimeout(onDone, 2000 + (LINES[id] || '').split(/\s+/).length * 500);
+    step(id, token, 0, onDone);
+  }
+
+  function step(id, token, i, onDone) {
     if (token !== seq) return;
     const tier = TIERS[i];
-    if (!tier) return;
-    const fall = () => step(id, token, i + 1);
+    if (!tier) { onDone(); return; }
+    const fall = () => step(id, token, i + 1, onDone);
 
     switch (tier) {
       case 'pack':
@@ -236,19 +259,19 @@ const Narrator = (function () {
         Pack.get(id).then((blob) => {
           if (token !== seq) return;
           if (!blob) return fall();
-          playMedia(URL.createObjectURL(blob), token, fall, true);
+          playMedia(URL.createObjectURL(blob), token, fall, true, onDone);
         }).catch(fall);
         return;
 
       case 'file':
         if (fileState[id] === 'missing') return fall();
-        playMedia(DIR + id + EXT, token, () => { fileState[id] = 'missing'; fall(); }, false);
+        playMedia(DIR + id + EXT, token, () => { fileState[id] = 'missing'; fall(); }, false, onDone);
         return;
 
       case 'cloud': {
         if (!cloudReady || (choice && choice !== 'cloud')) return fall();
         const hit = cloudCache.get(id);
-        if (hit) return playMedia(hit, token, fall, false);
+        if (hit) return playMedia(hit, token, fall, false, onDone);
         const text = LINES[id];
         if (!text) return fall();
         fetch('api/tts', {
@@ -261,14 +284,14 @@ const Narrator = (function () {
             if (token !== seq) return;
             const u = URL.createObjectURL(b);
             cloudCache.set(id, u);
-            playMedia(u, token, fall, false);
+            playMedia(u, token, fall, false, onDone);
           })
           .catch(() => { cloudReady = false; fall(); });
         return;
       }
 
       default:
-        sayLocal(id);
+        sayLocal(id, token, onDone);
     }
   }
 
