@@ -312,6 +312,7 @@ const Narrator = (function () {
   }
 
   function shush() {
+    seq++;                                     // anything in flight is now stale
     if ('speechSynthesis' in window) speechSynthesis.cancel();
     if (current) { try { current.pause(); } catch (e) {} current = null; }
   }
@@ -321,7 +322,7 @@ const Narrator = (function () {
 
   function options() {
     const list = [{ value: '', label: 'Auto — best available' }];
-    if (cloudReady) list.push({ value: 'cloud', label: 'Google Cloud — deep British' });
+    if (cloudReady) list.push({ value: 'cloud', label: 'Generated voice (Gemini / Cloud)' });
     allVoices().filter((v) => /^en/i.test(v.lang))
       .forEach((v) => list.push({ value: v.name, label: v.name + ' · ' + v.lang }));
     return list;
@@ -329,15 +330,18 @@ const Narrator = (function () {
 
   function status() {
     const total = LINE_IDS.length;
-    if (packCount >= total) return { tier: 'pack', detail: 'Your audio pack — all ' + total + ' lines.' };
-    if (packCount > 0) return { tier: 'pack', detail: 'Your audio pack — ' + packCount + ' of ' + total + ' lines, the rest spoken by the browser.' };
-    if (cloudReady) return { tier: 'cloud', detail: 'Google Cloud voice. Drop files in /audio to replace it.' };
+    const have = packIds.length;
+    if (have >= total) return { tier: 'pack', have: have, total: total, detail: 'Your own pack — all ' + total + ' lines installed.' };
+    if (have > 0) return { tier: 'pack', have: have, total: total, detail: 'Your own pack — ' + have + ' of ' + total + ' lines. The rest fall back.' };
+    if (cloudReady) return { tier: 'cloud', have: 0, total: total, detail: 'Generated voice' + (cloudBackend ? ' (' + cloudBackend + ')' : '') + '. Drop your own files in to replace it.' };
     const v = voice;
     return {
-      tier: 'browser',
-      detail: v ? 'Browser voice — ' + v.name + (/^en[-_]GB/i.test(v.lang) ? '' : ' (not British; see AUDIO.md)') : 'No voice available.',
+      tier: 'browser', have: 0, total: total,
+      detail: v ? 'Browser voice — ' + v.name + (/^en[-_]GB/i.test(v.lang) ? '' : ' (not British)') : 'No voice available.',
     };
   }
 
-  return { say, preview, shush, setEnabled, setVoice, warm, options, status };
+  const installed = () => packIds.slice();
+
+  return { say, preview, shush, setEnabled, setVoice, warm, refreshPack, options, status, installed };
 })();
