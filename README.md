@@ -55,11 +55,19 @@ enter the whole cast at setup, and the app runs the rest.
 1. **Night.** The TV calls each role in turn. **There is no night clock** — you tap
    through at the table's pace. Every role acts **every night**, so nobody's role is
    safe for long.
-2. **Dawn.** Whoever the wolves chose is dead. The TV puts the name up in letters a
-   foot high and says what they were — or just whether they were a wolf, your call.
+2. **Wake up.** Everyone opens their eyes, then the TV counts **three, two, one**
+   before it shows who didn't make it — name in letters a foot high, and what they
+   were, or just whether they were a wolf, your call.
 3. **Day.** A timer runs on the TV while the village argues.
-4. **The vote.** Everyone points. Most votes hangs. **A tie means nobody hangs.**
+4. **The vote.** The TV counts down, everyone points, *then* the tally sheet appears
+   on the remote. Most votes hangs, after another three-count. **A tie sends it back
+   for a revote** — twice, and if they still can't agree, nobody hangs.
 5. Repeat until it's over.
+
+Once the wolves have marked somebody, later roles can't swap that person's card —
+otherwise a Troublemaker could turn the victim into a werewolf after the fact and
+the morning would announce the wrong thing. The Seer is exempt, because a name
+missing from their list would give the game away.
 
 ### The night, in order
 
