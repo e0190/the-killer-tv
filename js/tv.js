@@ -193,9 +193,15 @@ const TV = (function () {
       : (['day', 'vote', 'lynch'].indexOf(S.phase) !== -1 ? 'day ' : 'night ') + S.round;
 
     switch (S.phase) {
-      case 'opening':
-        paint({ scene: 'night', kicker: 'before we begin', title: 'The Killer TV', prose: LINES.opening });
+      case 'opening': {
+        const p = PROLOGUE[S.prologueIndex];
+        paint({
+          scene: p.scene, tint: p.id === 'opening_inside' ? 'blood' : '',
+          kicker: 'the story · ' + (S.prologueIndex + 1) + ' of ' + PROLOGUE.length,
+          title: p.title, small: true, prose: LINES[p.id],
+        });
         break;
+      }
 
       case 'nightfall':
         paint({
