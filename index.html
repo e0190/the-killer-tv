@@ -20,6 +20,40 @@
       <p class="standfirst">Something has been getting in at night, and it is already sitting at the table.</p>
     </header>
 
+    <div class="pack-banner" id="packBanner" hidden>
+      <div class="pack-banner-text">
+        <strong id="packBannerTitle"></strong>
+        <span id="packBannerSub"></span>
+      </div>
+      <button type="button" class="pack-banner-btn" id="packOpen">install them</button>
+    </div>
+
+    <section class="block" id="packBlock" hidden>
+      <div class="block-head">
+        <h2>Narration files</h2>
+        <div class="block-tools">
+          <button type="button" class="link" id="packCopy">copy the script</button>
+          <button type="button" class="link" id="packClear">remove all</button>
+          <button type="button" class="link" id="packClose">hide</button>
+        </div>
+      </div>
+      <p class="note">
+        Generate or record these however you like, name each file after its line id, and drop the
+        lot in below. They're matched by filename, stored in this browser, and stay put — you only
+        do this once. Anything you skip falls back to a generated or browser voice.
+      </p>
+
+      <label class="dropzone" id="packDrop" for="packFiles">
+        <strong>Drop all <span id="packTotal">49</span> files here</strong>
+        <span>or click to choose them</span>
+        <input type="file" id="packFiles" multiple accept="audio/*" hidden>
+      </label>
+      <p class="note" id="packReport"></p>
+
+      <div class="pack-meter"><i id="packBar"></i></div>
+      <ul class="pack-list" id="packList"></ul>
+    </section>
+
     <section class="block">
       <div class="block-head">
         <h2>I. The Cast</h2>
