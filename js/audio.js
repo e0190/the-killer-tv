@@ -297,18 +297,22 @@ const Narrator = (function () {
 
   /* One outcome per attempt. A 404 fires both an error event and a rejected
      play() promise, which is how this used to say every line twice. */
-  function playMedia(src, token, onFail, revoke) {
+  function playMedia(src, token, onFail, revoke, onDone) {
     const a = new Audio(src);
     current = a;
     let settled = false;
-    const finish = () => { settled = true; if (revoke) URL.revokeObjectURL(src); };
     const bail = () => {
       if (settled) return;
-      finish();
+      settled = true;
+      if (revoke) URL.revokeObjectURL(src);
       if (token === seq) onFail();
     };
     a.addEventListener('error', bail);
-    a.addEventListener('ended', finish);
+    a.addEventListener('ended', () => {
+      settled = true;
+      if (revoke) URL.revokeObjectURL(src);
+      if (onDone) onDone();
+    });
     a.play().then(() => { settled = true; }).catch(bail);
   }
 
