@@ -145,11 +145,18 @@ const SCENES = {
     <path d="M62 40h20M158 40h20" stroke-dasharray="3 6"/>
   </svg>`,
 
-  wolves_win: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M156 26a22 22 0 1 0 20 30 24 24 0 0 1-20-30Z"/>
-    <path d="M60 122V86l-14-8 12-30 22 12 20-8 20 8 22-12 12 30-14 8v36Z"/>
-    <path d="M84 96h12M124 96h12"/>
-    <path d="M96 112h28M104 118l6-6M116 118l-6-6"/>
+  /* the last one standing, and the houses gone dark behind them */
+  killer_win: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M0 128h240"/>
+    <path d="M22 128V100l14-11 14 11v28M60 128v-22l12-9 12 9v22" stroke-dasharray="3 6"/>
+    <path d="M156 128v-22l12-9 12 9v22M194 128v-28l14-11 14 11v28" stroke-dasharray="3 6"/>
+    <path d="M120 128V70"/>
+    <circle cx="120" cy="42" r="13"/>
+    <path d="M114 40h4M122 40h4"/>
+    <path d="M106 92V70a14 14 0 0 1 28 0v22"/>
+    <path d="M120 70 104 84M120 70l16 14"/>
+    <path d="M136 84v24M136 108l-4 6M136 108l4 6" stroke-width="1.3"/>
+    <path d="M104 84l-2 22" stroke-width="1.3"/>
   </svg>`,
 
   village_win: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
