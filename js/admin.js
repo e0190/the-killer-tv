@@ -296,8 +296,17 @@ const Admin = (function () {
         break;
       }
       case 'nightfall': if (S.round === 1) S.phase = 'opening'; break;
+      case 'wake':
+        S.phase = 'nightbeat';
+        S.beatIndex = Math.max(0, S.nightBeats.length - 1);
+        break;
+      case 'suspense':
+        stopTimer();
+        S.phase = S.suspenseNext === 'dawn' ? 'wake' : 'tally';
+        break;
       case 'day': S.phase = 'dawn'; stopTimer(); break;
       case 'vote': S.phase = 'day'; startTimer(S.settings.dayMs); break;
+      case 'tally': S.phase = 'vote'; startTimer(5000); break;
       default: return;
     }
     push();
