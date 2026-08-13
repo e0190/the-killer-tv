@@ -141,15 +141,15 @@ const PROLOGUE = [
 /* Suggested casts, by head count. Every player holds exactly one role —
    there are no cards in the middle any more. */
 const PRESETS = {
-  4: ['werewolf', 'seer', 'villager', 'villager'],
-  5: ['werewolf', 'seer', 'robber', 'villager', 'villager'],
-  6: ['werewolf', 'seer', 'robber', 'troublemaker', 'villager', 'villager'],
-  7: ['werewolf', 'werewolf', 'seer', 'robber', 'insomniac', 'villager', 'villager'],
-  8: ['werewolf', 'werewolf', 'minion', 'seer', 'robber', 'troublemaker', 'villager', 'villager'],
-  9: ['werewolf', 'werewolf', 'minion', 'seer', 'robber', 'troublemaker', 'insomniac', 'hunter', 'villager'],
-  10: ['werewolf', 'werewolf', 'minion', 'mason', 'mason', 'seer', 'robber', 'troublemaker', 'hunter', 'tanner'],
-  11: ['werewolf', 'werewolf', 'minion', 'mason', 'mason', 'seer', 'robber', 'troublemaker', 'insomniac', 'hunter', 'tanner'],
-  12: ['werewolf', 'werewolf', 'minion', 'mason', 'mason', 'seer', 'robber', 'troublemaker', 'insomniac', 'doppelganger', 'hunter', 'tanner'],
+  4: ['killer', 'seer', 'villager', 'villager'],
+  5: ['killer', 'seer', 'robber', 'villager', 'villager'],
+  6: ['killer', 'seer', 'robber', 'troublemaker', 'villager', 'villager'],
+  7: ['killer', 'killer', 'seer', 'robber', 'insomniac', 'villager', 'villager'],
+  8: ['killer', 'killer', 'minion', 'seer', 'robber', 'troublemaker', 'villager', 'villager'],
+  9: ['killer', 'killer', 'minion', 'seer', 'robber', 'troublemaker', 'insomniac', 'hunter', 'villager'],
+  10: ['killer', 'killer', 'minion', 'mason', 'mason', 'seer', 'robber', 'troublemaker', 'hunter', 'tanner'],
+  11: ['killer', 'killer', 'minion', 'mason', 'mason', 'seer', 'robber', 'troublemaker', 'insomniac', 'hunter', 'tanner'],
+  12: ['killer', 'killer', 'minion', 'mason', 'mason', 'seer', 'robber', 'troublemaker', 'insomniac', 'doppelganger', 'hunter', 'tanner'],
 };
 
 function roleCounts(list) {
