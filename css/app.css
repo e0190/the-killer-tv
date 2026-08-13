@@ -349,6 +349,18 @@ body[data-view="tv"]{overflow:hidden;background:#000}
 }
 .tv-hint.hide{display:none}
 
+/* the whole screen is a power switch until someone touches it */
+.tv-wake{
+  position:absolute;inset:0;z-index:20;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;gap:1.6vmin;
+  background:#050505;text-align:center;border:0;width:100%;
+}
+.tv-wake.gone{display:none}
+.tv-wake-mark{font-family:var(--serif);font-size:2vmin;letter-spacing:.28em;text-transform:uppercase;color:#6a655c}
+.tv-wake-main{font-family:var(--serif);font-size:min(7vmin,9vw);color:var(--bone)}
+.tv-wake-sub{font-size:1.6vmin;letter-spacing:.1em;color:#5a554d;max-width:60ch}
+.tv-wake:hover .tv-wake-main{color:#fff}
+
 @media (max-width:760px){
   .console{grid-template-columns:1fr;gap:26px}
   .roster{border-left:0;border-top:1px solid var(--rule);padding-left:0;padding-top:18px;position:static}
