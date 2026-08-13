@@ -381,12 +381,19 @@ const Admin = (function () {
     const head = (kicker, title) => { $('admKicker').textContent = kicker; $('admTitle').textContent = title; };
 
     switch (S.phase) {
-      case 'opening':
-        head('before we start', 'Read them in');
-        $('admStory').textContent = LINES.opening;
-        $('admCall').textContent = 'Everyone should be seated and know their own role. Nobody else\'s.';
-        $('admNext').textContent = 'nightfall';
+      case 'opening': {
+        const p = PROLOGUE[S.prologueIndex];
+        const last = S.prologueIndex === PROLOGUE.length - 1;
+        head('the story · ' + (S.prologueIndex + 1) + ' of ' + PROLOGUE.length, p.title);
+        $('admStory').textContent = LINES[p.id];
+        if (S.prologueIndex === 0) {
+          $('admCall').textContent = 'Everyone seated, everyone knowing their own role and nobody else\'s. Read it off the TV, or let the TV read it.';
+        } else if (last) {
+          $('admCall').textContent = 'Next puts them to sleep and starts the first night.';
+        }
+        $('admNext').textContent = last ? 'nightfall' : 'go on';
         break;
+      }
 
       case 'nightfall':
         head('night ' + roman(S.round), 'Everybody, close your eyes');
