@@ -92,11 +92,14 @@ function applySwap(state, aId, bId) {
   state.nightLog.push(nameOf(state, aId) + ' and ' + nameOf(state, bId) + ' were swapped without being told.');
 }
 
+/* The Seer learns exactly what someone is, not merely whether they bite. */
 function applyLook(state, targetId) {
-  const wolf = isWolf(state, targetId);
-  state.seerAnswer = { targetId: targetId, isWolf: wolf };
-  state.nightLog.push('The Seer looked at ' + nameOf(state, targetId) + ' — ' + (wolf ? 'a wolf.' : 'not a wolf.'));
-  return wolf;
+  const p = byId(state, targetId);
+  const role = p ? p.role : '';
+  state.seerAnswer = { targetId: targetId, role: role, isWolf: role === 'werewolf' };
+  state.nightLog.push('The Seer looked at ' + nameOf(state, targetId) + ' — ' +
+    (ROLES[role] ? 'the ' + ROLES[role].name : 'nothing') + '.');
+  return role;
 }
 
 /* ---------- killing ---------- */
