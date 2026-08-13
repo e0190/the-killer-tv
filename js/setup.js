@@ -106,8 +106,16 @@ const Setup = (function () {
           const have = roles.filter((r) => r === wanted).length;
           roles[i] = wanted;
           if (have === 0) {
-            const spare = roles.findIndex((r, j) => j !== i && r !== wanted);
-            if (spare !== -1) roles[spare] = wanted;
+            // take the cheapest seat going: an empty one, then a villager,
+            // then whatever's left — never quietly eat the last wolf.
+            const free = (test) => roles.findIndex((r, j) => j !== i && test(r));
+            const spare = [
+              free((r) => !r),
+              free((r) => r === 'villager'),
+              free((r) => r !== wanted && ROLES[r] && ROLES[r].team === 'village'),
+              free((r) => r !== wanted),
+            ].find((x) => x !== -1 && x !== undefined);
+            if (spare !== undefined && spare !== -1) roles[spare] = wanted;
           }
         } else {
           const was = roles[i];
