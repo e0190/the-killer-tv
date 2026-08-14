@@ -253,9 +253,13 @@ body[data-view="tv"]{overflow:hidden;background:#000}
   font-family:var(--serif);font-size:16px;line-height:1.65;color:var(--bone-2);
   font-style:italic;margin:14px 0 0;max-width:54ch;
 }
+.say-label{margin:18px 0 6px;color:var(--blood-2)}
 .instruction{
   font-size:14px;line-height:1.6;margin:16px 0 0;max-width:54ch;
   border-left:2px solid var(--blood);padding-left:14px;color:var(--bone);
+}
+.say-label + .instruction{
+  margin-top:0;font-family:var(--serif);font-size:17px;line-height:1.5;
 }
 
 .clockbar{display:flex;align-items:center;gap:18px;margin:22px 0 0}
