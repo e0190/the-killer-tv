@@ -33,7 +33,7 @@ function newGame() {
       dayMs: 5 * 60 * 1000,
       revealMode: 'full',   // 'full' = say the role, 'killer' = only whether they were the Killer
       tutorial: true,       // walk the table through the rules before the story
-      narration: true,
+      narration: 'all',     // 'all' | 'story' | 'none'
       sfx: true,
       voiceName: '',
     },
