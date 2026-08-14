@@ -111,12 +111,12 @@ whatever it became. The dead still win — Hunters especially.
 
 **It already talks.** All **64 lines** are generated and committed in `/audio`, so the
 game narrates itself out of the box — no key, no account, nothing to install. There
-are never any more than 72, because **no player names are ever spoken**.
+are never any more than 64, because **no player names are ever spoken**.
 
 The catch: the committed pack was built from the Windows speech engine and is
 **American**. Deep and slow, but not British. Swapping it is the biggest single
 upgrade going — see **[AUDIO.md](AUDIO.md)** for the three ways to do it, the
-quickest being to drag your own 72 files onto the banner on the setup page.
+quickest being to drag your own 64 files onto the banner on the setup page.
 
 Four tiers, best available wins, each falling through to the next so the narrator is
 never silent:
