@@ -156,16 +156,15 @@ const SCENES = {
     <path d="M14 118h44M78 118h36M136 118h50M200 118h26"/>
   </svg>`,
 
-  /* nobody left to stop them */
+  /* nobody left to stop them: the street gone dark, the figure still standing */
   killer_win: SVG_OPEN + `
     <path d="M0 126h240"/>
-    <path d="M14 126V98l18-14 18 14v28M58 126V90l20-16 20 16v36" stroke-dasharray="5 7"/>
-    <path d="M144 126V90l20-16 20 16v36M192 126V98l18-14 18 14v28" stroke-dasharray="5 7"/>
-    <circle cx="120" cy="34" r="15" fill="currentColor" stroke="none"/>
-    <path fill="currentColor" stroke="none" d="M120 51c-13 0-22 6-26 15l-10 60h72l-10-60c-4-9-13-15-26-15Z"/>
-    <path fill="currentColor" stroke="none" d="M94 68 82 110l8 3 12-43Z"/>
-    <path fill="currentColor" stroke="none" d="M146 68l12 42-8 3-12-43Z"/>
-    <path fill="currentColor" stroke="none" d="M150 110h8l3 22-7 6-4-6Z"/>
+    <path d="M10 126V98l17-14 17 14v28M52 126V92l19-15 19 15v34" stroke-dasharray="5 7"/>
+    <path d="M152 126V92l19-15 19 15v34M196 126V98l17-14 17 14v28" stroke-dasharray="5 7"/>
+    <circle cx="104" cy="30" r="15" fill="currentColor" stroke="none"/>
+    <path fill="currentColor" stroke="none" d="M104 47c-14 0-24 7-27 17l-11 62h76l-11-62c-3-10-13-17-27-17Z"/>
+    <path fill="currentColor" stroke="none" d="M130 70l28-7 2 9-29 7Z"/>
+    <path fill="currentColor" stroke="none" d="M166 62h10v46l-5 16-5-16Z"/>
   </svg>`,
 
   /* the lights come back on */
