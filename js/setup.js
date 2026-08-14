@@ -53,6 +53,16 @@ const Setup = (function () {
       });
     });
 
+    document.querySelectorAll('[data-narration]').forEach((b) => {
+      b.addEventListener('click', () => {
+        narration = b.dataset.narration;
+        document.querySelectorAll('[data-narration]').forEach((x) =>
+          x.setAttribute('aria-checked', String(x.dataset.narration === narration)));
+        Sound.play('blip');
+        renderVoice();
+      });
+    });
+
     $('optVoiceName').addEventListener('change', () => {
       Narrator.setVoice($('optVoiceName').value);
       preview();
