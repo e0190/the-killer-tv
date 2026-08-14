@@ -21,7 +21,7 @@ const TV = (function () {
     document.body.dataset.view = 'tv';
     Narrator.warm();
 
-    Link.start('tv', (up) => { $('tvRound').style.opacity = up ? '1' : '.4'; });
+    Link.start('tv', (up) => { $('tvHint').classList.toggle('offline', !up); });
 
     Bus.on((msg) => {
       if (msg.type === 'state') apply(msg.payload);
