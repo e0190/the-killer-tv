@@ -150,6 +150,8 @@ const Narrator = (function () {
   let cloudBackend = '';
   let current = null;
   let packIds = [];        // line ids dropped into the browser
+  let shipped = 0;         // line ids shipped in /audio, per the manifest
+  let shippedVoice = '';
   let seq = 0;             // bumps on every shush; stale callbacks check it
   let queue = [];          // lines still to speak in this run
 
