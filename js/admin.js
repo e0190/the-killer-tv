@@ -301,8 +301,13 @@ const Admin = (function () {
         else S.phase = 'nightfall';
         break;
       }
+      case 'tutorial':
+        if (S.tutorialIndex > 0) S.tutorialIndex--;
+        else return;
+        break;
       case 'opening':
         if (S.prologueIndex > 0) S.prologueIndex--;
+        else if (S.settings.tutorial) { S.phase = 'tutorial'; S.tutorialIndex = TUTORIAL.length - 1; }
         else return;
         break;
       case 'nightfall':
