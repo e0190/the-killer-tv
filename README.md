@@ -109,7 +109,7 @@ whatever it became. The dead still win — Hunters especially.
 
 ## The narrator
 
-**It already talks.** All **72 lines** are generated and committed in `/audio`, so the
+**It already talks.** All **64 lines** are generated and committed in `/audio`, so the
 game narrates itself out of the box — no key, no account, nothing to install. There
 are never any more than 72, because **no player names are ever spoken**.
 

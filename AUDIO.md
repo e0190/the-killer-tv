@@ -9,7 +9,7 @@ replace it.
 
 Generated with `tools/generate-audio-sapi.ps1` from the speech engine built into
 Windows, pitched down and slowed by ffmpeg so it reads as a narrator rather than
-a sat-nav. 72 clips, about five minutes of audio, 2.5 MB.
+a sat-nav. 64 clips, about five minutes of audio, 2.5 MB.
 
 The flaw: **it is American**. The only voices on the machine that built it were
 Microsoft David and Zira, both en-US. It is deep and it is measured, but it is
@@ -20,10 +20,10 @@ upgrade available, and there are three ways to do it.
 
 Easiest, and it doesn't touch the repo.
 
-1. Record or generate the 72 files. Name each after its line id — `tut_killer.mp3`,
+1. Record or generate the 64 files. Name each after its line id — `tut_killer.mp3`,
    `opening_doors.mp3`, `call_killer.mp3` — exactly as listed below.
 2. Open the site. There's a banner at the top of the setup page.
-3. Hit **replace it**, then drag all 72 onto the drop zone in one go.
+3. Hit **replace it**, then drag all 64 onto the drop zone in one go.
 
 They're matched by filename, stored in this browser, and take priority over the
 committed pack. Messy filenames are fine: `03 Call_Killer.MP3` still lands on
@@ -118,19 +118,6 @@ Resist the urge to perform them. They're short on purpose; let them land flat.
 | `night_first.mp3` | Lights out. Everybody close your eyes. |
 | `night_again.mp3` | Another night. Close your eyes. |
 | `sleep.mp3` | Close your eyes. |
-
-### Atmosphere - first night only
-
-| file | what it says |
-| --- | --- |
-| `story_doppelganger.mp3` | Something learns the shape of a face. |
-| `story_minion.mp3` | Somebody is watching, and taking notes. |
-| `story_mason.mp3` | Two people meet in the dark. They already trust each other. |
-| `story_seer.mp3` | A candle. One name. A long look. |
-| `story_robber.mp3` | A door opens that was locked. |
-| `story_troublemaker.mp3` | Two coats change pegs. Nobody is told. |
-| `story_insomniac.mp3` | One window never goes dark. |
-| `story_killer.mp3` | Somebody in this room stops pretending. |
 
 ### Calls - every night
 
