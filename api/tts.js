@@ -35,7 +35,7 @@ const BACKEND = (process.env.TTS_BACKEND || 'auto').toLowerCase();
 const RATE = Number(process.env.TTS_RATE || 0.88);
 const PITCH = Number(process.env.TTS_PITCH || -4.0);
 
-const GEMINI_MODEL = process.env.TTS_MODEL || 'gemini-2.5-flash-preview-tts';
+const GEMINI_MODEL = process.env.TTS_MODEL || 'gemini-3.1-flash-tts-preview';
 const GEMINI_VOICE = process.env.TTS_VOICE || 'Charon';
 const CLOUD_VOICE = process.env.TTS_VOICE || 'en-GB-Chirp3-HD-Charon';
 const STYLE = process.env.TTS_STYLE ||
