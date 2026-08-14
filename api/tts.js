@@ -27,8 +27,10 @@
  */
 
 /* Vercel stores the value verbatim, so a key pasted with surrounding quotes or a
-   stray newline arrives with them attached and Google rejects it as invalid. */
-const KEY = (process.env.GOOGLE_TTS_KEY || '').trim().replace(/^["']|["']$/g, '');
+   stray newline arrives with them attached and Google rejects it as invalid.
+   GEMINI_API_KEY is what Google's own samples call it, so accept either name. */
+const KEY = (process.env.GOOGLE_TTS_KEY || process.env.GEMINI_API_KEY || '')
+  .trim().replace(/^["']|["']$/g, '');
 const BACKEND = (process.env.TTS_BACKEND || 'auto').toLowerCase();
 const RATE = Number(process.env.TTS_RATE || 0.88);
 const PITCH = Number(process.env.TTS_PITCH || -4.0);
