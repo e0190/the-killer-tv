@@ -503,7 +503,9 @@ const Admin = (function () {
     const holders = aliveWith(S, b.role);
     $('admKicker').textContent = 'night ' + roman(S.round) + ' · ' + (S.beatIndex + 1) + ' of ' + S.nightBeats.length;
     $('admTitle').textContent = ROLES[b.role].name;
-    if (S.round === 1) $('admStory').textContent = b.story;
+    /* With the narrator set to story-only or silent, this text is the script —
+       the moderator reads it out themselves, so it's marked as such. */
+    $('admSayLabel').hidden = false;
     $('admCall').textContent = b.call +
       (b.notes ? ' ' + b.notes.map((n) => LINES[n]).join(' ') : '');
 
