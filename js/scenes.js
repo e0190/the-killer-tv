@@ -133,12 +133,12 @@ const SCENES = {
     <path d="M74 40 52 30M74 68H48M74 96l-22 10" stroke-dasharray="5 7"/>
   </svg>`,
 
-  /* the rope */
+  /* the rope. Three coils read as a knot; a triangle reads as an arrowhead. */
   vote: SVG_OPEN + `
-    <path stroke-width="4" d="M120 4v44"/>
-    <path fill="currentColor" stroke="none" d="M110 48h20l-4 14h-12Z"/>
-    <ellipse cx="120" cy="92" rx="24" ry="32" stroke-width="4"/>
-    <path d="M28 8h184" stroke-width="4"/>
+    <path stroke-width="4" d="M28 10h184"/>
+    <path stroke-width="4" d="M120 10v40"/>
+    <path stroke-width="3" d="M109 55h22M109 63h22M109 71h22"/>
+    <ellipse cx="120" cy="102" rx="24" ry="28" stroke-width="4"/>
   </svg>`,
 
   /* one shot left */
