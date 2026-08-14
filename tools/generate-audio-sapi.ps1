@@ -84,7 +84,9 @@ $present = @($lines.PSObject.Properties.Name | Where-Object { Test-Path (Join-Pa
   lines   = $present
 } | ConvertTo-Json -Depth 3 | Set-Content (Join-Path $out 'manifest.json') -Encoding utf8
 
-$total = $lines.PSObject.Properties.Count
+# wrap in @() first: .Count on a PSObject property collection maps over the
+# members instead of counting them, and you get a row of 1s
+$total = @($lines.PSObject.Properties).Count
 Write-Host ""
 Write-Host "$made written, $skipped already there, $failed failed"
 Write-Host "manifest lists $($present.Count) of $total lines"
