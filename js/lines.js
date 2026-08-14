@@ -117,5 +117,5 @@ const LINE_IDS = Object.keys(LINES);
    what to do. Some tables want the second half read out, some find it nannying
    once they know the game, so the two are separable. */
 function isStoryLine(id) {
-  return /^(opening_|story_)/.test(id);
+  return /^opening_/.test(id);
 }
