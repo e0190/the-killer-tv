@@ -1,79 +1,115 @@
 # The narration pack
 
-The narrator reads the whole game aloud. There are **62 lines**, and that is the
-complete and final list. Two rules keep it that way:
+**The pack is already built and committed.** All 72 lines are in `/audio` and
+deploy with the site, so the game talks out of the box with no key, no account
+and nothing to install. You only need the rest of this page if you want to
+replace it.
 
-**Every line is short.** Average six words, longest eleven. Nobody at a party
-wants to sit through a paragraph, so the story is told across many small beats
-instead of a few long ones.
+## What's in there now, and its one flaw
 
-**No player names, ever.** That is what keeps the pack finite. When somebody dies
-the voice says "there is a body in the square" and the TV puts the name on screen
-in letters a foot high. Do these once, never again.
+Generated with `tools/generate-audio-sapi.ps1` from the speech engine built into
+Windows, pitched down and slowed by ffmpeg so it reads as a narrator rather than
+a sat-nav. 72 clips, about five minutes of audio, 2.5 MB.
 
-## The easy way: drop them into the setup page
+The flaw: **it is American**. The only voices on the machine that built it were
+Microsoft David and Zira, both en-US. It is deep and it is measured, but it is
+not the British narrator this game wants. Replacing it is the single biggest
+upgrade available, and there are three ways to do it.
 
-You don't have to touch the repo at all.
+## 1. Drop your own recordings into the setup page
 
-1. Generate or record the 62 files. Name each one after its line id —
-   `opening_road.mp3`, `call_killer.mp3`, and so on, exactly as listed below.
+Easiest, and it doesn't touch the repo.
+
+1. Record or generate the 72 files. Name each after its line id — `tut_killer.mp3`,
+   `opening_doors.mp3`, `call_killer.mp3` — exactly as listed below.
 2. Open the site. There's a banner at the top of the setup page.
-3. Hit **install them**, then drag all 62 files onto the drop zone in one go.
+3. Hit **replace it**, then drag all 72 onto the drop zone in one go.
 
-They're matched by filename, stored in this browser, and they stay there — you
-only do it once per machine. The TV window reads the same store, so both halves
-get them. Messy filenames are tolerated: `03 Call_Killer.MP3` still lands on
-`call_killer`.
+They're matched by filename, stored in this browser, and take priority over the
+committed pack. Messy filenames are fine: `03 Call_Killer.MP3` still lands on
+`call_killer`. Anything you skip keeps using the shipped clip, so you can replace
+them a handful at a time.
 
-Anything you skip falls back to the generated voice, then the browser voice, so a
-half-finished pack plays fine. **copy the script** on that panel puts the whole
-list on your clipboard as `filename<tab>text`, ready to paste into whatever you're
-generating with.
+**copy the script** on that panel puts the whole list on your clipboard as
+`filename<tab>text`, ready to paste into whatever you're generating with.
 
-## The other way: commit them
-
-Put the MP3s in `/audio` in the repo and push. They deploy with the site and work
-for everyone, not just your browser. Then run this so the app stops probing:
+## 2. Rebuild the committed pack on Windows
 
 ```bash
-node tools/generate-audio.js --manifest-only
+node -e "const fs=require('fs');const s={};new Function('x',fs.readFileSync('js/lines.js','utf8').replace(/^const LINES/m,'x.LINES').replace(/^const LINE_IDS[\s\S]*$/m,''))(s);fs.writeFileSync('audio/_lines.json',JSON.stringify(s.LINES,null,1))"
 ```
 
-## Or have Google generate the lot
+```bash
+powershell -ExecutionPolicy Bypass -File tools/generate-audio-sapi.ps1 -Force
+```
+
+The first command exports the script from `js/lines.js`; the second speaks it.
+Flags: `-Voice 'Microsoft Zira Desktop'`, `-Rate -4` (slower), `-Pitch 0.8`
+(deeper), `-Only tut_killer,day`, `-Force`.
+
+**To get a British voice**, install one first: Settings, Time and Language,
+Speech, Manage voices, add English (United Kingdom). Then pass it with `-Voice`.
+
+## 3. Have Google generate it
 
 ```bash
 node tools/generate-audio.js
 ```
 
-Needs `GOOGLE_TTS_KEY`. Writes all 62 MP3s into `/audio`, skips any that already
-exist, rewrites the manifest. Flags: `--force`, `--voice`, `--rate`, `--pitch`,
-`--only a,b,c`.
+Needs `GOOGLE_TTS_KEY`. Writes MP3s into `/audio` and rewrites the manifest.
+See the README for which kind of Google key you need — there are two and they
+are not interchangeable.
 
-## Direction, if you're recording or prompting these
+## The manifest
+
+`audio/manifest.json` lists which line ids actually exist and what format they
+are in. The app reads it so it never has to probe. Regenerate it after adding
+files by hand:
+
+```bash
+node tools/generate-audio.js --manifest-only
+```
+
+## Direction, if you're recording these yourself
 
 Deep, unhurried, quiet — somebody telling you something grim they've told a
-hundred times before. Not a whisper, not a shout, no relish. British. Leave about
-half a second of silence at the top and tail of every file so the cuts don't clip.
+hundred times before. Not a whisper, not a shout, no relish. Leave about half a
+second of silence at the top and tail so the cuts don't clip.
 
 Resist the urge to perform them. They're short on purpose; let them land flat.
 
 ## The lines
 
-### The prologue — eleven short beats before the first night
+### The tutorial - how to play, ten screens
 
 | file | what it says |
 | --- | --- |
-| `opening_road.mp3` | One road in. It closes when the snow does. |
-| `opening_shut.mp3` | It has been shut for nine days. |
-| `opening_dog.mp3` | First it was a dog. Then the whole Aldritch herd. |
-| `opening_lamps.mp3` | Three nights of men sitting up with lamps. They saw nothing. |
-| `opening_marta.mp3` | Then it was Marta, at the well. |
-| `opening_quiet.mp3` | Forty feet from her own door, and nobody heard her. |
-| `opening_tracks.mp3` | Tracks went down to the well. None came back. |
-| `opening_inside.mp3` | So it never left. It is in this room. |
-| `opening_rules.mp3` | Every night you close your eyes. Every morning you count. |
-| `opening_rope.mp3` | Then you hang one of your own, and hope. |
-| `opening_tonight.mp3` | Nobody is coming. Close your eyes. |
+| `tut_killer.mp3` | Somebody at this table is the Killer. |
+| `tut_secret.mp3` | Only you know what you are. Keep it that way. |
+| `tut_night.mp3` | When the television says so, everybody closes their eyes. |
+| `tut_called.mp3` | Roles are called one at a time. Wake only on yours. |
+| `tut_choice.mp3` | The Killer is called last, and picks somebody. |
+| `tut_morning.mp3` | By morning that person is dead, and you all find out. |
+| `tut_day.mp3` | Then you argue about who did it. |
+| `tut_vote.mp3` | Then everybody points at once. Most votes hangs. |
+| `tut_win.mp3` | Hang the Killer and the town lives. Otherwise it does not. |
+| `tut_remote.mp3` | Whoever holds the remote sees everything. Never look at it. |
+
+### The prologue - eleven short beats before the first night
+
+| file | what it says |
+| --- | --- |
+| `opening_doors.mp3` | Nobody in this town locks their doors. Never had to. |
+| `opening_ellis.mp3` | Ellis Kane didn't come in from the yard on Tuesday. |
+| `opening_found.mp3` | They found him Thursday. Some of him. |
+| `opening_more.mp3` | Then Sarah Vance. Then the Pryor boy. |
+| `opening_inside.mp3` | Every one of them died inside their own house. |
+| `opening_bolted.mp3` | And every door was still bolted from the inside. |
+| `opening_forced.mp3` | No broken window. No forced lock. Nothing. |
+| `opening_opened.mp3` | Which means they opened the door themselves. |
+| `opening_smiled.mp3` | They knew the face on the step. They smiled at it. |
+| `opening_left.mp3` | There is nobody left in this town but you. |
+| `opening_tonight.mp3` | One of you does it again tonight. Close your eyes. |
 
 ### Nightfall
 
@@ -83,7 +119,7 @@ Resist the urge to perform them. They're short on purpose; let them land flat.
 | `night_again.mp3` | Another night. Close your eyes. |
 | `sleep.mp3` | Close your eyes. |
 
-### Atmosphere — first night only
+### Atmosphere - first night only
 
 | file | what it says |
 | --- | --- |
@@ -96,7 +132,7 @@ Resist the urge to perform them. They're short on purpose; let them land flat.
 | `story_insomniac.mp3` | One window never goes dark. |
 | `story_killer.mp3` | Somebody in this room stops pretending. |
 
-### Calls — every night
+### Calls - every night
 
 | file | what it says |
 | --- | --- |
@@ -109,7 +145,7 @@ Resist the urge to perform them. They're short on purpose; let them land flat.
 | `call_insomniac.mp3` | Insomniac, wake. Look at what you are. |
 | `call_killer.mp3` | Killer, wake. Choose who dies tonight. |
 
-### The Doppelgänger’s rules — said straight after its call
+### The Doppelganger rules - said straight after its call
 
 | file | what it says |
 | --- | --- |
