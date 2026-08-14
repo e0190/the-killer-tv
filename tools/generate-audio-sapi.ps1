@@ -1,4 +1,4 @@
-# the killer tv — build the narration pack on Windows, with no API key.
+# the killer tv - build the narration pack on Windows, with no API key.
 #
 #   powershell -ExecutionPolicy Bypass -File tools\generate-audio-sapi.ps1
 #
@@ -6,13 +6,17 @@
 # pitch and warm it up, because the stock voices are thin and far too chirpy for
 # a narrator. Writes audio/<id>.mp3 and rewrites audio/manifest.json.
 #
-# Voices are whatever Windows has installed. That is usually en-US only; add an
-# en-GB voice under Settings > Time & Language > Speech if you want British.
+# Voices are whatever Windows has installed, usually en-US only. Add an en-GB
+# voice under Settings, Time and Language, Speech if you want British.
+#
+# Keep this file ASCII only and saved with a BOM. PowerShell 5.1 reads a
+# BOM-less file as ANSI and mangles any non-ASCII character in it, which shows
+# up as a baffling parse error hundreds of lines from the real cause.
 
 param(
   [string]$Voice   = 'Microsoft David Desktop',
   [int]   $Rate    = -2,      # SAPI rate, -10..10. Slower reads as more deliberate.
-  [double]$Pitch   = 0.86,    # <1 deepens. Applied by ffmpeg, not SAPI.
+  [double]$Pitch   = 0.86,    # below 1 deepens. Applied by ffmpeg, not SAPI.
   [string]$Only    = '',      # comma separated line ids
   [switch]$Force
 )
@@ -63,7 +67,7 @@ foreach ($p in $lines.PSObject.Properties) {
     Write-Host ("  ok  {0,-22} {1,4} kB" -f $id, $kb)
     $made++
   } catch {
-    Write-Warning "  $id — $_"
+    Write-Warning "  $id : $_"
     $failed++
   } finally {
     if (Test-Path $wav) { Remove-Item $wav -Force }
@@ -80,6 +84,7 @@ $present = @($lines.PSObject.Properties.Name | Where-Object { Test-Path (Join-Pa
   lines   = $present
 } | ConvertTo-Json -Depth 3 | Set-Content (Join-Path $out 'manifest.json') -Encoding utf8
 
+$total = $lines.PSObject.Properties.Count
 Write-Host ""
 Write-Host "$made written, $skipped already there, $failed failed"
-Write-Host ("manifest lists {0} of {1} lines" -f $present.Count, $lines.PSObject.Properties.Count)
+Write-Host "manifest lists $($present.Count) of $total lines"
