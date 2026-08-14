@@ -182,12 +182,13 @@ const TV = (function () {
 
   /* ---------- render ---------- */
 
-  /* Everything from waking up to the hanging is daylight. */
-  const DAY_PHASES = ['wake', 'dawn', 'hunter', 'day', 'vote', 'tally', 'lynch'];
+  /* Everything from waking up to the hanging is daylight. Both countdowns sit
+     inside that stretch — one after everyone opens their eyes, one after the
+     vote — so they stay light too, or the screen flickers dark and back mid-beat. */
+  const DAY_PHASES = ['wake', 'suspense', 'dawn', 'hunter', 'day', 'vote', 'tally', 'lynch'];
 
   function isDaylight() {
     if (!S) return false;
-    if (S.phase === 'suspense') return S.suspenseNext === 'lynch';
     if (S.phase === 'over') return S.result && S.result.team === 'village';
     return DAY_PHASES.indexOf(S.phase) !== -1;
   }
