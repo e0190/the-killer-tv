@@ -63,7 +63,8 @@ const TV = (function () {
   function apply(state, quiet) {
     S = state;
     Sound.setEnabled(!!S.settings.sfx);
-    Narrator.setEnabled(!!S.settings.narration);
+    Narrator.setEnabled(S.settings.narration !== 'none' && S.settings.narration !== false);
+    Narrator.setMode(S.settings.narration);
     Narrator.setVoice(S.settings.voiceName || '');
 
     const key = [S.phase, S.round, S.beatIndex, S.prologueIndex, S.tutorialIndex,
