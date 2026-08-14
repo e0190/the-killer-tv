@@ -367,8 +367,20 @@ const Narrator = (function () {
   function status() {
     const total = LINE_IDS.length;
     const have = packIds.length;
-    if (have >= total) return { tier: 'pack', have: have, total: total, detail: 'Your own pack — all ' + total + ' lines installed.' };
-    if (have > 0) return { tier: 'pack', have: have, total: total, detail: 'Your own pack — ' + have + ' of ' + total + ' lines. The rest fall back.' };
+    if (have >= total) return { tier: 'pack', have: have, total: total, detail: 'Your own recordings — all ' + total + ' lines.' };
+    if (have > 0) {
+      return {
+        tier: 'pack', have: have, total: total,
+        detail: 'Your own recordings for ' + have + ' of ' + total + ' lines. The rest use ' +
+          (shipped ? 'the pack that ships with the site.' : 'a fallback voice.'),
+      };
+    }
+    if (shipped >= total) {
+      return { tier: 'files', have: shipped, total: total, detail: 'The pack that ships with the site, all ' + total + ' lines' + (shippedVoice ? ' (' + shippedVoice + ')' : '') + '.' };
+    }
+    if (shipped > 0) {
+      return { tier: 'files', have: shipped, total: total, detail: shipped + ' of ' + total + ' lines ship with the site. The rest fall back.' };
+    }
     if (cloudReady) return { tier: 'cloud', have: 0, total: total, detail: 'Generated voice' + (cloudBackend ? ' (' + cloudBackend + ')' : '') + '. Drop your own files in to replace it.' };
     const v = voice;
     return {
