@@ -224,6 +224,19 @@ const Narrator = (function () {
 
   const TIERS = ['pack', 'file', 'cloud', 'voice'];
 
+  /* 'all' reads everything, 'story' reads only the prologue and atmosphere,
+     'none' keeps its mouth shut and leaves you the sound effects. */
+  function setMode(m) {
+    mode = m === true ? 'all' : m === false ? 'none' : (m || 'all');
+    if (mode === 'none') shush();
+  }
+
+  function allowed(id) {
+    if (mode === 'none') return false;
+    if (mode === 'story') return isStoryLine(id);
+    return true;
+  }
+
   function say(id) { sayAll([id]); }
 
   /* Several lines back to back, each starting when the one before it finishes.
