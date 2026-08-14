@@ -1,4 +1,4 @@
-# the killer tv - build the narration pack on Windows, with no API key.
+﻿# the killer tv - build the narration pack on Windows, with no API key.
 #
 #   powershell -ExecutionPolicy Bypass -File tools\generate-audio-sapi.ps1
 #
