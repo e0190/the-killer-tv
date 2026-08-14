@@ -625,6 +625,15 @@ const Admin = (function () {
     boot(fresh, !tvWindow || tvWindow.closed);
   }
 
+  /* A get-out for the run-up screens, so a table that already knows the rules
+     isn't tapping through twenty of them. */
+  function showSkip(label, fn) {
+    const b = $('admSkip');
+    b.hidden = false;
+    b.textContent = label;
+    b.onclick = fn;
+  }
+
   function showPicker(label, ids, chosen, limit, onChange) {
     const box = $('admPicker');
     box.hidden = false;
