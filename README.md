@@ -54,21 +54,21 @@ enter the whole cast at setup, and the app runs the rest.
 
 1. **The tutorial.** Ten screens explaining the game to people who've never played it.
    Skippable from the remote, or switch it off in the house rules.
-1. **The prologue.** Eleven beats of story: a town where nobody locks up, three people
+2. **The prologue.** Eleven beats of story: a town where nobody locks up, three people
    dead inside their own bolted houses, and no sign of a forced door. Which leaves
    exactly one explanation, and the table usually gets there a beat before the TV does.
-1. **Night.** The TV calls each role in turn. **There is no night clock** — you tap
+3. **Night.** The TV calls each role in turn. **There is no night clock** — you tap
    through at the table's pace. Every role acts **every night** — bar the Doppelgänger,
    who only ever goes once — so nobody's role is safe for long. **The Killer goes
    last**, and nobody dies until morning.
-2. **Wake up.** Everyone opens their eyes, then the TV counts **three, two, one**
+4. **Wake up.** Everyone opens their eyes, then the TV counts **three, two, one**
    before it shows who didn't make it — name in letters a foot high, and what they
    were, or just whether they were the Killer, your call.
-3. **Day.** A timer runs on the TV while the village argues.
-4. **The vote.** The TV counts down, everyone points, *then* the tally sheet appears
+5. **Day.** A timer runs on the TV while the village argues.
+6. **The vote.** The TV counts down, everyone points, *then* the tally sheet appears
    on the remote. Most votes hangs, after another three-count. **A tie sends it back
    for a revote** — twice, and if they still can't agree, nobody hangs.
-5. Repeat until it's over.
+7. Repeat until it's over.
 
 The Killer waking **last** is what keeps the morning honest: nothing acts after
 them, so the victim's role is settled the instant it's chosen and cannot be swapped
