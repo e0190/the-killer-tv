@@ -355,15 +355,6 @@ const TV = (function () {
     });
   }
 
-  function renderRoster() {
-    const winners = S.result ? S.result.winners : [];
-    $('tvRoster').innerHTML = S.players.map((p) => {
-      const cls = [p.alive ? '' : 'dead', winners.indexOf(p.id) !== -1 ? 'won' : ''].join(' ').trim();
-      const suffix = (S.phase === 'over') ? ' · ' + ROLES[p.role].name : '';
-      return '<li class="' + cls + '">' + esc(p.name) + suffix + '</li>';
-    }).join('');
-  }
-
   function esc(s) {
     return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   }
