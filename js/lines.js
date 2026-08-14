@@ -118,3 +118,11 @@ const LINES = {
 };
 
 const LINE_IDS = Object.keys(LINES);
+
+/* The prologue and the first-night atmosphere are the story. Everything else —
+   role calls, the tutorial, verdicts, results — is the narrator telling people
+   what to do. Some tables want the second half read out, some find it nannying
+   once they know the game, so the two are separable. */
+function isStoryLine(id) {
+  return /^(opening_|story_)/.test(id);
+}
