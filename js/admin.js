@@ -663,7 +663,7 @@ const Admin = (function () {
       const targets = living.filter((t) => t.id !== p.id).map((t) =>
         '<button type="button" data-voter="' + p.id + '" data-target="' + t.id + '" aria-pressed="' +
         (S.votes[p.id] === t.id) + '">' + esc(t.name) + '</button>').join('');
-      return '<div class="vote-row' + (S.votes[p.id] ? ' done' : '') + '"><b>' + esc(p.name) +
+      return '<div class="vote-row' + (S.votes[p.id] ? ' done' : ' missing') + '"><b>' + esc(p.name) +
         '</b><div class="vote-targets">' + targets + '</div></div>';
     }).join('');
     box.querySelectorAll('button').forEach((b) => {
@@ -672,9 +672,23 @@ const Admin = (function () {
         Sound.play('blip');
         push();
         renderVotes();
-        $('admNext').disabled = !votesIn();
       });
     });
+    voteProgress();
+  }
+
+  /* Everyone has to be accounted for before the rope comes out. Say who's
+     missing rather than just greying the button out and leaving them to guess. */
+  function voteProgress() {
+    const living = alive(S);
+    const short = living.filter((p) => !S.votes[p.id]);
+    const done = living.length - short.length;
+    $('admNext').disabled = short.length > 0;
+    $('admNext').textContent = short.length ? short.length + ' still to record' : 'lock it in';
+    $('admCall').textContent = short.length
+      ? done + ' of ' + living.length + ' recorded. Still waiting on ' +
+        short.slice(0, 4).map((p) => p.name).join(', ') + (short.length > 4 ? ' and others' : '') + '.'
+      : 'All ' + living.length + ' recorded. Lock it in.';
   }
 
   function renderRoster() {
