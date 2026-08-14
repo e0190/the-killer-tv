@@ -186,7 +186,7 @@ api/tts.js          Google Cloud TTS proxy — keeps the key off the client
 tools/generate-audio.js       builds the pack via Google Cloud TTS
 tools/generate-audio-gemini.js builds the pack via Gemini TTS
 tools/generate-audio-sapi.ps1 builds the pack from the Windows speech engine
-audio/                        the committed narration, 72 clips
+audio/                        the committed narration, 64 clips
 ```
 
 The remote is the single source of truth and broadcasts the whole state on every

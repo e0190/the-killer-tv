@@ -1,6 +1,6 @@
 # The narration pack
 
-**The pack is already built and committed.** All 72 lines are in `/audio` and
+**The pack is already built and committed.** All 64 lines are in `/audio` and
 deploy with the site, so the game talks out of the box with no key, no account
 and nothing to install. You only need the rest of this page if you want to
 replace it.
