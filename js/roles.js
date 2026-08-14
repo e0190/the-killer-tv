@@ -127,20 +127,34 @@ const NIGHT_ORDER = [
 const NIGHT_BY_ID = {};
 NIGHT_ORDER.forEach((b) => { NIGHT_BY_ID[b.id] = b; });
 
-/* The prologue. Tapped through one beat at a time before the first night, so
-   the table gets the situation before anybody has to lie about it. */
+/* How to play, before any of the atmosphere. Skippable once the table knows it. */
+const TUTORIAL = [
+  { id: 'tut_killer',  title: 'One of you',       scene: 'killer' },
+  { id: 'tut_secret',  title: 'Your role',        scene: 'mask' },
+  { id: 'tut_night',   title: 'The night',        scene: 'night' },
+  { id: 'tut_called',  title: 'Being called',     scene: 'lamp' },
+  { id: 'tut_choice',  title: 'The choice',       scene: 'killer' },
+  { id: 'tut_morning', title: 'The morning',      scene: 'body' },
+  { id: 'tut_day',     title: 'The day',          scene: 'dawn' },
+  { id: 'tut_vote',    title: 'The vote',         scene: 'vote' },
+  { id: 'tut_win',     title: 'Winning',          scene: 'village_win' },
+  { id: 'tut_remote',  title: 'The remote',       scene: 'eye' },
+];
+
+/* The prologue. A locked-room problem that only has one answer, told one beat
+   at a time so the table arrives at it a step ahead of the narrator. */
 const PROLOGUE = [
-  { id: 'opening_road',    title: 'One road in',        scene: 'village' },
-  { id: 'opening_shut',    title: 'Nine days',          scene: 'village' },
-  { id: 'opening_dog',     title: 'First the animals',  scene: 'door' },
-  { id: 'opening_lamps',   title: 'Three nights',       scene: 'door' },
-  { id: 'opening_marta',   title: 'Then Marta',         scene: 'body' },
-  { id: 'opening_quiet',   title: 'Nobody heard',       scene: 'body' },
-  { id: 'opening_tracks',  title: 'The tracks',         scene: 'mask' },
-  { id: 'opening_inside',  title: 'It never left',      scene: 'mask' },
-  { id: 'opening_rules',   title: 'How this goes',      scene: 'vote' },
-  { id: 'opening_rope',    title: 'And then the rope',  scene: 'vote' },
-  { id: 'opening_tonight', title: 'Tonight',            scene: 'night' },
+  { id: 'opening_doors',   title: 'Nobody locks up',      scene: 'village' },
+  { id: 'opening_ellis',   title: 'Ellis Kane',           scene: 'door' },
+  { id: 'opening_found',   title: 'Thursday',             scene: 'body' },
+  { id: 'opening_more',    title: 'And then more',        scene: 'body' },
+  { id: 'opening_inside',  title: 'All of them indoors',  scene: 'village' },
+  { id: 'opening_bolted',  title: 'Bolted from inside',   scene: 'door' },
+  { id: 'opening_forced',  title: 'Nothing forced',       scene: 'door' },
+  { id: 'opening_opened',  title: 'So they opened it',    scene: 'door' },
+  { id: 'opening_smiled',  title: 'They smiled at it',    scene: 'mask' },
+  { id: 'opening_left',    title: "What's left",          scene: 'village' },
+  { id: 'opening_tonight', title: 'Tonight',              scene: 'night' },
 ];
 
 /* Suggested casts, by head count. Every player holds exactly one role —
