@@ -314,7 +314,7 @@ const Setup = (function () {
     }));
     state.settings.dayMs = Number($('optDay').value);
     state.settings.revealMode = reveal;
-    state.settings.narration = $('optVoice').checked;
+    state.settings.narration = narration;
     state.settings.sfx = $('optSfx').checked;
     state.settings.voiceName = $('optVoiceName').value;
     state.settings.tutorial = $('optTutorial').checked;
