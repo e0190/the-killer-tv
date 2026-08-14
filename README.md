@@ -192,6 +192,17 @@ audio/                        the committed narration, 72 clips
 The remote is the single source of truth and broadcasts the whole state on every
 change. Timers ship as an absolute `endsAt` so both screens count down in step.
 
+### The narrator's three modes
+
+Set in the house rules, and it only changes what is **spoken** — every word stays
+on screen regardless.
+
+| Mode | What you hear |
+| --- | --- |
+| **everything** | The story, the role calls, the verdicts. |
+| **story only** | Just the prologue and the first-night atmosphere. You call the roles yourself, like a proper moderator. |
+| **silent** | Nothing spoken at all. Sound effects still play unless you turn those off too. |
+
 ### Keyboard
 
 | | |
