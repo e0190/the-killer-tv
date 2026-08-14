@@ -245,7 +245,7 @@ const Narrator = (function () {
   function sayAll(ids) {
     if (!enabled) return;
     shush();
-    queue = (ids || []).filter(Boolean);
+    queue = (ids || []).filter(Boolean).filter(allowed);
     advance(seq);
   }
 
