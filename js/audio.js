@@ -197,6 +197,8 @@ const Narrator = (function () {
           if (!m || !Array.isArray(m.lines)) return;
           if (m.format) EXT = '.' + String(m.format).replace(/^\./, '');
           m.lines.forEach((id) => { fileState[id] = 'ok'; });
+          shipped = m.lines.length;
+          shippedVoice = m.voice || '';
         })
         .catch(() => {}),
       fetch('api/tts', { method: 'GET' })
