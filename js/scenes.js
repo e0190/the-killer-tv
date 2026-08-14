@@ -66,14 +66,14 @@ const SCENES = {
     <path d="M204 22c15 15 23 36 23 59s-8 44-23 59" stroke-dasharray="5 8"/>
   </svg>`,
 
-  /* whoever it is, standing where they shouldn't be */
+  /* whoever it is, standing where they shouldn't be. The blade sits clear of
+     the coat with daylight between them, or the two shapes merge into a blob. */
   killer: SVG_OPEN + `
-    <circle cx="120" cy="30" r="14" fill="currentColor" stroke="none"/>
-    <path fill="currentColor" stroke="none" d="M120 46c-12 0-21 5-25 14l-9 62h68l-9-62c-4-9-13-14-25-14Z"/>
-    <path fill="currentColor" stroke="none" d="M96 62 84 106l8 3 12-45Z"/>
-    <path fill="currentColor" stroke="none" d="M144 62l12 44-8 3-12-45Z"/>
-    <path fill="currentColor" stroke="none" d="M148 106h8l3 26-7 6-4-6Z"/>
-    <path d="M0 122h240"/>
+    <circle cx="104" cy="32" r="15" fill="currentColor" stroke="none"/>
+    <path fill="currentColor" stroke="none" d="M104 49c-14 0-24 7-27 17l-11 56h76l-11-56c-3-10-13-17-27-17Z"/>
+    <path fill="currentColor" stroke="none" d="M130 72l28-7 2 9-29 7Z"/>
+    <path fill="currentColor" stroke="none" d="M166 64h10v42l-5 16-5-16Z"/>
+    <path d="M0 126h240"/>
   </svg>`,
 
   /* the one who looks */
