@@ -45,9 +45,16 @@ const STYLE = process.env.TTS_STYLE ||
 /* which backend actually worked, remembered per warm instance */
 let proven = BACKEND === 'auto' ? null : BACKEND;
 
-/* ---- PCM from Gemini needs a WAV wrapper before a browser will touch it ---- */
-function toWav(pcm, sampleRate) {
-  const channels = 1, bits = 16;
+/* Gemini hands back raw PCM with the format in the mime type, e.g.
+   "audio/L16;codec=pcm;rate=24000". Nothing plays that without a header. */
+function parsePcmMime(mime) {
+  const rate = Number((/rate=(\d+)/.exec(mime || '') || [])[1] || 24000);
+  const bits = Number((/audio\/L(\d+)/.exec(mime || '') || [])[1] || 16);
+  return { rate: rate, bits: bits };
+}
+
+function toWav(pcm, sampleRate, bitsPerSample) {
+  const channels = 1, bits = bitsPerSample || 16;
   const blockAlign = channels * (bits / 8);
   const head = Buffer.alloc(44);
   head.write('RIFF', 0);
