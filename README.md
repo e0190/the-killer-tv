@@ -52,9 +52,9 @@ is what it's built for.
 There are no cards in the middle any more. Everyone holds exactly one role, you
 enter the whole cast at setup, and the app runs the rest.
 
-0. **The tutorial.** Ten screens explaining the game to people who've never played it.
+1. **The tutorial.** Ten screens explaining the game to people who've never played it.
    Skippable from the remote, or switch it off in the house rules.
-0. **The prologue.** Eleven beats of story: a town where nobody locks up, three people
+1. **The prologue.** Eleven beats of story: a town where nobody locks up, three people
    dead inside their own bolted houses, and no sign of a forced door. Which leaves
    exactly one explanation, and the table usually gets there a beat before the TV does.
 1. **Night.** The TV calls each role in turn. **There is no night clock** — you tap
