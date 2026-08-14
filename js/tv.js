@@ -328,8 +328,6 @@ const TV = (function () {
       default:
         paint({ scene: 'night', title: 'The Killer TV', prose: 'waiting for the remote' });
     }
-
-    renderRoster();
   }
 
   function renderCountdown() {
