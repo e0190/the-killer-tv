@@ -506,7 +506,7 @@ const Admin = (function () {
         showPicker('Who the Killer takes',
           alive(S).filter((p) => p.role !== 'killer').map((p) => p.id),
           b.targets, 1, (sel) => { if (sel.length) apply(b, sel); else undo(b); push(); render(); });
-        $('admNext').disabled = !b.applied;
+        gate(b);
         break;
 
       case 'look':
@@ -522,25 +522,25 @@ const Admin = (function () {
             esc(def ? def.name : '?') + '</strong>';
           box.classList.toggle('killer', S.seerAnswer.isKiller);
         }
-        $('admNext').disabled = !b.applied;
+        gate(b);
         break;
 
       case 'copy':
         showPicker('Who the Doppelgänger becomes', swappable([actor]), b.targets, 1,
           (sel) => { if (sel.length) apply(b, sel); else undo(b); push(); render(); });
-        $('admNext').disabled = !b.applied;
+        gate(b);
         break;
 
       case 'steal':
         showPicker('Who the Robber steals from', swappable([actor]), b.targets, 1,
           (sel) => { if (sel.length) apply(b, sel); else undo(b); push(); render(); });
-        $('admNext').disabled = !b.applied;
+        gate(b);
         break;
 
       case 'swap':
         showPicker('The two being swapped — pick two', swappable([actor]), b.targets, 2,
           (sel) => { if (sel.length === 2) apply(b, sel); else { undo(b); b.targets = sel; } push(); render(); });
-        $('admNext').disabled = !b.applied;
+        gate(b);
         break;
 
       case 'self': {
