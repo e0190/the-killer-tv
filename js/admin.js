@@ -333,6 +333,13 @@ const Admin = (function () {
   /* ---------- night inputs ---------- */
 
   function needsInput(b) { return b.input !== 'none' && b.input !== 'self'; }
+
+  /* A disabled Next with no explanation reads as a frozen app. Say what's wanted. */
+  function gate(b) {
+    const ready = !!b.applied;
+    $('admNext').disabled = !ready;
+    if (!ready) $('admNext').textContent = b.input === 'swap' ? 'pick two first' : 'pick someone first';
+  }
   function actorOf(b) {
     const holder = aliveWith(S, b.role)[0];
     return holder ? holder.id : null;
