@@ -289,7 +289,16 @@ const Setup = (function () {
     sel.innerHTML = opts.map((o) =>
       '<option value="' + esc(o.value) + '">' + esc(o.label) + '</option>').join('');
     if (opts.some((o) => o.value === keep)) sel.value = keep;
-    $('voiceNote').textContent = Narrator.status().detail;
+    $('voiceNote').textContent = narration === 'none'
+      ? 'Nothing is read aloud, so the voice doesn\'t matter.'
+      : Narrator.status().detail;
+    $('narrationNote').textContent = {
+      all: 'Every line: the story, the role calls, the verdicts.',
+      story: 'Only the prologue and the first-night atmosphere. You call the roles yourself.',
+      none: 'Nothing spoken. The words still appear on the TV.',
+    }[narration];
+    sel.disabled = narration === 'none';
+    $('testVoice').disabled = narration === 'none';
   }
 
   function preview() {
