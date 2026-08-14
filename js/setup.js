@@ -132,17 +132,22 @@ const Setup = (function () {
     const banner = $('packBanner');
     const st = Narrator.status();
     banner.hidden = false;
-    banner.classList.toggle('done', have.length >= total);
+    banner.classList.toggle('done', st.tier === 'pack' || st.tier === 'files');
+
     if (have.length >= total) {
-      $('packBannerTitle').textContent = 'Your narration pack is installed';
+      $('packBannerTitle').textContent = 'Your own narration is installed';
       $('packBannerSub').textContent = 'All ' + total + ' lines, stored in this browser.';
       $('packOpen').textContent = 'review';
     } else if (have.length > 0) {
-      $('packBannerTitle').textContent = have.length + ' of ' + total + ' narration files installed';
-      $('packBannerSub').textContent = 'The missing ones fall back to ' + (st.tier === 'cloud' ? 'the generated voice.' : 'the browser voice.');
+      $('packBannerTitle').textContent = have.length + ' of ' + total + ' lines are your own recordings';
+      $('packBannerSub').textContent = 'The rest use ' + st.detail.toLowerCase();
       $('packOpen').textContent = 'finish it';
+    } else if (st.tier === 'files') {
+      $('packBannerTitle').textContent = 'Narration ready';
+      $('packBannerSub').textContent = st.detail + ' Drop your own recordings in to replace it.';
+      $('packOpen').textContent = 'replace it';
     } else {
-      $('packBannerTitle').textContent = 'No narration files installed';
+      $('packBannerTitle').textContent = 'No narration files';
       $('packBannerSub').textContent = st.tier === 'cloud'
         ? 'Using the generated voice. Drop your own recordings in to replace it.'
         : 'The browser will read the game aloud. Drop your own recordings in for something better.';
