@@ -195,3 +195,33 @@ const SCENES = {
 function sceneFor(id) {
   return SCENES[id] || SCENES.night;
 }
+
+/* Every drawing is one colour, inherited from the element. At night that stays
+   near-monochrome so the screen keeps its gloom; in daylight it opens up, since
+   an off-white screen can carry real colour without glaring. */
+const SCENE_TINT = {
+  village:     { night: '#8a857c', day: '#a8702e' },
+  night:       { night: '#8f9ab5', day: '#5c6a8c' },
+  door:        { night: '#b99a3e', day: '#b8860f' },
+  body:        { night: '#a81f28', day: '#8f1a22' },
+  mask:        { night: '#9a86c4', day: '#6b4f9e' },
+  killer:      { night: '#a81f28', day: '#8f1a22' },
+  eye:         { night: '#7ee8c0', day: '#1f6f68' },
+  watcher:     { night: '#8a9ab5', day: '#4a5b7d' },
+  hands:       { night: '#7ec08a', day: '#2f6b45' },
+  key:         { night: '#b99a3e', day: '#9a6a22' },
+  swap:        { night: '#c48fd0', day: '#7a3f92' },
+  lamp:        { night: '#e0c25a', day: '#b8860f' },
+  vote:        { night: '#a81f28', day: '#7a1119' },
+  hunter:      { night: '#e0785a', day: '#a34a22' },
+  dawn:        { night: '#e0a83a', day: '#d1751a' },
+  killer_win:  { night: '#a81f28', day: '#8f1a22' },
+  village_win: { night: '#6fbf7a', day: '#2f6b45' },
+  tanner_win:  { night: '#d8b43a', day: '#9a7414' },
+};
+
+function tintFor(scene, daylight) {
+  const t = SCENE_TINT[scene];
+  if (!t) return daylight ? '#3a3428' : '#8a857c';
+  return daylight ? t.day : t.night;
+}
