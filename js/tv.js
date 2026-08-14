@@ -185,14 +185,28 @@ const TV = (function () {
 
   /* ---------- render ---------- */
 
+  /* Everything from waking up to the hanging is daylight. */
+  const DAY_PHASES = ['wake', 'dawn', 'hunter', 'day', 'vote', 'tally', 'lynch'];
+
+  function isDaylight() {
+    if (!S) return false;
+    if (S.phase === 'suspense') return S.suspenseNext === 'lynch';
+    if (S.phase === 'over') return S.result && S.result.team === 'village';
+    return DAY_PHASES.indexOf(S.phase) !== -1;
+  }
+
   function paint(o) {
+    const day = isDaylight();
+    document.getElementById('view-tv').classList.toggle('day', day);
+
     $('tvKicker').textContent = o.kicker || '';
     $('tvTitle').textContent = o.title || '';
     $('tvTitle').className = 'tv-title' + (o.name ? ' name' : '') + (o.small ? ' small' : '');
     $('tvProse').textContent = o.prose || '';
     $('tvProse').className = 'tv-prose' + (o.plain ? ' plain' : '');
     $('tvScene').innerHTML = sceneFor(o.scene);
-    $('tvScene').className = 'tv-scene ' + (o.tint || '');
+    $('tvScene').className = 'tv-scene';
+    $('tvScene').style.color = tintFor(o.scene, day);
   }
 
   function render() {
