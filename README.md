@@ -168,7 +168,7 @@ generated speech — see the key table above.
 ```
 index.html          all three views; a hash picks which one you get
 css/app.css
-js/roles.js         the cast, the night order, suggested line-ups
+js/roles.js         the cast, the night order, the tutorial and prologue beats
 js/lines.js         every word the narrator says — the audio pack's source of truth
 js/pack.js          dropped-in narration files, stored in the browser
 js/scenes.js        the line art
@@ -180,7 +180,9 @@ js/admin.js         the remote — owns the game
 js/tv.js            the big screen — renders it
 js/main.js          routing
 api/tts.js          Google Cloud TTS proxy — keeps the key off the client
-tools/generate-audio.js   builds the whole audio pack in one go
+tools/generate-audio.js       builds the pack via Google TTS
+tools/generate-audio-sapi.ps1 builds the pack from the Windows speech engine
+audio/                        the committed narration, 72 clips
 ```
 
 The remote is the single source of truth and broadcasts the whole state on every
