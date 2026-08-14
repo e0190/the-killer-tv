@@ -106,9 +106,11 @@ async function viaGemini(text) {
   const inline = part && part.inlineData;
   if (!inline || !inline.data) throw new Error('gemini returned no audio');
 
-  const mime = inline.mimeType || '';
-  const rate = Number((mime.match(/rate=(\d+)/) || [])[1] || 24000);
-  return { body: toWav(Buffer.from(inline.data, 'base64'), rate), type: 'audio/wav' };
+  const fmt = parsePcmMime(inline.mimeType);
+  const raw = Buffer.from(inline.data, 'base64');
+  // some models already return a container; only add a header to bare PCM
+  if (raw.slice(0, 4).toString() === 'RIFF') return { body: raw, type: 'audio/wav' };
+  return { body: toWav(raw, fmt.rate, fmt.bits), type: 'audio/wav' };
 }
 
 async function viaCloud(text) {
