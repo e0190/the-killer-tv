@@ -391,17 +391,27 @@ const Admin = (function () {
     const head = (kicker, title) => { $('admKicker').textContent = kicker; $('admTitle').textContent = title; };
 
     switch (S.phase) {
+      case 'tutorial': {
+        const t = TUTORIAL[S.tutorialIndex];
+        const last = S.tutorialIndex === TUTORIAL.length - 1;
+        head('how to play · ' + (S.tutorialIndex + 1) + ' of ' + TUTORIAL.length, t.title);
+        $('admStory').textContent = LINES[t.id];
+        if (S.tutorialIndex === 0) {
+          $('admCall').textContent = 'Everyone seated and holding their own role. Let the TV explain it, then hit skip if they already know.';
+        }
+        $('admNext').textContent = last ? 'on with the story' : 'go on';
+        showSkip('skip the rules', () => { S.phase = 'opening'; push(); render(); });
+        break;
+      }
+
       case 'opening': {
         const p = PROLOGUE[S.prologueIndex];
         const last = S.prologueIndex === PROLOGUE.length - 1;
         head('the story · ' + (S.prologueIndex + 1) + ' of ' + PROLOGUE.length, p.title);
         $('admStory').textContent = LINES[p.id];
-        if (S.prologueIndex === 0) {
-          $('admCall').textContent = 'Everyone seated, everyone knowing their own role and nobody else\'s. Read it off the TV, or let the TV read it.';
-        } else if (last) {
-          $('admCall').textContent = 'Next puts them to sleep and starts the first night.';
-        }
+        if (last) $('admCall').textContent = 'Next puts them to sleep and starts the first night.';
         $('admNext').textContent = last ? 'nightfall' : 'go on';
+        showSkip('skip the story', () => { startNight(); push(); render(); });
         break;
       }
 
