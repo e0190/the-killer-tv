@@ -47,13 +47,13 @@ const SCENES = {
     <path d="M40 44 62 56M34 72h26M40 100l22-12" stroke-dasharray="5 7"/>
   </svg>`,
 
-  /* under a sheet. The arm out from under it is what stops this reading as a
-     hill — a plain mound is just a mound. */
+  /* under a sheet. The feet sticking out the end are the whole trick — without
+     them a draped mound is just a hill. */
   body: SVG_OPEN + `
     <path d="M14 124h212"/>
-    <path fill="currentColor" stroke="none" d="M56 124c0-28 25-43 62-43s60 15 60 43Z"/>
-    <path fill="currentColor" stroke="none" d="M68 102 36 116l5 11 32-14Z"/>
-    <circle cx="34" cy="120" r="8" fill="currentColor" stroke="none"/>
+    <path fill="currentColor" stroke="none" d="M42 124c0-30 25-45 58-45s56 15 56 45Z"/>
+    <rect x="166" y="102" width="15" height="22" rx="7" fill="currentColor" stroke="none"/>
+    <rect x="186" y="102" width="15" height="22" rx="7" fill="currentColor" stroke="none"/>
   </svg>`,
 
   /* a face with nothing behind it */
