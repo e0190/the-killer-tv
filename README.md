@@ -109,18 +109,20 @@ whatever it became. The dead still win — Hunters especially.
 
 ## The narrator
 
-Read **[AUDIO.md](AUDIO.md)**. There are **62 lines**, that's the complete and final
-list, and it never grows — **no player names are ever spoken**, so the pack is fixed
-forever. Do it once.
+**It already talks.** All **72 lines** are generated and committed in `/audio`, so the
+game narrates itself out of the box — no key, no account, nothing to install. There
+are never any more than 72, because **no player names are ever spoken**.
 
-The quickest route: name your files after the line ids, open the setup page, and
-drag all 62 onto the banner at the top. They're stored in the browser and stay put.
+The catch: the committed pack was built from the Windows speech engine and is
+**American**. Deep and slow, but not British. Swapping it is the biggest single
+upgrade going — see **[AUDIO.md](AUDIO.md)** for the three ways to do it, the
+quickest being to drag your own 72 files onto the banner on the setup page.
 
 Four tiers, best available wins, each falling through to the next so the narrator is
 never silent:
 
-1. **Files you dropped into the setup page** — stored in this browser.
-2. **Files committed to `/audio`** — deploy with the site, work for everyone.
+1. **Recordings you dropped into the setup page** — stored in this browser.
+2. **The pack committed to `/audio`** — ships with the site, works for everyone.
 3. **Generated speech** via `api/tts.js`, if `GOOGLE_TTS_KEY` is set. The key lives in
    a Vercel environment variable and is **never sent to the browser**.
 4. **The browser's own voice**, hunting for a British male and pitching it down.
