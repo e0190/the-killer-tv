@@ -70,10 +70,11 @@ const SCENES = {
   /* whoever it is, standing where they shouldn't be. The blade sits clear of
      the coat with daylight between them, or the two shapes merge into a blob. */
   killer: SVG_OPEN + `
-    <circle cx="104" cy="32" r="15" fill="currentColor" stroke="none"/>
-    <path fill="currentColor" stroke="none" d="M104 49c-14 0-24 7-27 17l-11 56h76l-11-56c-3-10-13-17-27-17Z"/>
-    <path fill="currentColor" stroke="none" d="M130 72l28-7 2 9-29 7Z"/>
-    <path fill="currentColor" stroke="none" d="M166 64h10v42l-5 16-5-16Z"/>
+    <circle cx="112" cy="28" r="15" fill="currentColor" stroke="none"/>
+    <path fill="currentColor" stroke="none" d="M112 45c-15 0-26 8-29 19l-10 58h78l-10-58c-3-11-14-19-29-19Z"/>
+    <path fill="currentColor" stroke="none" d="M180 56h9v20h-9Z"/>
+    <path fill="currentColor" stroke="none" d="M172 76h25v6h-25Z"/>
+    <path fill="currentColor" stroke="none" d="M176 82h17l-8 38Z"/>
     <path d="M0 126h240"/>
   </svg>`,
 
