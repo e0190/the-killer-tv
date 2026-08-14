@@ -20,18 +20,30 @@
 
 const LINES = {
 
-  /* ---- the prologue: a story, one short beat at a time ---- */
-  opening_road:    'One road in. It closes when the snow does.',
-  opening_shut:    'It has been shut for nine days.',
-  opening_dog:     'First it was a dog. Then the whole Aldritch herd.',
-  opening_lamps:   'Three nights of men sitting up with lamps. They saw nothing.',
-  opening_marta:   'Then it was Marta, at the well.',
-  opening_quiet:   'Forty feet from her own door, and nobody heard her.',
-  opening_tracks:  'Tracks went down to the well. None came back.',
-  opening_inside:  'So it never left. It is in this room.',
-  opening_rules:   'Every night you close your eyes. Every morning you count.',
-  opening_rope:    'Then you hang one of your own, and hope.',
-  opening_tonight: 'Nobody is coming. Close your eyes.',
+  /* ---- the tutorial: how to play, before any of the atmosphere ---- */
+  tut_killer:  'Somebody at this table is the Killer.',
+  tut_secret:  'Only you know what you are. Keep it that way.',
+  tut_night:   'When the television says so, everybody closes their eyes.',
+  tut_called:  'Roles are called one at a time. Wake only on yours.',
+  tut_choice:  'The Killer is called last, and picks somebody.',
+  tut_morning: 'By morning that person is dead, and you all find out.',
+  tut_day:     'Then you argue about who did it.',
+  tut_vote:    'Then everybody points at once. Most votes hangs.',
+  tut_win:     'Hang the Killer and the town lives. Otherwise it does not.',
+  tut_remote:  'Whoever holds the remote sees everything. Never look at it.',
+
+  /* ---- the prologue: a locked-room problem with only one answer ---- */
+  opening_doors:  'Nobody in this town locks their doors. Never had to.',
+  opening_ellis:  'Ellis Kane didn\'t come in from the yard on Tuesday.',
+  opening_found:  'They found him Thursday. Some of him.',
+  opening_more:   'Then Sarah Vance. Then the Pryor boy.',
+  opening_inside: 'Every one of them died inside their own house.',
+  opening_bolted: 'And every door was still bolted from the inside.',
+  opening_forced: 'No broken window. No forced lock. Nothing.',
+  opening_opened: 'Which means they opened the door themselves.',
+  opening_smiled: 'They knew the face on the step. They smiled at it.',
+  opening_left:   'There is nobody left in this town but you.',
+  opening_tonight:'One of you does it again tonight. Close your eyes.',
 
   /* ---- the night ---- */
   night_first: 'Lights out. Everybody close your eyes.',
