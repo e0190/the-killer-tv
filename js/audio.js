@@ -405,5 +405,5 @@ const Narrator = (function () {
 
   const installed = () => packIds.slice();
 
-  return { say, sayAll, preview, shush, setEnabled, setVoice, warm, refreshPack, options, status, installed };
+  return { say, sayAll, preview, shush, setEnabled, setMode, setVoice, warm, refreshPack, options, status, installed };
 })();
