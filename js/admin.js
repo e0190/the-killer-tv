@@ -454,7 +454,7 @@ const Admin = (function () {
           alive(S).map((p) => p.id), S.hunterTarget ? [S.hunterTarget] : [], 1,
           (sel) => { S.hunterTarget = sel[0] || null; push(); render(); });
         $('admNext').disabled = !S.hunterTarget;
-        $('admNext').textContent = 'fire';
+        $('admNext').textContent = S.hunterTarget ? 'fire' : 'pick a target first';
         break;
       }
 
