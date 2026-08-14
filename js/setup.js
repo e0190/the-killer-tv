@@ -294,8 +294,9 @@ const Setup = (function () {
 
   function preview() {
     Narrator.setEnabled(true);
+    Narrator.setMode('all');          // the preview always speaks, whatever the mode
     Narrator.setVoice($('optVoiceName').value);
-    Narrator.preview(LINES.call_killer);
+    Narrator.preview(narration === 'story' ? LINES.opening_doors : LINES.call_killer);
   }
 
   /* ---------- go ---------- */
