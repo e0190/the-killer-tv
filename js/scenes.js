@@ -1,187 +1,192 @@
 /* the killer tv — the pictures.
-   Line art, one stroke weight, no fills except where it reads as shadow.
-   Everything inherits currentColor so the TV can tint a scene by mood. */
+
+   Solid silhouettes with heavy strokes, not thin line art. These get scaled to
+   about a third of a television and looked at from a sofa, so hairlines vanish
+   and anything fiddly turns to mush. Shapes read; detail doesn't.
+
+   Everything inherits currentColor so the TV can tint a scene by mood. Holes
+   (windows, eye sockets) are cut with fill-rule="evenodd" rather than painted
+   in a background colour, so they work on any backdrop. */
+
+const SVG_OPEN = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 140" fill="none" ' +
+  'stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">';
 
 const SCENES = {
 
-  night: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M158 30a24 24 0 1 0 22 33 26 26 0 0 1-22-33Z"/>
-    <circle cx="46" cy="26" r="1.6" fill="currentColor" stroke="none"/>
-    <circle cx="78" cy="44" r="1.1" fill="currentColor" stroke="none"/>
-    <circle cx="30" cy="58" r="1.1" fill="currentColor" stroke="none"/>
-    <circle cx="104" cy="24" r="1.4" fill="currentColor" stroke="none"/>
-    <circle cx="200" cy="86" r="1.1" fill="currentColor" stroke="none"/>
-    <path d="M0 116h240"/>
-    <path d="M22 116V96l-9 4 9-16 9 16-9-4M52 116V88l-11 5 11-20 11 20-11-5"/>
-    <path d="M188 116V94l-8 4 8-14 8 14-8-4M214 116V100l-7 3 7-12 7 12-7-3"/>
-    <path d="M92 116v-14h34v14M100 102V94h18v8M106 110h6"/>
-  </svg>`,
-
-  village: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  /* a row of houses with the lights still on */
+  village: SVG_OPEN + `
+    <path fill="currentColor" stroke="none" fill-rule="evenodd" d="
+      M8 122V80l22-18 22 18v42Z   M22 92h14v14H22Z
+      M62 122V70l28-22 28 22v52Z  M80 86h20v18H80Z
+      M128 122V78l22-18 22 18v44Z M142 92h14v12h-14Z
+      M182 122V74l25-20 25 20v48Z M198 88h18v16h-18Z"/>
     <path d="M0 122h240"/>
-    <path d="M14 122V96l16-13 16 13v26M26 122v-14h8v14"/>
-    <path d="M56 122V88l18-15 18 15v34M68 122v-16h12v16"/>
-    <path d="M104 122V74l20-17 20 17v48M118 122v-18h12v18M120 84h8"/>
-    <path d="M124 57V40h-8"/>
-    <path d="M156 122V90l17-14 17 14v32M168 122v-15h10v15"/>
-    <path d="M202 122V98l14-11 14 11v24"/>
-    <path d="M6 92 0 96M234 92l6 4" stroke-dasharray="3 5"/>
-    <path d="M96 30a18 18 0 1 0 17 24 19 19 0 0 1-17-24Z"/>
   </svg>`,
 
-  door: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  /* same street, lights out, moon up */
+  night: SVG_OPEN + `
+    <path fill="currentColor" stroke="none" d="M176 16a27 27 0 1 0 25 37 29 29 0 0 1-25-37Z"/>
+    <circle cx="44" cy="26" r="2.4" fill="currentColor" stroke="none"/>
+    <circle cx="86" cy="46" r="1.8" fill="currentColor" stroke="none"/>
+    <circle cx="28" cy="62" r="1.8" fill="currentColor" stroke="none"/>
+    <circle cx="112" cy="22" r="2.2" fill="currentColor" stroke="none"/>
+    <path fill="currentColor" stroke="none" d="
+      M4 124V92l20-16 20 16v32Z
+      M58 124V84l24-19 24 19v40Z
+      M120 124V90l20-16 20 16v34Z
+      M182 124V86l23-18 23 18v38Z"/>
     <path d="M0 124h240"/>
-    <path d="M62 124V26h56v98"/>
-    <path d="M118 26l44 22v76"/>
-    <path d="M118 124h44"/>
-    <circle cx="108" cy="78" r="3" fill="currentColor" stroke="none"/>
-    <path d="M78 44h24v22H78z"/>
-    <path d="M20 124V70M40 124V70M20 70h20M18 60h24l-12-10Z"/>
-    <path d="M186 108l14-10M198 116l16-14M190 92l18-12" stroke-dasharray="3 6"/>
-    <path d="M198 40l6 10 10-4-6 12 12 2-12 6 8 10-13-3" stroke-width="1.3"/>
   </svg>`,
 
-  /* a figure standing where it shouldn't be, holding something */
-  killer: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M0 130h240"/>
-    <path d="M120 130V72"/>
-    <path d="M120 72 98 88M120 72l22 16"/>
-    <path d="M120 130l-16 0M120 130l16 0"/>
-    <path d="M104 96V72a16 16 0 0 1 32 0v24"/>
-    <circle cx="120" cy="46" r="14"/>
-    <path d="M113 44h4M123 44h4"/>
-    <path d="M142 88v26M142 114l-5 8M142 114l5 8" stroke-width="1.3"/>
-    <path d="M96 92l-4 26" stroke-width="1.3"/>
-    <path d="M92 118l-3 -2 6-2Z" fill="currentColor"/>
-    <path d="M26 130V102l14-10 14 10v28M186 130V98l16-12 16 12v32" stroke-dasharray="4 6"/>
+  /* a door standing open with the light coming out of it */
+  door: SVG_OPEN + `
+    <path fill="currentColor" stroke="none" d="M76 22h56v100H76Z"/>
+    <path d="M132 22 176 34v76l-44 12Z"/>
+    <circle cx="142" cy="72" r="3.4" fill="currentColor" stroke="none"/>
+    <path d="M54 122h150"/>
+    <path d="M40 44 62 56M34 72h26M40 100l22-12" stroke-dasharray="5 7"/>
   </svg>`,
 
-  eye: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M52 70c26-30 42-44 68-44s42 14 68 44c-26 30-42 44-68 44s-42-14-68-44Z"/>
-    <circle cx="120" cy="70" r="20"/>
-    <circle cx="120" cy="70" r="7" fill="currentColor" stroke="none"/>
-    <path d="M120 12V2M164 24l6-9M76 24l-6-9M196 60l10-4M44 60l-10-4"/>
-    <path d="M120 128v10M168 118l6 9M72 118l-6 9"/>
+  /* under a sheet, with an arm out */
+  body: SVG_OPEN + `
+    <path d="M22 120h196"/>
+    <path fill="currentColor" stroke="none" d="M46 120c0-19 12-29 30-33l56-12c19-4 31 4 35 19l6 26Z"/>
+    <path fill="currentColor" stroke="none" d="M62 96 46 118l9 5 13-21Z"/>
+    <path d="M36 44l12 12M48 44 36 56M196 38l12 12M208 38l-12 12"/>
   </svg>`,
 
-  mask: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M88 16c-14 8-20 24-20 46 0 30 14 62 32 62s32-32 32-62c0-22-6-38-20-46Z"/>
-    <path d="M120 16c14 8 20 24 20 46 0 30-14 62-32 62"/>
-    <ellipse cx="90" cy="58" rx="9" ry="6"/>
-    <ellipse cx="122" cy="58" rx="9" ry="6"/>
-    <path d="M96 92c8 4 14 4 22 0"/>
-    <path d="M168 30c12 10 18 26 18 48s-6 40-18 50" stroke-dasharray="4 7"/>
-    <path d="M196 22c16 14 24 34 24 60s-8 46-24 60" stroke-dasharray="4 7"/>
+  /* a face with nothing behind it */
+  mask: SVG_OPEN + `
+    <path fill="currentColor" stroke="none" fill-rule="evenodd" d="
+      M120 14c-25 0-41 19-41 49 0 31 18 59 41 59s41-28 41-59c0-30-16-49-41-49Z
+      M95 60a9 7 0 1 0 18 0 9 7 0 1 0-18 0Z
+      M127 60a9 7 0 1 0 18 0 9 7 0 1 0-18 0Z
+      M108 92h24v7h-24Z"/>
+    <path d="M176 32c11 11 17 28 17 49s-6 38-17 49" stroke-dasharray="5 8"/>
+    <path d="M204 22c15 15 23 36 23 59s-8 44-23 59" stroke-dasharray="5 8"/>
   </svg>`,
 
-  watcher: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M0 124h240"/>
-    <path d="M40 124V80l-14 6 14-24 14 24-14-6M74 124V70l-16 7 16-28 16 28-16-7"/>
-    <path d="M166 124V70l-16 7 16-28 16 28-16-7M200 124V80l-14 6 14-24 14 24-14-6"/>
-    <path d="M120 124v-30M110 94a10 10 0 0 1 20 0"/>
-    <circle cx="120" cy="76" r="9"/>
-    <circle cx="117" cy="76" r="2" fill="currentColor" stroke="none"/>
-    <path d="M104 40h32M108 30h24" stroke-dasharray="3 6"/>
+  /* whoever it is, standing where they shouldn't be */
+  killer: SVG_OPEN + `
+    <circle cx="120" cy="30" r="14" fill="currentColor" stroke="none"/>
+    <path fill="currentColor" stroke="none" d="M120 46c-12 0-21 5-25 14l-9 62h68l-9-62c-4-9-13-14-25-14Z"/>
+    <path fill="currentColor" stroke="none" d="M96 62 84 106l8 3 12-45Z"/>
+    <path fill="currentColor" stroke="none" d="M144 62l12 44-8 3-12-45Z"/>
+    <path fill="currentColor" stroke="none" d="M148 106h8l3 26-7 6-4-6Z"/>
+    <path d="M0 122h240"/>
   </svg>`,
 
-  hands: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M60 118V64a26 26 0 0 1 52 0v54"/>
-    <path d="M128 118V64a26 26 0 0 1 52 0v54"/>
-    <path d="M60 90h52M128 90h52"/>
-    <path d="M86 64V38M154 64V38"/>
-    <path d="M74 26h24l-12-14ZM142 26h24l-12-14Z"/>
-    <path d="M40 118h160"/>
-    <path d="M112 100h16" stroke-dasharray="3 5"/>
+  /* the one who looks */
+  eye: SVG_OPEN + `
+    <path d="M50 70c26-31 43-45 70-45s44 14 70 45c-26 31-43 45-70 45s-44-14-70-45Z"/>
+    <circle cx="120" cy="70" r="21"/>
+    <circle cx="120" cy="70" r="9" fill="currentColor" stroke="none"/>
+    <path d="M120 12V2M166 24l7-10M74 24l-7-10M198 58l11-5M42 58l-11-5"/>
+    <path d="M120 128v10M170 116l7 10M70 116l-7 10"/>
   </svg>`,
 
-  key: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="76" cy="70" r="26"/>
-    <circle cx="76" cy="70" r="10"/>
-    <path d="M102 70h84"/>
-    <path d="M150 70v20M168 70v26M186 70v14"/>
-    <path d="M198 34c8 10 12 22 12 36s-4 26-12 36" stroke-dasharray="4 7"/>
-    <path d="M30 34c-8 10-12 22-12 36s4 26 12 36" stroke-dasharray="4 7"/>
+  /* watching from between the curtains */
+  watcher: SVG_OPEN + `
+    <path stroke-width="4" d="M74 6v128M166 6v128"/>
+    <path d="M92 70c11-15 18-21 28-21s17 6 28 21c-11 15-18 21-28 21s-17-6-28-21Z"/>
+    <circle cx="120" cy="70" r="10"/>
+    <circle cx="120" cy="70" r="4.5" fill="currentColor" stroke="none"/>
   </svg>`,
 
-  swap: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-    <rect x="30" y="76" width="46" height="46" rx="4"/>
-    <rect x="164" y="76" width="46" height="46" rx="4"/>
-    <circle cx="53" cy="52" r="14"/>
-    <circle cx="187" cy="52" r="14"/>
-    <path d="M84 34h72l-14-12M156 62H84l14 12"/>
+  /* two who know each other on sight */
+  hands: SVG_OPEN + `
+    <circle cx="76" cy="52" r="17" fill="currentColor" stroke="none"/>
+    <path fill="currentColor" stroke="none" d="M46 124c0-19 13-32 30-32s30 13 30 32Z"/>
+    <circle cx="164" cy="52" r="17" fill="currentColor" stroke="none"/>
+    <path fill="currentColor" stroke="none" d="M134 124c0-19 13-32 30-32s30 13 30 32Z"/>
+    <path d="M100 50h40" stroke-dasharray="5 7"/>
   </svg>`,
 
-  lamp: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-    <rect x="82" y="30" width="76" height="76" rx="2"/>
-    <path d="M120 30v76M82 68h76"/>
-    <path d="M72 106h96M76 118h88"/>
-    <path d="M158 44l24-10M158 60h26M158 78l24 10" stroke-dasharray="3 6"/>
-    <path d="M82 44 58 34M82 60H56M82 78l-24 10" stroke-dasharray="3 6"/>
-    <path d="M104 88h32v18h-32z"/>
+  /* took what wasn't theirs */
+  key: SVG_OPEN + `
+    <circle cx="74" cy="70" r="28"/>
+    <circle cx="74" cy="70" r="11" fill="currentColor" stroke="none"/>
+    <path stroke-width="4" d="M102 70h88"/>
+    <path stroke-width="4" d="M152 70v22M172 70v28M190 70v16"/>
   </svg>`,
 
-  dawn: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  /* two people, quietly exchanged */
+  swap: SVG_OPEN + `
+    <circle cx="44" cy="48" r="15" fill="currentColor" stroke="none"/>
+    <path fill="currentColor" stroke="none" d="M18 124c0-17 12-28 26-28s26 11 26 28Z"/>
+    <circle cx="196" cy="48" r="15" fill="currentColor" stroke="none"/>
+    <path fill="currentColor" stroke="none" d="M170 124c0-17 12-28 26-28s26 11 26 28Z"/>
+    <path d="M86 52h68l-14-13"/>
+    <path d="M154 82H86l14 13"/>
+  </svg>`,
+
+  /* the window that never goes dark */
+  lamp: SVG_OPEN + `
+    <path fill="currentColor" stroke="none" fill-rule="evenodd" d="
+      M82 32h76v78H82Z
+      M117 32h6v78h-6Z
+      M82 68h76v6H82Z"/>
+    <path d="M70 118h100M76 128h88"/>
+    <path d="M166 40l22-10M166 68h26M166 96l22 10" stroke-dasharray="5 7"/>
+    <path d="M74 40 52 30M74 68H48M74 96l-22 10" stroke-dasharray="5 7"/>
+  </svg>`,
+
+  /* the rope */
+  vote: SVG_OPEN + `
+    <path stroke-width="4" d="M120 4v44"/>
+    <path fill="currentColor" stroke="none" d="M110 48h20l-4 14h-12Z"/>
+    <ellipse cx="120" cy="92" rx="24" ry="32" stroke-width="4"/>
+    <path d="M28 8h184" stroke-width="4"/>
+  </svg>`,
+
+  /* one shot left */
+  hunter: SVG_OPEN + `
+    <path stroke-width="4" d="M74 16c28 24 28 84 0 108"/>
+    <path d="M74 16 64 70l10 54"/>
+    <path stroke-width="4" d="M64 70h108"/>
+    <path fill="currentColor" stroke="none" d="M196 70l-26-10v20Z"/>
+    <path d="M64 70l-11-7M64 70l-11 7"/>
+  </svg>`,
+
+  /* morning */
+  dawn: SVG_OPEN + `
     <path d="M0 104h240"/>
-    <path d="M78 104a42 42 0 0 1 84 0"/>
-    <path d="M120 44V22M162 62l16-16M78 62 62 46M186 100h20M34 100h20"/>
-    <path d="M14 118h44M78 118h36M136 118h50M200 118h26" stroke-dasharray="none" opacity=".5"/>
+    <path fill="currentColor" stroke="none" d="M76 104a44 44 0 0 1 88 0Z"/>
+    <path d="M120 42V20M164 60l16-16M76 60 60 44M188 100h20M32 100h20"/>
+    <path d="M14 118h44M78 118h36M136 118h50M200 118h26"/>
   </svg>`,
 
-  body: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M32 112h176"/>
-    <path d="M54 112c0-10 8-16 20-16h92c12 0 20 6 20 16"/>
-    <path d="M74 96c-4-14 2-22 16-24l58-8c14-2 22 4 22 16"/>
-    <path d="M92 74c0-8 6-14 14-14s14 6 14 14"/>
-    <path d="M170 96v16M150 98v14M128 100v12"/>
-    <path d="M40 46l10 10M50 46 40 56M196 40l10 10M206 40l-10 10"/>
+  /* nobody left to stop them */
+  killer_win: SVG_OPEN + `
+    <path d="M0 126h240"/>
+    <path d="M14 126V98l18-14 18 14v28M58 126V90l20-16 20 16v36" stroke-dasharray="5 7"/>
+    <path d="M144 126V90l20-16 20 16v36M192 126V98l18-14 18 14v28" stroke-dasharray="5 7"/>
+    <circle cx="120" cy="34" r="15" fill="currentColor" stroke="none"/>
+    <path fill="currentColor" stroke="none" d="M120 51c-13 0-22 6-26 15l-10 60h72l-10-60c-4-9-13-15-26-15Z"/>
+    <path fill="currentColor" stroke="none" d="M94 68 82 110l8 3 12-43Z"/>
+    <path fill="currentColor" stroke="none" d="M146 68l12 42-8 3-12-43Z"/>
+    <path fill="currentColor" stroke="none" d="M150 110h8l3 22-7 6-4-6Z"/>
   </svg>`,
 
-  vote: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M120 22v54"/>
-    <circle cx="120" cy="86" r="14"/>
-    <path d="M120 100v18"/>
-    <path d="M46 118c0-12 8-20 18-24l14-6M194 118c0-12-8-20-18-24l-14-6"/>
-    <path d="M78 88l16-8 8 10M162 88l-16-8-8 10"/>
-    <path d="M62 40h20M158 40h20" stroke-dasharray="3 6"/>
+  /* the lights come back on */
+  village_win: SVG_OPEN + `
+    <path d="M0 122h240"/>
+    <path fill="currentColor" stroke="none" d="M92 58a28 28 0 0 1 56 0Z"/>
+    <path d="M120 26V10M158 38l12-12M82 38 70 26M182 56h18M40 56h18"/>
+    <path fill="currentColor" stroke="none" fill-rule="evenodd" d="
+      M18 122V90l20-16 20 16v32Z  M30 100h16v14H30Z
+      M92 122V86l28-22 28 22v36Z  M110 98h20v16h-20Z
+      M182 122V90l20-16 20 16v32Z M194 100h16v14h-16Z"/>
   </svg>`,
 
-  /* the last one standing, and the houses gone dark behind them */
-  killer_win: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M0 128h240"/>
-    <path d="M22 128V100l14-11 14 11v28M60 128v-22l12-9 12 9v22" stroke-dasharray="3 6"/>
-    <path d="M156 128v-22l12-9 12 9v22M194 128v-28l14-11 14 11v28" stroke-dasharray="3 6"/>
-    <path d="M120 128V70"/>
-    <circle cx="120" cy="42" r="13"/>
-    <path d="M114 40h4M122 40h4"/>
-    <path d="M106 92V70a14 14 0 0 1 28 0v22"/>
-    <path d="M120 70 104 84M120 70l16 14"/>
-    <path d="M136 84v24M136 108l-4 6M136 108l4 6" stroke-width="1.3"/>
-    <path d="M104 84l-2 22" stroke-width="1.3"/>
-  </svg>`,
-
-  village_win: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M0 118h240"/>
-    <path d="M96 60a24 24 0 0 1 48 0"/>
-    <path d="M120 30V14M154 42l12-12M86 42 74 30"/>
-    <path d="M30 118V88l20-16 20 16v30M42 118v-14h16v14"/>
-    <path d="M170 118V88l20-16 20 16v30M182 118v-14h16v14"/>
-    <path d="M100 118V96h40v22M114 118v-12h12v12"/>
-  </svg>`,
-
-  tanner_win: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M84 116v-14c-16-8-26-24-26-42a62 62 0 0 1 124 0c0 18-10 34-26 42v14Z"/>
-    <circle cx="98" cy="58" r="11"/>
-    <circle cx="142" cy="58" r="11"/>
-    <path d="M114 80h12l-6 12Z"/>
-    <path d="M98 102h44M106 102v14M120 102v14M134 102v14"/>
-  </svg>`,
-
-  hunter: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M74 20c26 16 26 84 0 100"/>
-    <path d="M74 20 68 70l6 50"/>
-    <path d="M68 70h108"/>
-    <path d="M176 70l-16-10M176 70l-16 10"/>
-    <path d="M196 52c8 6 12 12 12 18s-4 12-12 18" stroke-dasharray="4 7"/>
+  /* got exactly what they wanted */
+  tanner_win: SVG_OPEN + `
+    <path fill="currentColor" stroke="none" fill-rule="evenodd" d="
+      M120 8c-36 0-64 27-64 63 0 20 9 37 24 48v13h80v-13c15-11 24-28 24-48 0-36-28-63-64-63Z
+      M84 62a15 15 0 1 0 30 0 15 15 0 1 0-30 0Z
+      M126 62a15 15 0 1 0 30 0 15 15 0 1 0-30 0Z
+      M112 88h16l-8 16Z
+      M96 108h6v24h-6Z M114 108h6v24h-6Z M132 108h6v24h-6Z"/>
   </svg>`,
 };
 
