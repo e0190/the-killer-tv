@@ -469,10 +469,7 @@ const Admin = (function () {
 
       case 'tally':
         head('day ' + roman(S.round), 'Who pointed where?');
-        $('admCall').textContent = 'Tap each voter, then their target.';
-        renderVotes();
-        $('admNext').disabled = !votesIn();
-        $('admNext').textContent = 'lock it in';
+        renderVotes();          // sets the call text and the next button itself
         break;
 
       case 'lynch': renderLynch(); break;
