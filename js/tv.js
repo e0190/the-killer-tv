@@ -213,8 +213,6 @@ const TV = (function () {
     if (!S) return;
     $('tvClockWrap').hidden = !S.timer.total || ['vote', 'suspense'].indexOf(S.phase) !== -1;
     $('tvTally').hidden = true;
-    $('tvRound').textContent = S.phase === 'over' ? 'finished'
-      : (['day', 'vote', 'lynch'].indexOf(S.phase) !== -1 ? 'day ' : 'night ') + S.round;
 
     switch (S.phase) {
       case 'tutorial': {
