@@ -76,7 +76,6 @@ const ROLE_IDS = Object.keys(ROLES);
 const NIGHT_ORDER = [
   {
     id: 'doppelganger', role: 'doppelganger', input: 'copy', scene: 'mask',
-    story: 'Something learns the shape of a face.',
     call: 'Doppelgänger, wake. Point at someone. You are them now.',
     /* Spoken straight after the call. The copy overwrites rather than swaps, so
        nobody holds the Doppelgänger afterwards and this beat never runs again —
@@ -85,32 +84,26 @@ const NIGHT_ORDER = [
   },
   {
     id: 'minion', role: 'minion', input: 'none', scene: 'watcher',
-    story: 'Somebody is watching, and taking notes.',
     call: 'Minion, wake. Killer, show yourself.',
   },
   {
     id: 'mason', role: 'mason', input: 'none', scene: 'hands',
-    story: 'Two people meet in the dark. They already trust each other.',
     call: 'Masons, wake. Find each other.',
   },
   {
     id: 'seer', role: 'seer', input: 'look', scene: 'eye',
-    story: 'A candle. One name. A long look.',
     call: 'Seer, wake. Point at one person.',
   },
   {
     id: 'robber', role: 'robber', input: 'steal', scene: 'key',
-    story: 'A door opens that was locked.',
     call: 'Robber, wake. Point at someone. Take what they are.',
   },
   {
     id: 'troublemaker', role: 'troublemaker', input: 'swap', scene: 'swap',
-    story: 'Two coats change pegs. Nobody is told.',
     call: 'Troublemaker, wake. Swap two people.',
   },
   {
     id: 'insomniac', role: 'insomniac', input: 'self', scene: 'lamp',
-    story: 'One window never goes dark.',
     call: 'Insomniac, wake. Look at what you are.',
   },
   /* The Killer goes last, deliberately. Nothing acts after them, so the
@@ -119,7 +112,6 @@ const NIGHT_ORDER = [
      goes up without eyes opening. */
   {
     id: 'killer', role: 'killer', input: 'kill', scene: 'killer',
-    story: 'Somebody in this room stops pretending.',
     call: 'Killer, wake. Choose who dies tonight.',
   },
 ];
