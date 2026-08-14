@@ -47,12 +47,13 @@ const SCENES = {
     <path d="M40 44 62 56M34 72h26M40 100l22-12" stroke-dasharray="5 7"/>
   </svg>`,
 
-  /* under a sheet: two mounds read as a body, one mound reads as a rock */
+  /* under a sheet. The arm out from under it is what stops this reading as a
+     hill — a plain mound is just a mound. */
   body: SVG_OPEN + `
     <path d="M14 124h212"/>
-    <path fill="currentColor" stroke="none" d="M44 124c0-25 24-40 60-40s58 15 58 40Z"/>
-    <path fill="currentColor" stroke="none" d="M148 124c0-17 11-28 25-28s25 11 25 28Z"/>
-    <path fill="currentColor" stroke="none" d="M56 100 34 120l9 7 20-20Z"/>
+    <path fill="currentColor" stroke="none" d="M56 124c0-28 25-43 62-43s60 15 60 43Z"/>
+    <path fill="currentColor" stroke="none" d="M68 102 36 116l5 11 32-14Z"/>
+    <circle cx="34" cy="120" r="8" fill="currentColor" stroke="none"/>
   </svg>`,
 
   /* a face with nothing behind it */
