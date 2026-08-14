@@ -50,17 +50,10 @@ const LINES = {
   night_again: 'Another night. Close your eyes.',
   sleep:       'Close your eyes.',
 
-  /* ---- atmosphere: first night only ---- */
-  story_doppelganger: 'Something learns the shape of a face.',
-  story_minion:       'Somebody is watching, and taking notes.',
-  story_mason:        'Two people meet in the dark. They already trust each other.',
-  story_seer:         'A candle. One name. A long look.',
-  story_robber:       'A door opens that was locked.',
-  story_troublemaker: 'Two coats change pegs. Nobody is told.',
-  story_insomniac:    'One window never goes dark.',
-  story_killer:       'Somebody in this room stops pretending.',
-
-  /* ---- calls: every night ---- */
+  /* ---- calls: every night ----
+     The roles used to get a line of atmosphere before the instruction. It read
+     nicely once and then got in the way every night after, so the night is now
+     instruction only. The story lives entirely in the prologue. */
   call_doppelganger: 'Doppelgänger, wake. Point at someone. You are them now.',
   /* said straight after the call — the Doppelgänger only ever wakes once */
   dg_act:  'If that role is called tonight, act on it.',
