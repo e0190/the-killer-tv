@@ -105,11 +105,8 @@ const TV = (function () {
         const b = S.nightBeats[S.beatIndex];
         if (!b) break;
         Sound.play('thud');
-        // first night gets the atmosphere too; every night gets the call and
-        // any rules the role needs spelling out
-        const run = [];
-        if (S.round === 1) run.push('story_' + b.role);
-        run.push('call_' + b.role);
+        // the call, plus any rules the role needs spelling out
+        const run = ['call_' + b.role];
         if (b.notes) b.notes.forEach((n) => run.push(n));
         Narrator.sayAll(run);
         break;
