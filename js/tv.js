@@ -197,10 +197,20 @@ const TV = (function () {
       : (['day', 'vote', 'lynch'].indexOf(S.phase) !== -1 ? 'day ' : 'night ') + S.round;
 
     switch (S.phase) {
+      case 'tutorial': {
+        const t = TUTORIAL[S.tutorialIndex];
+        paint({
+          scene: t.scene, tint: 'bone',
+          kicker: 'how to play · ' + (S.tutorialIndex + 1) + ' of ' + TUTORIAL.length,
+          title: t.title, small: true, prose: LINES[t.id], plain: true,
+        });
+        break;
+      }
+
       case 'opening': {
         const p = PROLOGUE[S.prologueIndex];
         paint({
-          scene: p.scene, tint: p.id === 'opening_inside' ? 'blood' : '',
+          scene: p.scene, tint: p.id === 'opening_smiled' || p.id === 'opening_tonight' ? 'blood' : '',
           kicker: 'the story · ' + (S.prologueIndex + 1) + ' of ' + PROLOGUE.length,
           title: p.title, small: true, prose: LINES[p.id],
         });
