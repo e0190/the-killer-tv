@@ -139,7 +139,7 @@ const Sound = (function () {
 
 const Narrator = (function () {
   const DIR = 'audio/';
-  const EXT = '.mp3';
+  let EXT = '.mp3';        // overridden by the manifest's `format`, if it has one
   const RATE = 0.84;
   const PITCH = 0.55;
 
@@ -195,6 +195,7 @@ const Narrator = (function () {
         .then((r) => (r.ok ? r.json() : null))
         .then((m) => {
           if (!m || !Array.isArray(m.lines)) return;
+          if (m.format) EXT = '.' + String(m.format).replace(/^\./, '');
           m.lines.forEach((id) => { fileState[id] = 'ok'; });
         })
         .catch(() => {}),
