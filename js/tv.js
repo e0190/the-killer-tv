@@ -249,11 +249,11 @@ const TV = (function () {
         // a role with rules to spell out shows them instead of the mood piece
         const notes = b.notes ? b.notes.map((n) => LINES[n]).join(' ') : '';
         paint({
-          scene: b.scene, tint: b.role === 'killer' ? 'blood' : 'bone',
+          scene: b.scene,
           kicker: 'night ' + S.round,
           title: ROLES[b.role].name,
-          prose: notes ? b.call + ' ' + notes : (S.round === 1 ? b.story : b.call),
-          plain: !!notes || S.round !== 1,
+          prose: notes ? b.call + ' ' + notes : b.call,
+          plain: true,
           small: ROLES[b.role].name.length > 12,
         });
         break;
