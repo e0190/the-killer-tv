@@ -390,11 +390,26 @@ body[data-view="tv"]{overflow:hidden;background:#000}
 .tv-tally b{display:block;font-size:2vmin;font-weight:500}
 .tv-tally i{display:block;font-family:var(--mono);font-style:normal;font-size:3.4vmin;color:var(--blood-2);margin-top:.4vmin}
 
-.tv-foot{border-top:1px solid #1e1e22;padding-top:1.4vmin}
-.tv-roster{list-style:none;display:flex;flex-wrap:wrap;justify-content:center;gap:.8vmin 1.8vmin;margin:0;padding:0}
-.tv-roster li{font-size:1.7vmin;letter-spacing:.14em;text-transform:uppercase;color:#6a655c}
-.tv-roster li.dead{color:#3a3733;text-decoration:line-through}
-.tv-roster li.won{color:var(--gold)}
+/* ---- daylight ----
+   Morning through to the hanging runs on an off-white screen. It's the single
+   loudest signal in the game that the night is over, and it gives the room
+   something to blink at. */
+#view-tv.day{background:#e9e4d8}
+#view-tv.day .tv-vignette{
+  background:radial-gradient(115% 85% at 50% 42%,transparent 45%,rgba(120,108,86,.34) 100%);
+}
+#view-tv.day .tv-grain{opacity:.06;mix-blend-mode:multiply}
+#view-tv.day .tv-title{color:#16140f}
+#view-tv.day .tv-prose{color:#4a4437}
+#view-tv.day .tv-prose.plain{color:#26221a}
+#view-tv.day .tv-kicker{color:#8a2d22}
+#view-tv.day .tv-clock span{color:#16140f}
+#view-tv.day .tv-clock span.low{color:#a81f28}
+#view-tv.day .tv-bar{background:#cfc7b4}
+#view-tv.day .tv-tally div{border-color:#c3baa4}
+#view-tv.day .tv-tally b{color:#26221a}
+#view-tv.day .tv-hint{color:#a79d86}
+#view-tv.day .tv-result .team{border-color:#3f6d4e;color:#2f5c3c}
 
 .tv-hint{
   position:absolute;bottom:1.6vmin;right:2.4vmin;z-index:5;margin:0;
