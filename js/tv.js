@@ -66,7 +66,7 @@ const TV = (function () {
     Narrator.setEnabled(!!S.settings.narration);
     Narrator.setVoice(S.settings.voiceName || '');
 
-    const key = [S.phase, S.round, S.beatIndex, S.prologueIndex,
+    const key = [S.phase, S.round, S.beatIndex, S.prologueIndex, S.tutorialIndex,
       S.lastDeaths.join(','), S.hunterPending].join('|');
     const changed = key !== lastKey;
     lastKey = quiet ? '' : key;

@@ -301,6 +301,8 @@ const Setup = (function () {
     state.settings.narration = $('optVoice').checked;
     state.settings.sfx = $('optSfx').checked;
     state.settings.voiceName = $('optVoiceName').value;
+    state.settings.tutorial = $('optTutorial').checked;
+    if (!state.settings.tutorial) state.phase = 'opening';
 
     Sound.ensure();
     Sound.play('toll');
