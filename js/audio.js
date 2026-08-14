@@ -144,6 +144,7 @@ const Narrator = (function () {
   const PITCH = 0.55;
 
   let enabled = true;
+  let mode = 'all';        // 'all' | 'story' | 'none'
   let voice = null;
   let choice = '';
   let cloudReady = null;
