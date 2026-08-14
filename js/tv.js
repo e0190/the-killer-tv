@@ -81,6 +81,11 @@ const TV = (function () {
     Narrator.shush();
 
     switch (S.phase) {
+      case 'tutorial':
+        Sound.play('blip');
+        Narrator.say(TUTORIAL[S.tutorialIndex].id);
+        break;
+
       case 'opening': {
         const p = PROLOGUE[S.prologueIndex];
         Sound.play(S.prologueIndex === 0 ? 'toll' : 'thud');
