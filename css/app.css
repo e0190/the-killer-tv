@@ -359,11 +359,7 @@ body[data-view="tv"]{overflow:hidden;background:#000}
 }
 .tv-frame{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;padding:2.6vmin 4vmin}
 
-.tv-head{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid #1e1e22;padding-bottom:1.4vmin}
-.tv-mark{font-family:var(--serif);font-size:1.9vmin;letter-spacing:.24em;text-transform:uppercase;color:#6a655c}
-.tv-round{font-size:1.5vmin;color:#6a655c}
-
-.tv-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:0;gap:1.2vmin;padding:2vmin 0}
+.tv-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:0;gap:1.4vmin;padding:2vmin 0}
 .tv-scene{margin:0 0 .6vmin;color:#4e4a44;width:min(30vmin,300px)}
 .tv-scene svg{width:100%;height:auto;display:block}
 .tv-scene.blood{color:var(--blood)}
