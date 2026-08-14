@@ -333,6 +333,11 @@ body[data-view="tv"]{overflow:hidden;background:#000}
   color:var(--bone-3);letter-spacing:.1em;text-transform:uppercase;
 }
 .ctl-back:hover{border-color:var(--bone-3);color:var(--bone)}
+.ctl-skip{
+  border:1px solid var(--rule);border-radius:2px;padding:15px 18px;font-size:12px;
+  color:var(--bone-3);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;
+}
+.ctl-skip:hover{border-color:var(--gold);color:var(--gold)}
 .ctl-next{
   flex:1;background:var(--blood);border-radius:2px;padding:15px;color:#fff;
   font-size:14px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;
