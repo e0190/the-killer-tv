@@ -74,9 +74,10 @@ async function viaGemini(text) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      contents: [{ parts: [{ text: STYLE + '\n\n' + text }] }],
+      contents: [{ role: 'user', parts: [{ text: STYLE + '\n\n## Transcript:\n' + text }] }],
       generationConfig: {
-        responseModalities: ['AUDIO'],
+        temperature: 1,
+        responseModalities: ['audio'],
         speechConfig: {
           voiceConfig: { prebuiltVoiceConfig: { voiceName: GEMINI_VOICE } },
         },
