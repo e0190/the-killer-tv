@@ -137,6 +137,11 @@ const Admin = (function () {
 
   function next() {
     switch (S.phase) {
+      case 'tutorial':
+        if (S.tutorialIndex < TUTORIAL.length - 1) S.tutorialIndex++;
+        else S.phase = 'opening';
+        break;
+
       case 'opening':
         if (S.prologueIndex < PROLOGUE.length - 1) S.prologueIndex++;
         else startNight();
