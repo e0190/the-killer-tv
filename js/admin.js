@@ -398,6 +398,7 @@ const Admin = (function () {
     $('admNext').textContent = 'next';
     $('admStory').textContent = '';
     $('admCall').textContent = '';
+    $('admSayLabel').hidden = true;
     $('roundLabel').textContent =
       (S.phase === 'over' ? 'Finished'
         : ['day', 'vote', 'tally', 'lynch'].indexOf(S.phase) !== -1 ? 'Day ' + roman(S.round)
