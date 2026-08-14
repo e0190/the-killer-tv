@@ -24,6 +24,14 @@ const Admin = (function () {
       state.timer.running = false;
     }
     boot(state, false);
+    /* The countdown is the only phase with no Next button — the clock is what
+       advances it. Reloading mid-count pauses that clock and strands the game,
+       so re-arm it. */
+    if (S.phase === 'suspense') {
+      startTimer(3000);
+      push();
+      render();
+    }
   }
 
   function boot(state, openTv) {
