@@ -133,7 +133,7 @@ There are two, they look identical, and they are not interchangeable:
 
 | Key from | Works with | Set |
 | --- | --- | --- |
-| [aistudio.google.com](https://aistudio.google.com/apikey) | Gemini TTS | `GOOGLE_TTS_KEY`, and optionally `TTS_BACKEND=gemini` |
+| [aistudio.google.com](https://aistudio.google.com/apikey) | Gemini TTS | `GEMINI_API_KEY` (or `GOOGLE_TTS_KEY`), and optionally `TTS_BACKEND=gemini` |
 | Google Cloud console | Cloud Text-to-Speech (must be enabled on the project) | `GOOGLE_TTS_KEY`, and optionally `TTS_BACKEND=cloud` |
 
 `TTS_BACKEND` defaults to `auto`, which tries Gemini first and falls back to Cloud if
@@ -141,7 +141,10 @@ the key is rejected — so either kind should just work. An AI Studio key sent t
 TTS fails with `API_KEY_INVALID`, which is the usual way to get this wrong. `GET
 /api/tts` reports which backend is live; a failed `POST` tells you why.
 
-Other optional vars: `TTS_VOICE` (Gemini default `Charon`, Cloud default
+Gemini TTS needs a **billing-enabled** project — AI Studio gates the speech playground behind
+`Link a paid API key`. A key alone may not be enough.
+
+Other optional vars: `TTS_MODEL` (default `gemini-3.1-flash-tts-preview`), `TTS_VOICE` (Gemini default `Charon`, Cloud default
 `en-GB-Chirp3-HD-Charon`), `TTS_STYLE`, `TTS_LANG`, `TTS_RATE`, `TTS_PITCH`.
 
 ---
@@ -180,7 +183,8 @@ js/admin.js         the remote — owns the game
 js/tv.js            the big screen — renders it
 js/main.js          routing
 api/tts.js          Google Cloud TTS proxy — keeps the key off the client
-tools/generate-audio.js       builds the pack via Google TTS
+tools/generate-audio.js       builds the pack via Google Cloud TTS
+tools/generate-audio-gemini.js builds the pack via Gemini TTS
 tools/generate-audio-sapi.ps1 builds the pack from the Windows speech engine
 audio/                        the committed narration, 72 clips
 ```
