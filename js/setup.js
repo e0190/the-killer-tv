@@ -10,6 +10,7 @@ const Setup = (function () {
   let names = [];
   let roles = [];
   let reveal = 'full';
+  let narration = 'all';
   let mounted = false;
 
   const $ = (id) => document.getElementById(id);
