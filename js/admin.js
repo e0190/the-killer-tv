@@ -376,7 +376,7 @@ const Admin = (function () {
   /* ---------- render ---------- */
 
   function render() {
-    ['admPicker', 'admVotes', 'admOutcome', 'admAnswer'].forEach((id) => { $(id).hidden = true; });
+    ['admPicker', 'admVotes', 'admOutcome', 'admAnswer', 'admSkip'].forEach((id) => { $(id).hidden = true; });
     $('admClockRow').hidden = !S.timer.total || S.phase === 'vote';
     $('admPause').textContent = S.timer.running ? 'pause' : 'resume';
     $('admNext').disabled = false;
