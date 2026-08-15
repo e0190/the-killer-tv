@@ -42,7 +42,7 @@ if ($Only) { $wanted = $Only.Split(',') | ForEach-Object { $_.Trim() } }
 $made = 0; $skipped = 0; $failed = 0
 foreach ($p in $lines.PSObject.Properties) {
   $id   = $p.Name
-  $text = $p.Value
+  $text = $p.Value.text
   if ($wanted.Count -and $wanted -notcontains $id) { continue }
 
   $mp3 = Join-Path $out "$id.mp3"
