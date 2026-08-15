@@ -167,7 +167,8 @@ const Setup = (function () {
     $('voiceNote').textContent = Narrator.status();
   }
 
-  function begin() {
+  function begin(how) {
+    $('openDialog').hidden = true;
     readNames();
 
     const s = newGame();
