@@ -10,8 +10,7 @@
  * Same thing Google's Python sample does, over plain REST so there is nothing
  * to pip install. Gemini returns raw PCM with the format in the mime type, so
  * each clip gets a WAV header bolted on here. If ffmpeg is on PATH the WAVs are
- * converted down to MP3 afterwards, because 72 WAVs is about 25 MB and 72 MP3s
- * is about 2.
+ * converted down to MP3 afterwards, because WAVs are roughly ten times the size.
  *
  * Options
  *   --voice <name>   default Charon. Others: Enceladus, Algenib, Gacrux,
@@ -172,7 +171,7 @@ async function main() {
     } catch (err) {
       failed++;
       console.error('  ✗   ' + id + ' — ' + err.message);
-      // a bad key or a missing model fails identically for all 72; don't hammer it
+      // a bad key or a missing model fails identically for every line; don't hammer it
       if (/API_KEY_INVALID|API key not valid|NOT_FOUND|PERMISSION_DENIED/i.test(err.message)) {
         console.error('\nStopping — that looks like a key or model problem, not a one-off.');
         break;
