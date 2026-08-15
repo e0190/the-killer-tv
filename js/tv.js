@@ -54,7 +54,7 @@ const TV = (function () {
       if (cached) apply(JSON.parse(cached), true);
     } catch (e) { /* ignore */ }
 
-    frame();
+    setInterval(paintClock, 200);   // four ticks a second is plenty for a clock
   }
 
   function apply(state, quiet) {
