@@ -4,7 +4,8 @@ A social deduction party game for 4–12 people around one television.
 
 One website that **splits into two screens**: a big one for the room, and a
 control panel for whoever is running the game. Set it up once, hit start, and it
-opens the TV in a second window while the window in your hand becomes the remote.
+asks whether you want the TV in a new window or a new tab, then hands you the
+remote in the window you started from.
 
 No server, no accounts, no build step. It works offline.
 
@@ -41,7 +42,8 @@ plugged into the television with this page in your hand is the intended setup.
 
 ## How a game runs
 
-1. **Rules and story.** Four screens each, both switchable off in settings.
+1. **Rules and story.** Four screens each, with a switch for each. The story is
+   narrated; the rules are text only.
 2. **Night.** The TV calls each role in turn. There is no night clock — you tap
    through at the table's pace. **The killers go last.**
 3. **Dawn.** The TV holds a beat, then puts the name of whoever died on screen in

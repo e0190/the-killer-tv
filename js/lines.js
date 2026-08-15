@@ -62,7 +62,7 @@ const lineText = (id) => (LINES[id] ? LINES[id].text : '');
 const lineCat = (id) => (LINES[id] ? LINES[id].cat : '');
 
 /* Shown on screen and never spoken. Keeping these out of the narrator is what
-   holds the audio pack at twenty lines. Both are switched off in settings. */
+   holds the audio pack small. Both are switched off in settings. */
 
 const RULES = [
   {
