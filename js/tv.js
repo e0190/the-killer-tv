@@ -85,8 +85,11 @@ const TV = (function () {
     Narrator.stop();
     switch (S.phase) {
       case 'rules':
+        Sound.play('tap');
+        break;
       case 'story':
         Sound.play('tap');
+        Narrator.speak(STORY[S.step].id);
         break;
       case 'night': {
         const b = S.night[S.step];
@@ -144,13 +147,13 @@ const TV = (function () {
     switch (S.phase) {
       case 'rules': {
         const r = RULES[S.step];
-        paint({ eyebrow: 'How to play · ' + (S.step + 1) + ' of ' + RULES.length, title: r.title, body: r.body, small: true, lead: true });
+        paint({ scene: r.scene, eyebrow: 'How to play · ' + (S.step + 1) + ' of ' + RULES.length, title: r.title, body: r.body, small: true, lead: true });
         break;
       }
 
       case 'story': {
         const t = STORY[S.step];
-        paint({ eyebrow: 'Before we start', title: t.title, body: t.body, small: true, lead: true });
+        paint({ scene: t.scene, eyebrow: 'Before we start', title: t.title, body: lineText(t.id), small: true });
         break;
       }
 
@@ -158,54 +161,54 @@ const TV = (function () {
         const b = S.night[S.step];
         if (!b) break;
         const beat = NIGHT.find((x) => x.role === b.role);
-        paint({ eyebrow: 'Night ' + S.round, title: ROLES[b.role].name, body: beat ? beat.say : '', lead: true });
+        paint({ scene: ROLE_SCENE[b.role], eyebrow: 'Night ' + S.round, title: ROLES[b.role].name, body: beat ? beat.say : '', lead: true });
         steps();
         break;
       }
 
       case 'dawn': {
         if (!S.deaths.length) {
-          paint({ eyebrow: 'Dawn', title: 'Everyone survived', body: lineText('survived'), small: true });
+          paint({ scene: 'sun', eyebrow: 'Dawn', title: 'Everyone survived', body: lineText('survived'), small: true });
           break;
         }
         if (!revealed) {
-          paint({ eyebrow: 'Dawn', title: 'The town wakes up…', small: true });
+          paint({ scene: 'sun', eyebrow: 'Dawn', title: 'The town wakes up…', small: true });
         } else {
-          paint({ eyebrow: 'Dawn', title: nameOf(S, S.deaths[0]), body: reveal(S, S.deaths[0]).text, lead: true });
+          paint({ scene: 'smoke', eyebrow: 'Dawn', title: nameOf(S, S.deaths[0]), body: reveal(S, S.deaths[0]).text, lead: true });
           people(S.deaths);
         }
         break;
       }
 
       case 'hunter':
-        paint({ eyebrow: 'One shot left', title: nameOf(S, S.hunter), body: 'The Hunter is taking somebody with them.', lead: true });
+        paint({ scene: 'knife', eyebrow: 'One shot left', title: nameOf(S, S.hunter), body: 'The Hunter is taking somebody with them.', lead: true });
         break;
 
       case 'day':
-        paint({ eyebrow: 'Day ' + S.round, title: 'Talk it out', body: lineText('talk') });
+        paint({ scene: 'sun', eyebrow: 'Day ' + S.round, title: 'Talk it out', body: lineText('talk') });
         break;
 
       case 'vote':
         paint({
           eyebrow: S.revoted ? 'Day ' + S.round + ' · tied, vote again' : 'Day ' + S.round,
-          title: 'Point at who you want gone',
+          scene: 'hand', title: 'Point at who you want gone',
           body: S.revoted ? 'Nobody had a majority.' : lineText('vote'),
         });
         break;
 
       case 'verdict':
         if (S.deaths.length) {
-          paint({ eyebrow: 'Voted out', title: nameOf(S, S.deaths[0]), body: reveal(S, S.deaths[0]).text, lead: true });
+          paint({ scene: 'smoke', eyebrow: 'Voted out', title: nameOf(S, S.deaths[0]), body: reveal(S, S.deaths[0]).text, lead: true });
           people(S.deaths);
         } else {
-          paint({ eyebrow: 'The vote', title: 'Nobody is going', body: lineText('no_majority'), small: true });
+          paint({ scene: 'hand', eyebrow: 'The vote', title: 'Nobody is going', body: lineText('no_majority'), small: true });
         }
         break;
 
       case 'over': result(); break;
 
       default:
-        paint({ title: 'The Killer TV', body: 'Waiting for the remote…' });
+        paint({ scene: 'moon', title: 'The Killer TV', body: 'Waiting for the remote…' });
     }
 
     paintClock();   // so the clock is right the instant it appears, not a frame later
@@ -230,7 +233,7 @@ const TV = (function () {
 
   function result() {
     const r = S.result;
-    paint({ eyebrow: 'After ' + S.round + (S.round === 1 ? ' night' : ' nights'), title: r.headline, small: true });
+    paint({ scene: r.team === 'town' ? 'sun' : r.team === 'tanner' ? 'crown' : 'knife', eyebrow: 'After ' + S.round + (S.round === 1 ? ' night' : ' nights'), title: r.headline, small: true });
 
     $('tvTeams').hidden = false;
     $('tvTeams').innerHTML = '<span class="tv-team">' + teamName(r.team) + '</span>';
