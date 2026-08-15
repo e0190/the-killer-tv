@@ -1,187 +1,84 @@
-/* the killer tv — the cast.
-
-   This is no longer a one-night game. Play runs night → day → vote → night
-   until the tanner dies, the killers are wiped out, or the killers have the
-   village down to one last soul. Every role acts every night. */
+/* the killer tv — the cast and the running order. */
 
 const ROLES = {
-  killer: {
-    name: 'Killer', mark: 'K', team: 'killers', max: 2, step: 1,
-    short: 'Kills one person every night.',
-    long: 'Wakes last, when everything else has finished moving, and picks who does not see morning.',
-  },
-  minion: {
-    name: 'Minion', mark: 'M', team: 'killers', max: 1, step: 1,
-    short: 'Knows the Killer. Wins with them.',
-    long: 'Sees who it is and says nothing. Dies like anyone else and wins like a Killer.',
-  },
-  mason: {
-    name: 'Mason', mark: 'S', team: 'village', max: 2, step: 2,
-    short: 'Knows the other Mason for certain.',
-    long: 'Two builders who have seen each other\'s faces. Each is the other\'s only proof.',
-  },
-  seer: {
-    name: 'Seer', mark: 'E', team: 'village', max: 1, step: 1,
-    short: 'Learns what one person is each night.',
-    long: 'Finds out exactly what somebody is. Knowing is easy. Being believed is not.',
-  },
-  robber: {
-    name: 'Robber', mark: 'R', team: 'village', max: 1, step: 1,
-    short: 'Steals a role each night.',
-    long: 'Takes another player\'s role and leaves their own behind. Neither of them chose it.',
-  },
-  troublemaker: {
-    name: 'Troublemaker', mark: 'T', team: 'village', max: 1, step: 1,
-    short: 'Swaps two other players each night.',
-    long: 'Trades two people\'s roles without looking. Nobody is told. Not even them.',
-  },
-  insomniac: {
-    name: 'Insomniac', mark: 'I', team: 'village', max: 1, step: 1,
-    short: 'Checks what they currently are.',
-    long: 'Never sleeps, so always knows what they have become by morning.',
-  },
-  doppelganger: {
-    name: 'Doppelgänger', mark: 'D', team: 'village', max: 1, step: 1,
-    short: 'Becomes someone else on the first night.',
-    long: 'Points at one person and takes their role. If that role is called later the same ' +
-          'night, they act on it. The Doppelgänger is gone by morning — they are simply that role now.',
-  },
-  hunter: {
-    name: 'Hunter', mark: 'H', team: 'village', max: 1, step: 1,
-    short: 'Takes someone down when they die.',
-    long: 'Dies with a loaded weapon and one last decision to make.',
-  },
-  tanner: {
-    name: 'Tanner', mark: 'X', team: 'tanner', max: 1, step: 1,
-    short: 'Wins by dying. Ends the game.',
-    long: 'Wants out. Dies by any hand and wins alone, and everybody else goes home with nothing.',
-  },
-  villager: {
-    name: 'Villager', mark: 'V', team: 'village', max: 4, step: 1,
-    short: 'No power. Just a vote and an opinion.',
-    long: 'Sleeps through everything and still has to decide who hangs.',
-  },
+  killer:       { name: 'Killer',       team: 'killers', max: 2, pair: false },
+  minion:       { name: 'Minion',       team: 'killers', max: 1, pair: false },
+  mason:        { name: 'Mason',        team: 'town',    max: 2, pair: true  },
+  seer:         { name: 'Seer',         team: 'town',    max: 1, pair: false },
+  robber:       { name: 'Robber',       team: 'town',    max: 1, pair: false },
+  troublemaker: { name: 'Troublemaker', team: 'town',    max: 1, pair: false },
+  insomniac:    { name: 'Insomniac',    team: 'town',    max: 1, pair: false },
+  doppelganger: { name: 'Doppelgänger', team: 'town',    max: 1, pair: false },
+  hunter:       { name: 'Hunter',       team: 'town',    max: 1, pair: false },
+  tanner:       { name: 'Tanner',       team: 'tanner',  max: 1, pair: false },
+  villager:     { name: 'Villager',     team: 'town',    max: 4, pair: false },
+};
+
+/* One line each, shown on the setup sheet and on the help screen. */
+const ROLE_BLURB = {
+  killer:       'Picks someone to kill each night.',
+  minion:       'Knows the Killer. Wins with them, but dies like anyone else.',
+  mason:        'The two Masons know each other for certain. Always added as a pair.',
+  seer:         'Learns exactly what one person is, each night.',
+  robber:       'Swaps roles with someone. Neither of them chose it.',
+  troublemaker: 'Swaps two other people\'s roles. Nobody is told.',
+  insomniac:    'Is shown what they have become, after everything else has moved.',
+  doppelganger: 'Copies someone on the first night and stays that role.',
+  hunter:       'When they die, they take somebody with them.',
+  tanner:       'Wins by dying, and ends the game on the spot.',
+  villager:     'No power. A vote and an opinion.',
 };
 
 const ROLE_IDS = Object.keys(ROLES);
 
-/* The night, in order. Each beat runs only if a living player holds that role.
-   `input` is what the moderator has to tell the app:
-     kill  — the Killer's victim
-     look  — one player, answer shown to the moderator only
-     steal — one player, roles swap with the actor
-     swap  — two players, their roles trade
-     self  — no target; the moderator just signals the answer
-*/
-const NIGHT_ORDER = [
-  {
-    id: 'doppelganger', role: 'doppelganger', input: 'copy', scene: 'mask',
-    call: 'Doppelgänger, wake. Point at someone. You are them now.',
-    /* Spoken straight after the call. The copy overwrites rather than swaps, so
-       nobody holds the Doppelgänger afterwards and this beat never runs again —
-       the table needs telling that up front. */
-    notes: ['dg_act', 'dg_keep'],
-  },
-  {
-    id: 'minion', role: 'minion', input: 'none', scene: 'watcher',
-    call: 'Minion, wake. Killer, show yourself.',
-  },
-  {
-    id: 'mason', role: 'mason', input: 'none', scene: 'hands',
-    call: 'Masons, wake. Find each other.',
-  },
-  {
-    id: 'seer', role: 'seer', input: 'look', scene: 'eye',
-    call: 'Seer, wake. Point at one person.',
-  },
-  {
-    id: 'robber', role: 'robber', input: 'steal', scene: 'key',
-    call: 'Robber, wake. Point at someone. Take what they are.',
-  },
-  {
-    id: 'troublemaker', role: 'troublemaker', input: 'swap', scene: 'swap',
-    call: 'Troublemaker, wake. Swap two people.',
-  },
-  {
-    id: 'insomniac', role: 'insomniac', input: 'self', scene: 'lamp',
-    call: 'Insomniac, wake. Look at what you are.',
-  },
-  /* The Killer goes last, deliberately. Nothing acts after them, so the
-     victim's role is settled the moment it's chosen and the morning can't
-     announce somebody else's card. The Minion still sees them earlier: a hand
-     goes up without eyes opening. */
-  {
-    id: 'killer', role: 'killer', input: 'kill', scene: 'killer',
-    call: 'Killer, wake. Choose who dies tonight.',
-  },
+/* The night, in order. A beat only runs if somebody still alive holds the role.
+   The Killer goes last on purpose: nothing acts after them, so the victim's role
+   is settled the moment it is picked and the morning cannot announce the wrong
+   thing. `input` is the only thing the moderator has to tell the app. */
+const NIGHT = [
+  { role: 'doppelganger', input: 'copy',  say: 'Doppelgänger, open your eyes. Point at someone. You are that role now.' },
+  { role: 'minion',       input: 'none',  say: 'Minion, open your eyes. Killer, raise a hand so your minion can see you.' },
+  { role: 'mason',        input: 'none',  say: 'Masons, open your eyes and find each other.' },
+  { role: 'seer',         input: 'look',  say: 'Seer, open your eyes. Point at one person.' },
+  { role: 'robber',       input: 'steal', say: 'Robber, open your eyes. Point at someone. You take their role, they take yours.' },
+  { role: 'troublemaker', input: 'swap',  say: 'Troublemaker, open your eyes. Point at two other people. Their roles swap.' },
+  { role: 'insomniac',    input: 'self',  say: 'Insomniac, open your eyes and see what you are now.' },
+  { role: 'killer',       input: 'kill',  say: 'Killers, open your eyes. Choose who dies tonight.' },
 ];
 
-const NIGHT_BY_ID = {};
-NIGHT_ORDER.forEach((b) => { NIGHT_BY_ID[b.id] = b; });
-
-/* How to play, before any of the atmosphere. Skippable once the table knows it. */
-const TUTORIAL = [
-  { id: 'tut_killer',  title: 'One of you',       scene: 'killer' },
-  { id: 'tut_secret',  title: 'Your role',        scene: 'mask' },
-  { id: 'tut_night',   title: 'The night',        scene: 'night' },
-  { id: 'tut_called',  title: 'Being called',     scene: 'lamp' },
-  { id: 'tut_choice',  title: 'The choice',       scene: 'killer' },
-  { id: 'tut_morning', title: 'The morning',      scene: 'body' },
-  { id: 'tut_day',     title: 'The day',          scene: 'dawn' },
-  { id: 'tut_vote',    title: 'The vote',         scene: 'vote' },
-  { id: 'tut_win',     title: 'Winning',          scene: 'village_win' },
-  { id: 'tut_remote',  title: 'The remote',       scene: 'eye' },
-];
-
-/* The prologue. A locked-room problem that only has one answer, told one beat
-   at a time so the table arrives at it a step ahead of the narrator. */
-const PROLOGUE = [
-  { id: 'opening_doors',   title: 'Nobody locks up',      scene: 'village' },
-  { id: 'opening_ellis',   title: 'Ellis Kane',           scene: 'door' },
-  { id: 'opening_found',   title: 'Thursday',             scene: 'body' },
-  { id: 'opening_more',    title: 'And then more',        scene: 'body' },
-  { id: 'opening_inside',  title: 'All of them indoors',  scene: 'village' },
-  { id: 'opening_bolted',  title: 'Bolted from inside',   scene: 'door' },
-  { id: 'opening_forced',  title: 'Nothing forced',       scene: 'door' },
-  { id: 'opening_opened',  title: 'So they opened it',    scene: 'door' },
-  { id: 'opening_smiled',  title: 'They smiled at it',    scene: 'mask' },
-  { id: 'opening_left',    title: "What's left",          scene: 'village' },
-  { id: 'opening_tonight', title: 'Tonight',              scene: 'night' },
-];
-
-/* Suggested casts, by head count. Every player holds exactly one role —
-   there are no cards in the middle any more. */
+/* Suggested line-ups. Every player holds exactly one role. */
 const PRESETS = {
-  4: ['killer', 'seer', 'villager', 'villager'],
-  5: ['killer', 'seer', 'robber', 'villager', 'villager'],
-  6: ['killer', 'seer', 'robber', 'troublemaker', 'villager', 'villager'],
-  7: ['killer', 'killer', 'seer', 'robber', 'insomniac', 'villager', 'villager'],
-  8: ['killer', 'killer', 'minion', 'seer', 'robber', 'troublemaker', 'villager', 'villager'],
-  9: ['killer', 'killer', 'minion', 'seer', 'robber', 'troublemaker', 'insomniac', 'hunter', 'villager'],
+  4:  ['killer', 'seer', 'villager', 'villager'],
+  5:  ['killer', 'seer', 'robber', 'villager', 'villager'],
+  6:  ['killer', 'seer', 'robber', 'troublemaker', 'villager', 'villager'],
+  7:  ['killer', 'killer', 'seer', 'robber', 'insomniac', 'villager', 'villager'],
+  8:  ['killer', 'killer', 'minion', 'seer', 'robber', 'troublemaker', 'villager', 'villager'],
+  9:  ['killer', 'killer', 'minion', 'seer', 'robber', 'troublemaker', 'insomniac', 'hunter', 'villager'],
   10: ['killer', 'killer', 'minion', 'mason', 'mason', 'seer', 'robber', 'troublemaker', 'hunter', 'tanner'],
   11: ['killer', 'killer', 'minion', 'mason', 'mason', 'seer', 'robber', 'troublemaker', 'insomniac', 'hunter', 'tanner'],
   12: ['killer', 'killer', 'minion', 'mason', 'mason', 'seer', 'robber', 'troublemaker', 'insomniac', 'doppelganger', 'hunter', 'tanner'],
 };
 
-function roleCounts(list) {
-  const c = {};
-  list.forEach((r) => { if (r) c[r] = (c[r] || 0) + 1; });
-  return c;
+function countRoles(list) {
+  const out = {};
+  list.forEach((r) => { if (r) out[r] = (out[r] || 0) + 1; });
+  return out;
 }
 
+/* Problems worth blocking on, in the order a person would notice them. */
 function castProblems(list) {
   const problems = [];
-  const counts = roleCounts(list);
-  Object.keys(counts).forEach((id) => {
-    if (!ROLES[id]) return;
-    if (counts[id] > ROLES[id].max) {
-      problems.push('Too many ' + ROLES[id].name + 's — the most you can have is ' + ROLES[id].max + '.');
+  const n = countRoles(list);
+
+  if (list.some((r) => !r)) problems.push('Everyone needs a role.');
+  Object.keys(n).forEach((id) => {
+    if (ROLES[id] && n[id] > ROLES[id].max) {
+      problems.push('At most ' + ROLES[id].max + ' × ' + ROLES[id].name + '.');
     }
   });
-  if (counts.mason === 1) problems.push('Masons come in twos. One Mason alone has nobody to recognise.');
-  if (!counts.killer) problems.push('There is no Killer. Nobody can lose.');
-  if (list.some((r) => !r)) problems.push('Somebody has not been given a role yet.');
-  const killers = counts.killer || 0;
-  if (killers && list.length - killers <= 1) problems.push('The killers already outnumber everyone else. Add more villagers.');
+  if (n.mason === 1) problems.push('Masons come as a pair — add the second one.');
+  if (!n.killer) problems.push('There is no Killer, so nobody can lose.');
+  else if (list.length - n.killer <= 1) problems.push('The killers already outnumber everyone else.');
+
   return problems;
 }
