@@ -68,8 +68,13 @@ const TV = (function () {
     const moved = key !== mark;
     mark = quiet ? '' : key;
 
-    if (moved && S.phase === 'dawn' && S.deaths.length) { revealAt = Date.now() + 2600; revealed = false; }
-    else if (moved) revealed = true;
+    /* Dawn holds the name back for a beat. A timer rather than a render loop,
+       because rAF stops dead in a background tab and the name would never land. */
+    if (moved) {
+      clearTimeout(revealTimer);
+      revealed = !(S.phase === 'dawn' && S.deaths.length);
+      if (!revealed) revealTimer = setTimeout(() => { revealed = true; draw(); }, 2600);
+    }
     draw();
     if (moved && !quiet) cue();
   }
