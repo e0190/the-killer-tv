@@ -239,17 +239,22 @@ const TV = (function () {
 
   /* ---------- per-frame: the clock, and the dawn reveal ---------- */
 
+  /* A flag rather than a time window: a missed frame used to leave the name
+     hidden for good, and rAF stops entirely in a background tab. */
   function frame() {
     requestAnimationFrame(frame);
     if (!S) return;
 
-    if (S.phase === 'dawn' && revealAt && Date.now() >= revealAt && Date.now() < revealAt + 120) draw();
+    if (!revealed && Date.now() >= revealAt) { revealed = true; draw(); }
 
-    if (!S.timer.total) return;
+    paintClock();
+  }
+
+  function paintClock() {
+    if (!S || !S.timer.total) return;
     const ms = timeLeft(S.timer);
-    const low = ms <= 15000;
     $('tvClock').textContent = clock(ms);
-    $('tvClock').classList.toggle('low', low);
+    $('tvClock').classList.toggle('low', ms <= 15000);
     $('tvTrack').style.width = Math.max(0, Math.min(100, (ms / S.timer.total) * 100)) + '%';
 
     const sec = Math.ceil(ms / 1000);
