@@ -257,7 +257,7 @@ details.help p{font-size:15px;color:var(--fg-2);margin-top:8px}
 .tv-in{position:absolute;inset:0;display:flex;flex-direction:column;padding:4vmin 5vmin}
 .tv-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:2.2vmin;min-height:0}
 
-.tv-scene{width:min(15vmin,150px);color:var(--fg-3);margin-bottom:.6vmin}
+.tv-scene{width:min(17vmin,170px);color:var(--fg-3);margin-bottom:.6vmin}
 .tv-scene svg{width:100%;height:auto;display:block}
 
 .tv-eyebrow{font-size:2vmin;letter-spacing:.26em;text-transform:uppercase;color:var(--accent);font-variant:small-caps}
