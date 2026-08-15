@@ -68,7 +68,8 @@ const TV = (function () {
     const moved = key !== mark;
     mark = quiet ? '' : key;
 
-    if (moved && S.phase === 'dawn') revealAt = Date.now() + 2600;
+    if (moved && S.phase === 'dawn' && S.deaths.length) { revealAt = Date.now() + 2600; revealed = false; }
+    else if (moved) revealed = true;
     draw();
     if (moved && !quiet) cue();
   }
