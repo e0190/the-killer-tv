@@ -51,6 +51,7 @@ const LINES = {
 const LINE_IDS = Object.keys(LINES);
 
 const SAY_CATEGORIES = [
+  { id: 'story',   label: 'The story',    hint: 'Setting the scene, before the first night.' },
   { id: 'night',   label: 'Role calls',   hint: 'The only ones that need saying with eyes shut.' },
   { id: 'deaths',  label: 'Deaths',       hint: 'Who died, and who was voted out.' },
   { id: 'day',     label: 'Day prompts',  hint: 'Start talking, start voting.' },
