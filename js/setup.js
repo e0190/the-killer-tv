@@ -190,6 +190,8 @@ const Setup = (function () {
     s.settings.voice = $('optVoice').value;
     document.querySelectorAll('[data-say]').forEach((el) => { s.settings.say[el.dataset.say] = el.checked; });
 
+    s.settings.openAs = how === 'tab' ? 'tab' : 'window';
+
     Sound.unlock();
     Sound.play('step');
     Admin.launch(s);
