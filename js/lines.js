@@ -53,3 +53,32 @@ const SAY_CATEGORIES = [
 
 const lineText = (id) => (LINES[id] ? LINES[id].text : '');
 const lineCat = (id) => (LINES[id] ? LINES[id].cat : '');
+
+/* Shown on screen and never spoken. Keeping these out of the narrator is what
+   holds the audio pack at eighteen lines. Both are switched off in settings. */
+
+const RULES = [
+  {
+    title: 'One of you is the Killer',
+    body: 'Everyone gets a secret role. Most of you are ordinary townsfolk. One or two are killers, and they know each other.',
+  },
+  {
+    title: 'At night, roles wake up',
+    body: 'Everyone shuts their eyes. The TV calls each role in turn — open your eyes only when yours is called. The killers go last and choose someone.',
+  },
+  {
+    title: 'By day, you argue and vote',
+    body: 'You find out who died. Then you talk, accuse, and everyone points at once. Whoever gets the most votes is out, and their role is revealed.',
+  },
+  {
+    title: 'How it ends',
+    body: 'The town wins by voting out every killer. The killers win once they equal the number of everyone else left.',
+  },
+];
+
+const STORY = [
+  { title: 'Nobody here locks their doors', body: 'They never had to. One road in, and it closes when the snow does.' },
+  { title: 'Three people are dead', body: 'All of them indoors. Every door still bolted from the inside, no window forced.' },
+  { title: 'So they opened it themselves', body: 'They knew the face on the step. They smiled at it.' },
+  { title: 'And it is still here', body: 'There is nobody left in this town but the people at this table.' },
+];
