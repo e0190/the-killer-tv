@@ -294,9 +294,16 @@ const Admin = (function () {
     $('admHint').textContent = '';
     $('admRoster').hidden = false;
 
+    $('admScene').hidden = true;
+
     const head = (eyebrow, title) => {
       $('admEyebrow').textContent = eyebrow;
       $('admTitle').textContent = title;
+    };
+    const art = (id) => {
+      if (!id) return;
+      $('admScene').hidden = false;
+      $('admScene').innerHTML = sceneFor(id);
     };
 
     switch (S.phase) {
