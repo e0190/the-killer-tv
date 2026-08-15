@@ -29,7 +29,7 @@ const LINES = {
   /* morning */
   died:              { cat: 'deaths', text: 'Somebody did not make it through the night.' },
   survived:          { cat: 'deaths', text: 'Everyone is still here. For now.' },
-  hanged:            { cat: 'deaths', text: 'The village has decided.' },
+  hanged:            { cat: 'deaths', text: 'The town has decided.' },
   no_majority:       { cat: 'deaths', text: 'No majority. Nobody hangs.' },
 
   /* day */
