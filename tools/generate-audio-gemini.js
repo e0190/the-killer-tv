@@ -148,7 +148,7 @@ async function main() {
 
   const mp3 = !has('keep-wav') && haveFfmpeg();
   const ext = mp3 ? '.mp3' : '.wav';
-  console.log(MODEL + ' · voice ' + VOICE + ' · writing ' + ext.slice(1).toUpperCase());
+  console.log(MODEL + ' | voice ' + VOICE + ' · writing ' + ext.slice(1).toUpperCase());
   if (!mp3 && !has('keep-wav')) console.log('(ffmpeg not found, keeping WAV — larger files)');
   console.log(ids.length + ' line(s) to consider\n');
 
@@ -157,7 +157,7 @@ async function main() {
     const target = path.join(OUT, id + ext);
     if (fs.existsSync(target) && !has('force')) { skipped++; continue; }
     try {
-      const wav = await synth(lines[id]);
+      const wav = await synth(lines[id].text);
       if (mp3) {
         const tmp = path.join(OUT, id + '.tmp.wav');
         fs.writeFileSync(tmp, wav);
