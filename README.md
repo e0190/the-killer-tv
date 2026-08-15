@@ -89,7 +89,7 @@ Checked after every death, in this order:
 
 ## The narrator
 
-**Twenty lines, and that is all there will ever be.** No player name is ever
+**Twenty-four lines, and that is all there will ever be.** No player name is ever
 spoken — the voice says "somebody did not make it through the night" and the TV
 puts the name up in huge type — which is what stops the list growing.
 
@@ -100,6 +100,7 @@ settings, so you can hand yourself as much of the hosting as you want:
 
 | Category | Lines |
 | --- | --- |
+| The story | 4 |
 | Role calls | 11 |
 | Deaths | 4 |
 | Day prompts | 2 |
@@ -135,7 +136,7 @@ server. Without it, nothing breaks — the browser voice covers it.
 index.html      all three screens; the hash picks one
 css/app.css
 js/roles.js     the cast, the night order, suggested line-ups
-js/lines.js     the twenty lines, plus the rules and story screens
+js/lines.js     the twenty-four lines, plus the rules and story screens
 js/state.js     game state and the rulebook — plain functions, no DOM
 js/bus.js       the wire between the two windows
 js/audio.js     synthesised effects, and the narrator

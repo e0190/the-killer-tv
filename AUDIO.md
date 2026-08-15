@@ -1,6 +1,6 @@
 # The narration pack
 
-There are **20 lines**, and that is the whole list. It never grows, because **no
+There are **24 lines**, and that is the whole list. It never grows, because **no
 player name is ever spoken** — the voice says "somebody did not make it through
 the night" and the television puts the name on screen instead.
 
@@ -53,6 +53,15 @@ Deep, unhurried, quiet. Leave about half a second of silence at each end so the
 cuts don't clip. Don't perform them — they're short on purpose.
 
 ## The lines
+
+### The story (4)
+
+| file | what it says |
+| --- | --- |
+| `story_1.mp3` | The snow came early this year and took the road with it. |
+| `story_2.mp3` | Forty houses, one church, one inn, and the woods behind all of it. |
+| `story_3.mp3` | Nobody here has locked a door in living memory. There was never any reason to. |
+| `story_4.mp3` | It is a long winter, and the nights are very long indeed. |
 
 ### Role calls (11)
 
