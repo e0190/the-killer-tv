@@ -40,6 +40,12 @@ const LINES = {
   win_town:          { cat: 'endings', text: 'The killers are dead. The town survives.' },
   win_killers:       { cat: 'endings', text: 'There is nobody left to stop them.' },
   win_tanner:        { cat: 'endings', text: 'The Tanner got exactly what they wanted.' },
+
+  /* the story — scene-setting, read aloud before the first night */
+  story_1:           { cat: 'story', text: 'The snow came early this year and took the road with it.' },
+  story_2:           { cat: 'story', text: 'Forty houses, one church, one inn, and the woods behind all of it.' },
+  story_3:           { cat: 'story', text: 'Nobody here has locked a door in living memory. There was never any reason to.' },
+  story_4:           { cat: 'story', text: 'It is a long winter, and the nights are very long indeed.' },
 };
 
 const LINE_IDS = Object.keys(LINES);
