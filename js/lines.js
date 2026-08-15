@@ -1,4 +1,4 @@
-/* the killer tv — everything the narrator can say. Twenty lines.
+/* the killer tv — everything the narrator can say. Twenty-four lines.
  *
  * Kept deliberately small. The only lines that genuinely have to be spoken are
  * the night calls, because at that point everyone's eyes are shut and the screen
