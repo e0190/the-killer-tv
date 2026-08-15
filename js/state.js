@@ -115,6 +115,9 @@ function applyBeat(s, beat, targets) {
   undoBeat(s, beat);
   beat.targets = targets.slice();
   beat.actor = actorOf(s, beat);
+  /* Remember where the log was, because not every action writes to it and
+     popping blindly on undo eats somebody else's entry. */
+  beat.logAt = s.log.length;
 
   if (beat.input === 'kill') s.pendingKill = targets[0];
   else if (beat.input === 'look') doLook(s, targets[0]);
