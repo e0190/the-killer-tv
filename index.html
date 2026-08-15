@@ -3,262 +3,233 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0b0b0c">
-<title>the killer tv</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%230b0b0c'/><path d='M6 11h20v14H6z' fill='none' stroke='%23e9e4d9' stroke-width='2'/><path d='M11 11 8 5M21 11l3-6' stroke='%23a81f28' stroke-width='2'/></svg>">
+<meta name="theme-color" content="#0d0f13">
+<meta name="description" content="A social deduction party game for one television and a phone.">
+<title>The Killer TV</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230d0f13'/><rect x='6' y='11' width='20' height='14' rx='3' fill='none' stroke='%23eceef2' stroke-width='2'/><path d='M11 11 8 6M21 11l3-5' stroke='%23e5484d' stroke-width='2' stroke-linecap='round'/></svg>">
 <link rel="stylesheet" href="css/app.css">
 </head>
 <body data-view="setup">
 
 <!-- ============================== SETUP ============================== -->
-<main id="view-setup" class="view">
-  <div class="sheet">
+<main id="setup" class="view">
+  <div class="wrap">
 
     <header class="masthead">
-      <div class="masthead-rule"><span>a game for four or more</span></div>
       <h1>The Killer TV</h1>
-      <p class="standfirst">One of you is the Killer. Nobody is coming to help.</p>
+      <p>One of you is the Killer. Nobody is coming to help.</p>
     </header>
 
-    <div class="pack-banner" id="packBanner" hidden>
-      <div class="pack-banner-text">
-        <strong id="packBannerTitle"></strong>
-        <span id="packBannerSub"></span>
-      </div>
-      <button type="button" class="pack-banner-btn" id="packOpen">install them</button>
-    </div>
-
-    <section class="block" id="packBlock" hidden>
-      <div class="block-head">
-        <h2>Narration files</h2>
-        <div class="block-tools">
-          <button type="button" class="link" id="packCopy">copy the script</button>
-          <button type="button" class="link" id="packClear">remove all</button>
-          <button type="button" class="link" id="packClose">hide</button>
+    <section class="card">
+      <div class="sec-head">
+        <h2>Players</h2>
+        <div class="tools">
+          <button type="button" class="btn btn-ghost" id="fillCast">Suggest roles</button>
+          <button type="button" class="btn btn-ghost" id="clearCast">Clear</button>
         </div>
       </div>
-      <p class="note">
-        Generate or record these however you like, name each file after its line id, and drop the
-        lot in below. They're matched by filename, stored in this browser, and stay put — you only
-        do this once. Anything you skip falls back to a generated or browser voice.
-      </p>
 
-      <label class="dropzone" id="packDrop" for="packFiles">
-        <strong>Drop all <span id="packTotal">55</span> files here</strong>
-        <span>or click to choose them</span>
-        <input type="file" id="packFiles" multiple accept="audio/*" hidden>
-      </label>
-      <p class="note" id="packReport"></p>
-
-      <div class="pack-meter"><i id="packBar"></i></div>
-      <ul class="pack-list" id="packList"></ul>
-    </section>
-
-    <section class="block">
-      <div class="block-head">
-        <h2>I. The Cast</h2>
-        <div class="block-tools">
-          <button type="button" class="link" id="autoCast">deal a cast</button>
-          <button type="button" class="link" id="clearCast">clear</button>
-        </div>
-      </div>
-      <p class="note">Everyone holds exactly one role, and the app knows all of them — that's what lets it call people by name and run the night for you. Fill this in privately.</p>
-
-      <div class="cast" id="castList"></div>
+      <div class="cast" id="cast"></div>
 
       <div class="cast-foot">
-        <div class="counter">
-          <button type="button" data-players="-1" aria-label="one fewer player">–</button>
-          <span><output id="playerCount">8</output> players</span>
-          <button type="button" data-players="1" aria-label="one more player">+</button>
+        <div class="stepper">
+          <button type="button" id="fewer" aria-label="Fewer players">−</button>
+          <output id="count">8</output>
+          <button type="button" id="more" aria-label="More players">+</button>
         </div>
-        <div class="tally" id="castTally"></div>
+        <div class="tally" id="tally"></div>
       </div>
 
-      <ul class="problems" id="castProblems"></ul>
+      <ul class="problems" id="problems"></ul>
     </section>
 
-    <section class="block">
-      <div class="block-head"><h2>II. House Rules</h2></div>
+    <section class="card">
+      <div class="sec-head"><h2>Game</h2></div>
 
-      <div class="rule-row">
-        <div class="rule-label">
-          <strong>When somebody dies</strong>
-          <span>What the village is told about the body. "Killer or not" keeps far more hidden.</span>
+      <div class="row">
+        <div class="row-text">
+          <b>Show the rules first</b>
+          <span>Four screens on how a round works.</span>
         </div>
-        <div class="segmented" id="revealMode" role="radiogroup" aria-label="death reveal">
-          <button type="button" role="radio" data-reveal="full" aria-checked="true">their whole role</button>
-          <button type="button" role="radio" data-reveal="killer" aria-checked="false">killer or not</button>
+        <div class="row-ctl">
+          <label class="switch"><input type="checkbox" id="optRules" checked><i></i></label>
         </div>
       </div>
 
-      <div class="rule-row">
-        <div class="rule-label">
-          <strong>Daylight</strong>
-          <span>How long the village gets to argue. The night has no clock — you tap through it.</span>
+      <div class="row">
+        <div class="row-text">
+          <b>Show the story first</b>
+          <span>Four screens of set-up before the first night.</span>
         </div>
-        <select id="optDay">
-          <option value="180000">3 minutes</option>
-          <option value="300000" selected>5 minutes</option>
-          <option value="420000">7 minutes</option>
-          <option value="600000">10 minutes</option>
-          <option value="0">no clock</option>
-        </select>
+        <div class="row-ctl">
+          <label class="switch"><input type="checkbox" id="optStory" checked><i></i></label>
+        </div>
       </div>
 
-      <div class="rule-row">
-        <div class="rule-label">
-          <strong>Narrator</strong>
+      <div class="row">
+        <div class="row-text">
+          <b>When somebody dies</b>
+          <span>What the town is told about the body.</span>
+        </div>
+        <div class="row-ctl">
+          <div class="seg" id="optReveal" role="radiogroup" aria-label="Reveal">
+            <button type="button" role="radio" data-reveal="role" aria-checked="true">Their role</button>
+            <button type="button" role="radio" data-reveal="team" aria-checked="false">Killer or not</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="row-text">
+          <b>Length of the day</b>
+          <span>How long the town gets to argue.</span>
+        </div>
+        <div class="row-ctl">
+          <select class="select" id="optDay" style="width:auto">
+            <option value="180000">3 min</option>
+            <option value="300000" selected>5 min</option>
+            <option value="420000">7 min</option>
+            <option value="0">No timer</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="sec-head">
+        <h2>Narration</h2>
+        <button type="button" class="btn btn-ghost" id="testVoice">Test voice</button>
+      </div>
+      <p class="small muted" style="margin-bottom:14px">
+        Pick what the TV reads out and what you say yourself. Everything stays on screen either way.
+      </p>
+
+      <div id="sayRows"></div>
+
+      <div class="row">
+        <div class="row-text">
+          <b>Voice</b>
           <span id="voiceNote">Checking what's available…</span>
         </div>
-        <div class="rule-controls">
-          <select id="optVoiceName"></select>
-          <button type="button" class="link" id="testVoice">hear it</button>
+        <div class="row-ctl">
+          <select class="select" id="optVoice" style="width:auto;max-width:190px"></select>
         </div>
       </div>
 
-      <div class="rule-row">
-        <div class="rule-label">
-          <strong>Explain the rules first</strong>
-          <span>Ten short screens on how the game works, before the story. Skippable mid-run.</span>
-        </div>
-        <div class="rule-controls">
-          <label class="check"><input type="checkbox" id="optTutorial" checked><span>show it</span></label>
-        </div>
-      </div>
-
-      <div class="rule-row">
-        <div class="rule-label">
-          <strong>What the TV reads aloud</strong>
-          <span id="narrationNote">Everything, or just the story with no instructions, or nothing at all. The words stay on screen either way.</span>
-        </div>
-        <div class="segmented" id="narrationMode" role="radiogroup" aria-label="narration">
-          <button type="button" role="radio" data-narration="all" aria-checked="true">everything</button>
-          <button type="button" role="radio" data-narration="story" aria-checked="false">story only</button>
-          <button type="button" role="radio" data-narration="none" aria-checked="false">silent</button>
-        </div>
-      </div>
-
-      <div class="rule-row">
-        <div class="rule-label"><strong>Sound effects</strong><span>Thuds, drones and the odd stab.</span></div>
-        <div class="rule-controls">
-          <label class="check"><input type="checkbox" id="optSfx" checked><span>on</span></label>
+      <div class="row">
+        <div class="row-text"><b>Sound effects</b><span>Cues on the TV.</span></div>
+        <div class="row-ctl">
+          <label class="switch"><input type="checkbox" id="optSfx" checked><i></i></label>
         </div>
       </div>
     </section>
 
-    <div class="begin">
-      <button type="button" id="splitBtn" class="begin-btn" disabled>
-        <span class="begin-main">Begin</span>
-        <span class="begin-sub">opens the TV screen · this device becomes the remote</span>
-      </button>
-      <p class="note centred" id="splitHint"></p>
-      <details class="aside">
-        <summary>getting it onto the television</summary>
-        <p><strong>HDMI or a second display</strong> — drag the TV window across and press <kbd>F</kbd> for fullscreen.</p>
-        <p><strong>Chromecast</strong> — Chrome menu, Cast, <em>Cast tab</em>, then pick the TV window.</p>
-        <p>Both halves have to be the same browser on the same machine. A laptop plugged into the telly with this page in your hand is what it's built for.</p>
-      </details>
+    <details class="help">
+      <summary>Getting it onto the television</summary>
+      <p><b>Laptop → HDMI.</b> Drag the TV window onto the big screen and press <b>F</b> for fullscreen.</p>
+      <p><b>Chromecast.</b> Chrome menu → Cast → <i>Cast tab</i>, then pick the TV window.</p>
+      <p>Both windows have to be the same browser on the same machine — that's how they talk to each other. There's no server, so it all works offline.</p>
+    </details>
+  </div>
+
+  <div class="start-bar">
+    <div class="wrap">
+      <button type="button" class="btn btn-primary btn-lg btn-block" id="start" disabled>Start the game</button>
+      <p class="start-hint" id="startHint"></p>
     </div>
   </div>
 </main>
 
 <!-- ============================== ADMIN ============================== -->
-<main id="view-admin" class="view">
-  <header class="topbar">
-    <div class="topbar-left">
-      <span class="linkdot" id="linkDot"></span>
-      <span class="micro" id="linkText">looking for the TV</span>
+<main id="admin" class="view">
+  <header class="bar">
+    <div class="bar-left">
+      <span class="dot" id="link"></span>
+      <span class="eyebrow" id="linkText">Looking for the TV</span>
     </div>
-    <div class="topbar-mid micro" id="roundLabel">Night I</div>
-    <div class="topbar-right">
-      <button type="button" class="link" id="reopenTv">TV</button>
-      <button type="button" class="link" id="quitBtn">quit</button>
+    <div class="bar-right">
+      <button type="button" class="btn btn-ghost" id="reopenTv">TV</button>
+      <button type="button" class="btn btn-ghost" id="quit">Quit</button>
     </div>
   </header>
 
-  <div class="popup-warn" id="popupWarn" hidden>
-    <span>The TV window was blocked.</span>
-    <a href="#tv" target="killer_tv_screen" id="tvOpenLink">open it →</a>
-  </div>
+  <div class="stage">
+    <p class="eyebrow" id="admEyebrow"></p>
+    <h2 id="admTitle">—</h2>
+    <p class="hint" id="admHint"></p>
 
-  <div class="console">
-    <div class="console-main">
-      <p class="micro accent" id="admKicker"></p>
-      <h2 id="admTitle">—</h2>
-      <p class="prose" id="admStory"></p>
-      <p class="micro say-label" id="admSayLabel" hidden>read this out</p>
-      <p class="instruction" id="admCall"></p>
-
-      <div class="clockbar" id="admClockRow" hidden>
-        <span class="clockface" id="admClock">0:00</span>
-        <button type="button" class="link" id="admPause">pause</button>
-        <button type="button" class="link" id="admPlus">+30s</button>
-      </div>
-
-      <div class="answer" id="admAnswer" hidden></div>
-
-      <div class="picker" id="admPicker" hidden>
-        <p class="micro" id="pickerLabel"></p>
-        <div class="picker-grid" id="pickerGrid"></div>
-      </div>
-
-      <div class="votebox" id="admVotes" hidden></div>
-
-      <div class="outcome" id="admOutcome" hidden></div>
+    <div class="script" id="admScript" hidden>
+      <p class="eyebrow">Read this out</p>
+      <p id="admScriptText"></p>
     </div>
 
-    <aside class="roster">
-      <p class="micro">The table <span id="rosterCount"></span></p>
-      <ul id="rosterList"></ul>
-      <p class="micro roster-note">Only you can see this.</p>
-    </aside>
+    <div class="clock-row" id="admClockRow" hidden>
+      <span class="clock" id="admClock">0:00</span>
+      <button type="button" class="btn" id="admPause">Pause</button>
+      <button type="button" class="btn" id="admPlus">+30s</button>
+    </div>
+
+    <div class="answer" id="admAnswer" hidden></div>
+
+    <div class="panel" id="admPicker" hidden>
+      <div class="panel-head"><p class="eyebrow" id="pickLabel"></p></div>
+      <div class="picks" id="picks"></div>
+    </div>
+
+    <div class="panel" id="admVotes" hidden>
+      <div class="panel-head">
+        <p class="eyebrow" id="voteLabel"></p>
+        <button type="button" class="btn btn-ghost" id="clearVotes">Clear</button>
+      </div>
+      <div class="votes" id="voteSheet"></div>
+    </div>
+
+    <div class="panel" id="admResult" hidden></div>
+
+    <div class="panel" id="admRoster">
+      <div class="panel-head"><p class="eyebrow">The table — only you see this</p></div>
+      <ul class="roster" id="roster"></ul>
+    </div>
   </div>
 
   <footer class="controls">
-    <button type="button" class="ctl-back" id="admBack">back</button>
-    <button type="button" class="ctl-skip" id="admSkip" hidden>skip</button>
-    <button type="button" class="ctl-next" id="admNext">next</button>
+    <button type="button" class="btn" id="admBack">Back</button>
+    <button type="button" class="btn btn-ghost" id="admSkip" hidden>Skip</button>
+    <button type="button" class="btn btn-primary" id="admNext">Next</button>
   </footer>
 </main>
 
 <!-- =============================== TV =============================== -->
-<main id="view-tv" class="view">
-  <div class="tv-grain" aria-hidden="true"></div>
-  <div class="tv-vignette" aria-hidden="true"></div>
-
-  <div class="tv-frame">
-    <div class="tv-body">
-      <figure class="tv-scene" id="tvScene"></figure>
-      <p class="tv-kicker micro" id="tvKicker"></p>
+<main id="tv" class="view">
+  <div class="tv-in">
+    <div class="tv-main">
+      <div class="tv-steps" id="tvSteps" hidden></div>
+      <p class="tv-eyebrow" id="tvEyebrow"></p>
       <h1 class="tv-title" id="tvTitle">The Killer TV</h1>
-      <p class="tv-prose" id="tvProse">waiting for the remote</p>
+      <p class="tv-body" id="tvBody">Waiting for the remote…</p>
 
-      <div class="tv-clock" id="tvClockWrap" hidden>
-        <span id="tvClock">0:00</span>
-        <div class="tv-bar"><i id="tvBar"></i></div>
+      <div id="tvClockWrap" hidden>
+        <div class="tv-clock" id="tvClock">0:00</div>
+        <div class="tv-track"><i id="tvTrack"></i></div>
       </div>
 
-      <div class="tv-tally" id="tvTally" hidden></div>
+      <div class="tv-people" id="tvPeople" hidden></div>
+      <div class="tv-teams" id="tvTeams" hidden></div>
     </div>
+    <div class="tv-foot" id="tvFoot"></div>
   </div>
 
   <button type="button" class="tv-wake" id="tvWake">
-    <span class="tv-wake-mark">The Killer TV</span>
-    <span class="tv-wake-main">Click to switch it on</span>
-    <span class="tv-wake-sub">browsers keep the sound off until you do · then <kbd>F</kbd> for fullscreen</span>
+    <b>Click to switch on</b>
+    <span>Browsers keep the sound off until you do · then F for fullscreen</span>
   </button>
-
-  <p class="tv-hint" id="tvHint"><kbd>F</kbd> for fullscreen</p>
 </main>
 
 <script src="js/roles.js"></script>
 <script src="js/lines.js"></script>
-<script src="js/pack.js"></script>
-<script src="js/scenes.js"></script>
+<script src="js/state.js"></script>
 <script src="js/bus.js"></script>
 <script src="js/audio.js"></script>
-<script src="js/game.js"></script>
 <script src="js/setup.js"></script>
 <script src="js/admin.js"></script>
 <script src="js/tv.js"></script>
