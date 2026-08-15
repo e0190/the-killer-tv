@@ -118,7 +118,6 @@ body[data-view="tv"]{overflow:hidden}
 }
 .pill b{color:var(--fg);font-weight:600}
 .pill.killers{border-color:#5a2a2e;background:var(--accent-soft);color:#e0989c}
-.pill.tanner{border-color:#544river}
 .pill.tanner{border-color:#544a2a;background:rgba(184,150,60,.1);color:#d8bd7e}
 
 .notice{
