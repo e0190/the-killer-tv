@@ -40,7 +40,7 @@ function newGame() {
       reveal: 'role',     // 'role' = say what they were, 'team' = killer or not
       showRules: true,
       showStory: true,
-      say: { night: true, deaths: true, day: true, endings: true },
+      say: { story: true, night: true, deaths: true, day: true, endings: true },
       sfx: true,
       voice: '',
       openAs: 'window',   // where the TV goes: 'window' or 'tab'
