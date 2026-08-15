@@ -83,9 +83,11 @@ const RULES = [
   },
 ];
 
+/* Scene-setting, not plot. The premise lives in the rules screens; this is only
+   here to put a room in everyone's head before the lights go out. */
 const STORY = [
-  { title: 'Nobody here locks their doors', body: 'They never had to. One road in, and it closes when the snow does.' },
-  { title: 'Three people are dead', body: 'All of them indoors. Every door still bolted from the inside, no window forced.' },
-  { title: 'So they opened it themselves', body: 'They knew the face on the step. They smiled at it.' },
-  { title: 'And it is still here', body: 'There is nobody left in this town but the people at this table.' },
+  { id: 'story_1', title: 'The road is closed', scene: 'road' },
+  { id: 'story_2', title: 'A small place',      scene: 'village' },
+  { id: 'story_3', title: 'Nobody locks up',    scene: 'door' },
+  { id: 'story_4', title: 'A long winter',      scene: 'moon' },
 ];
