@@ -246,17 +246,6 @@ const TV = (function () {
 
   /* ---------- per-frame: the clock, and the dawn reveal ---------- */
 
-  /* A flag rather than a time window: a missed frame used to leave the name
-     hidden for good, and rAF stops entirely in a background tab. */
-  function frame() {
-    requestAnimationFrame(frame);
-    if (!S) return;
-
-    if (!revealed && Date.now() >= revealAt) { revealed = true; draw(); }
-
-    paintClock();
-  }
-
   function paintClock() {
     if (!S || !S.timer.total) return;
     const ms = timeLeft(S.timer);
