@@ -117,13 +117,8 @@ const SCENES = {
 
   /* ---- what happens ---- */
 
-  body: S_OPEN + `
-    <path d="M8 106h104"/>
-    <path fill="currentColor" stroke="none" d="M22 106c0-24 18-36 32-36s32 12 32 36Z"/>
-    <path fill="currentColor" stroke="none" d="M92 90h12v16H92Z"/>
-    <path fill="currentColor" stroke="none" d="M76 90h12v16H76Z"/>
-  </svg>`,
-
+  /* A snuffed candle carries a death better than a shrouded body, which never
+     stopped reading as a rock however it was drawn. */
   smoke: S_OPEN + `
     <path fill="currentColor" stroke="none" d="M46 54h28v50H46Z"/>
     <path d="M32 110h56"/>
