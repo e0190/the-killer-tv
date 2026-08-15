@@ -12,6 +12,7 @@ const TV = (function () {
   let unlocked = false;
   let lastTick = -1;
   let revealAt = 0;                    // dawn holds the name back for a beat
+  let revealed = true;
 
   const DAY = ['dawn', 'hunter', 'day', 'vote', 'verdict'];
 
