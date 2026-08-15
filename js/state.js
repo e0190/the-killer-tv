@@ -160,8 +160,10 @@ function undoBeat(s, beat) {
   beat.targets = [];
 }
 
+/* Nobody left to answer means nothing to record — the moderator just waits a
+   beat and moves on, so the pause reads like a real one. */
 function beatNeedsInput(beat) {
-  return beat.input !== 'none' && beat.input !== 'self';
+  return !beat.empty && beat.input !== 'none' && beat.input !== 'self';
 }
 
 /* ---------- dying ---------- */
