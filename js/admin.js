@@ -398,6 +398,16 @@ const Admin = (function () {
     $('admScript').hidden = false;
     $('admScriptText').textContent = beat.say;
 
+    /* An empty call is a bluff: read it out exactly as normal, leave the same
+       pause, and move on. Only this screen knows there is nobody there. */
+    if (b.empty) {
+      $('admHint').textContent =
+        'Nobody is left to answer this. Read it out anyway, wait as long as you normally would, then carry on — ' +
+        'skipping it would tell the table the ' + role.name + ' is gone.';
+      $('admNext').textContent = 'Next';
+      return;
+    }
+
     const actor = actorOf(S, b);
     const others = (skipIds) => living(S).filter((p) => skipIds.indexOf(p.id) === -1).map((p) => p.id);
     const gate = () => {
