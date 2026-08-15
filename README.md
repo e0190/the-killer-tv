@@ -89,7 +89,7 @@ Checked after every death, in this order:
 
 ## The narrator
 
-**Eighteen lines, and that's all there will ever be.** No player name is ever
+**Twenty lines, and that is all there will ever be.** No player name is ever
 spoken — the voice says "somebody did not make it through the night" and the TV
 puts the name up in huge type — which is what stops the list growing.
 
