@@ -138,7 +138,7 @@ function undoBeat(s, beat) {
   else if (beat.input === 'copy') { const a = byId(s, beat.actor); if (a) a.role = beat.was; }
   else if (beat.input === 'steal') doSwap(s, beat.actor, beat.targets[0]);
   else if (beat.input === 'swap') doSwap(s, beat.targets[0], beat.targets[1]);
-  s.log.pop();
+  if (typeof beat.logAt === 'number') s.log.length = beat.logAt;
   beat.done = false;
   beat.targets = [];
 }
