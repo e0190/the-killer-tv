@@ -392,6 +392,8 @@ const Admin = (function () {
 
     $('admEyebrow').textContent = 'Night ' + roman(S.round) + ' · ' + (S.step + 1) + ' of ' + S.night.length;
     $('admTitle').textContent = role.name;
+    $('admScene').hidden = false;
+    $('admScene').innerHTML = sceneFor(ROLE_SCENE[b.role]);
 
     $('admScript').hidden = false;
     $('admScriptText').textContent = beat.say;
