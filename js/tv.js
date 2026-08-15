@@ -200,6 +200,8 @@ const TV = (function () {
       default:
         paint({ title: 'The Killer TV', body: 'Waiting for the remote…' });
     }
+
+    paintClock();   // so the clock is right the instant it appears, not a frame later
   }
 
   function steps() {
