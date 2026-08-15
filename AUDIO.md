@@ -77,7 +77,7 @@ cuts don't clip. Don't perform them — they're short on purpose.
 | `died.mp3` | Somebody did not make it through the night. |
 | `survived.mp3` | Everyone is still here. For now. |
 | `hanged.mp3` | The town has decided. |
-| `no_majority.mp3` | No majority. Nobody hangs. |
+| `no_majority.mp3` | No majority. Nobody goes. |
 
 ### Day prompts (2)
 

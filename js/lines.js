@@ -1,4 +1,4 @@
-/* the killer tv — everything the narrator can say. Eighteen lines.
+/* the killer tv — everything the narrator can say. Twenty lines.
  *
  * Kept deliberately small. The only lines that genuinely have to be spoken are
  * the night calls, because at that point everyone's eyes are shut and the screen
@@ -30,7 +30,7 @@ const LINES = {
   died:              { cat: 'deaths', text: 'Somebody did not make it through the night.' },
   survived:          { cat: 'deaths', text: 'Everyone is still here. For now.' },
   hanged:            { cat: 'deaths', text: 'The town has decided.' },
-  no_majority:       { cat: 'deaths', text: 'No majority. Nobody hangs.' },
+  no_majority:       { cat: 'deaths', text: 'No majority. Nobody goes.' },
 
   /* day */
   talk:              { cat: 'day', text: 'Talk it out. One of you is lying.' },
@@ -46,7 +46,7 @@ const LINE_IDS = Object.keys(LINES);
 
 const SAY_CATEGORIES = [
   { id: 'night',   label: 'Role calls',   hint: 'The only ones that need saying with eyes shut.' },
-  { id: 'deaths',  label: 'Deaths',       hint: 'Who died, and who was hanged.' },
+  { id: 'deaths',  label: 'Deaths',       hint: 'Who died, and who was voted out.' },
   { id: 'day',     label: 'Day prompts',  hint: 'Start talking, start voting.' },
   { id: 'endings', label: 'The ending',   hint: 'Who won.' },
 ];
@@ -55,7 +55,7 @@ const lineText = (id) => (LINES[id] ? LINES[id].text : '');
 const lineCat = (id) => (LINES[id] ? LINES[id].cat : '');
 
 /* Shown on screen and never spoken. Keeping these out of the narrator is what
-   holds the audio pack at eighteen lines. Both are switched off in settings. */
+   holds the audio pack at twenty lines. Both are switched off in settings. */
 
 const RULES = [
   {
