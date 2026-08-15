@@ -161,7 +161,7 @@ const TV = (function () {
           paint({ eyebrow: 'Dawn', title: 'Everyone survived', body: lineText('survived'), small: true });
           break;
         }
-        if (Date.now() < revealAt) {
+        if (!revealed) {
           paint({ eyebrow: 'Dawn', title: 'The town wakes up…', small: true });
         } else {
           paint({ eyebrow: 'Dawn', title: nameOf(S, S.deaths[0]), body: reveal(S, S.deaths[0]).text, lead: true });
