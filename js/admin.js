@@ -52,8 +52,13 @@ const Admin = (function () {
   }
 
   function openTvWindow() {
+    const url = location.pathname + location.search + '#tv';
     try {
-      tv = window.open(location.pathname + location.search + '#tv', 'killer_tv', 'width=1280,height=720');
+      /* A named target with size features becomes a popup window; the same
+         target with no features becomes an ordinary tab. */
+      tv = S.settings.openAs === 'tab'
+        ? window.open(url, 'killer_tv')
+        : window.open(url, 'killer_tv', 'width=1280,height=720');
     } catch (e) { tv = null; }
     if (!tv) { $('linkText').textContent = 'TV window blocked — use the TV button'; return; }
     Bus.setPeer(tv);
