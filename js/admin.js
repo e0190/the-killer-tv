@@ -1,73 +1,63 @@
 /* the killer tv — the remote.
 
-   Owns the game state, runs the phase machine, and pushes a copy of everything
-   to the TV after every change. The moderator sees every role here; nobody
-   else should be looking at this screen. */
+   Owns the game, runs the phases, and pushes a copy to the TV after every
+   change. Shows every role, so it is the one screen nobody else should see. */
 
 const Admin = (function () {
+  const $ = (id) => document.getElementById(id);
+  const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+  const roman = (n) => ROMAN[n] || String(n);
+
   let S = null;
-  let tvWindow = null;
+  let tv = null;
   let ticker = null;
   let wired = false;
 
-  const $ = (id) => document.getElementById(id);
-  const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
-  const roman = (n) => ROMAN[n] || String(n);
-
   /* ---------- lifecycle ---------- */
 
-  function launch(state, openTv) { boot(state, openTv); }
+  function launch(state) { boot(state, true); }
 
   function resume(state) {
     if (state.timer && state.timer.running) {
-      state.timer.remaining = timerRemaining(state.timer);
+      state.timer.left = timeLeft(state.timer);
       state.timer.running = false;
     }
     boot(state, false);
-    /* The countdown is the only phase with no Next button — the clock is what
-       advances it. Reloading mid-count pauses that clock and strands the game,
-       so re-arm it. */
-    if (S.phase === 'suspense') {
-      startTimer(3000);
-      push();
-      render();
-    }
   }
 
   function boot(state, openTv) {
     S = state;
     Sound.setEnabled(!!S.settings.sfx);
     Narrator.setEnabled(false);          // the TV does the talking, not the remote
+
     document.body.dataset.view = 'admin';
     if (location.hash !== '#admin') history.replaceState(null, '', '#admin');
 
     if (!wired) { wire(); wired = true; }
 
     Link.start('admin', (up) => {
-      $('linkDot').classList.toggle('on', up);
+      $('link').classList.toggle('on', up);
       $('linkText').textContent = up ? 'TV connected' : 'TV not responding';
-      if (up) { $('popupWarn').hidden = true; push(); }
+      if (up) push();
     });
 
     if (openTv) openTvWindow();
+    if (S.phase === 'rules' && !S.settings.showRules) S.phase = S.settings.showStory ? 'story' : null;
+    if (S.phase === 'story' && !S.settings.showStory) S.phase = null;
+    if (!S.phase) startNight();
+
     push();
-    render();
+    draw();
     if (!ticker) ticker = setInterval(tick, 200);
   }
 
   function openTvWindow() {
     try {
-      tvWindow = window.open(location.pathname + location.search + '#tv',
-        'killer_tv_screen', 'width=1280,height=720');
-    } catch (e) { tvWindow = null; }
-    if (!tvWindow) {
-      $('linkText').textContent = 'TV window blocked';
-      $('popupWarn').hidden = false;
-      return;
-    }
-    $('popupWarn').hidden = true;
-    Bus.setPeer(tvWindow);
-    try { tvWindow.focus(); } catch (e) {}
+      tv = window.open(location.pathname + location.search + '#tv', 'killer_tv', 'width=1280,height=720');
+    } catch (e) { tv = null; }
+    if (!tv) { $('linkText').textContent = 'TV window blocked — use the TV button'; return; }
+    Bus.setPeer(tv);
+    try { tv.focus(); } catch (e) {}
     setTimeout(push, 400);
   }
 
@@ -77,28 +67,26 @@ const Admin = (function () {
     $('admPause').addEventListener('click', togglePause);
     $('admPlus').addEventListener('click', () => addTime(30000));
     $('reopenTv').addEventListener('click', openTvWindow);
-    $('quitBtn').addEventListener('click', quit);
-    $('tvOpenLink').addEventListener('click', () => setTimeout(() => {
-      try { const w = window.open('', 'killer_tv_screen'); if (w) { tvWindow = w; Bus.setPeer(w); push(); } } catch (e) {}
-    }, 600));
+    $('quit').addEventListener('click', quit);
+    $('clearVotes').addEventListener('click', () => { S.votes = {}; push(); draw(); });
 
     document.addEventListener('keydown', (e) => {
       if (document.body.dataset.view !== 'admin') return;
       if (e.target.matches('input,select,textarea')) return;
       if (e.code === 'Space' || e.code === 'ArrowRight') { e.preventDefault(); next(); }
-      if (e.code === 'ArrowLeft') { e.preventDefault(); back(); }
+      else if (e.code === 'ArrowLeft') { e.preventDefault(); back(); }
     });
 
     Bus.on((msg) => { if (msg.type === 'hello') push(); });
     window.addEventListener('beforeunload', () => {
-      try { if (tvWindow && !tvWindow.closed) tvWindow.close(); } catch (e) {}
+      try { if (tv && !tv.closed) tv.close(); } catch (e) {}
     });
   }
 
   function quit() {
-    if (!confirm('End the game and go back to setup?')) return;
+    if (!confirm('End this game and go back to setup?')) return;
     Bus.send('bye', {});
-    try { if (tvWindow && !tvWindow.closed) tvWindow.close(); } catch (e) {}
+    try { if (tv && !tv.closed) tv.close(); } catch (e) {}
     try { localStorage.removeItem('killer-tv:state'); } catch (e) {}
     history.replaceState(null, '', location.pathname + location.search);
     location.reload();
@@ -110,524 +98,425 @@ const Admin = (function () {
     try { localStorage.setItem('killer-tv:state', JSON.stringify(S)); } catch (e) {}
   }
 
-  /* ---------- timers (day only — the night runs on taps) ---------- */
+  /* ---------- clock ---------- */
 
   function startTimer(ms) {
-    if (!ms) { stopTimer(); return; }
-    S.timer = { total: ms, remaining: ms, endsAt: Date.now() + ms, running: true };
+    S.timer = ms ? { total: ms, left: ms, endsAt: Date.now() + ms, running: true }
+                 : { total: 0, left: 0, endsAt: 0, running: false };
   }
-  function stopTimer() { S.timer = { total: 0, remaining: 0, endsAt: 0, running: false }; }
   function togglePause() {
     if (!S.timer.total) return;
-    if (S.timer.running) { S.timer.remaining = timerRemaining(S.timer); S.timer.running = false; }
-    else { S.timer.endsAt = Date.now() + S.timer.remaining; S.timer.running = true; }
-    $('admPause').textContent = S.timer.running ? 'pause' : 'resume';
-    push();
+    if (S.timer.running) { S.timer.left = timeLeft(S.timer); S.timer.running = false; }
+    else { S.timer.endsAt = Date.now() + S.timer.left; S.timer.running = true; }
+    push(); draw();
   }
   function addTime(ms) {
     if (!S.timer.total) return;
     S.timer.total += ms;
-    if (S.timer.running) S.timer.endsAt += ms; else S.timer.remaining += ms;
-    Sound.play('blip'); push(); renderClock();
+    if (S.timer.running) S.timer.endsAt += ms; else S.timer.left += ms;
+    Sound.play('tap'); push(); drawClock();
   }
   function tick() {
     if (!S) return;
-    renderClock();
-    if (S.timer.running && timerRemaining(S.timer) <= 0) {
+    drawClock();
+    if (S.timer.running && timeLeft(S.timer) <= 0) {
       S.timer.running = false;
-      if (['day', 'vote', 'suspense'].indexOf(S.phase) !== -1) next();
+      if (S.phase === 'day') next();
     }
   }
 
-  /* ---------- the phase machine ---------- */
+  /* ---------- phases ---------- */
 
-  const beat = () => S.nightBeats[S.beatIndex] || null;
+  function startNight() {
+    S.phase = 'night';
+    S.step = 0;
+    S.night = buildNight(S);
+    S.pendingKill = null;
+    S.seerAnswer = null;
+    S.log = [];
+    S.deaths = [];
+    startTimer(0);
+  }
 
   function next() {
     switch (S.phase) {
-      case 'tutorial':
-        if (S.tutorialIndex < TUTORIAL.length - 1) S.tutorialIndex++;
-        else S.phase = 'opening';
-        break;
-
-      case 'opening':
-        if (S.prologueIndex < PROLOGUE.length - 1) S.prologueIndex++;
+      case 'rules':
+        if (S.step < RULES.length - 1) S.step++;
+        else if (S.settings.showStory) { S.phase = 'story'; S.step = 0; }
         else startNight();
         break;
 
-      case 'nightfall':
-        S.phase = S.nightBeats.length ? 'nightbeat' : 'dawn';
-        if (S.phase === 'dawn') resolveDawn();
+      case 'story':
+        if (S.step < STORY.length - 1) S.step++;
+        else startNight();
         break;
 
-      case 'nightbeat': {
-        const b = beat();
-        if (b && needsInput(b) && !b.applied) return;
-        if (S.beatIndex < S.nightBeats.length - 1) {
-          S.beatIndex++;
-          S.seerAnswer = null;
-        } else {
-          S.phase = 'wake';
-        }
+      case 'night': {
+        const b = beatOf(S);
+        if (b && beatNeedsInput(b) && !b.done) return;
+        if (S.step < S.night.length - 1) { S.step++; S.seerAnswer = null; }
+        else resolveDawn();
         break;
       }
-
-      case 'wake':
-        S.phase = 'suspense';
-        S.suspenseNext = 'dawn';
-        startTimer(3000);
-        break;
-
-      case 'suspense':
-        stopTimer();
-        if (S.suspenseNext === 'dawn') { resolveDawn(); S.phase = 'dawn'; }
-        else resolveVote();
-        break;
 
       case 'dawn':
         afterDeaths('day');
         break;
 
-      case 'hunter': {
-        if (!S.hunterTarget) return;
-        kill(S, S.hunterTarget, 'hunter');
-        S.lastDeaths.push(S.hunterTarget);
-        S.hunterPending = null;
-        S.hunterTarget = null;
-        afterDeaths(S.hunterReturn || 'day');
-        break;
-      }
-
       case 'day':
         S.phase = 'vote';
         S.votes = {};
         S.revotes = 0;
-        S.revoteNotice = false;
-        startTimer(5000);          // just the three-two-one on the TV
+        S.revoted = false;
+        startTimer(0);
         break;
 
-      case 'vote':                 // the countdown; the tally sheet comes after
-        S.phase = 'tally';
-        S.revoteNotice = false;
-        stopTimer();
+      case 'vote': {
+        if (!votesIn(S)) return;
+        const out = voteResult(S);
+        S.tally = out.counts;
+        if (out.tied && S.revotes < MAX_REVOTES) {
+          S.revotes++;
+          S.revoted = true;
+          S.votes = {};
+          Sound.play('vote');
+          break;
+        }
+        S.deaths = [];
+        S.cause = 'vote';
+        if (out.id) { kill(S, out.id, 'vote'); S.deaths = [out.id]; }
+        S.phase = 'verdict';
+        Sound.play(out.id ? 'dead' : 'vote');
+        break;
+      }
+
+      case 'verdict':
+        afterDeaths('night');
         break;
 
-      case 'tally':
-        if (!votesIn()) return;
-        S.phase = 'suspense';
-        S.suspenseNext = 'lynch';
-        startTimer(3000);
+      case 'hunter': {
+        if (!S.hunterTarget) return;
+        kill(S, S.hunterTarget, 'hunter');
+        S.deaths.push(S.hunterTarget);
+        S.hunter = null;
+        S.hunterTarget = null;
+        Sound.play('dead');
+        afterDeaths(S.hunterNext || 'day');
         break;
+      }
 
-      case 'lynch':
-        afterDeaths('nightfall');
-        break;
-
-      default:
-        return;
+      default: return;
     }
     push();
-    render();
+    draw();
   }
 
-  /* After anybody dies: give the Hunter their shot, then see if it's over. */
+  function resolveDawn() {
+    S.deaths = [];
+    S.cause = 'killers';
+    if (S.pendingKill && kill(S, S.pendingKill, 'killers')) S.deaths = [S.pendingKill];
+    S.phase = 'dawn';
+    Sound.play(S.deaths.length ? 'dead' : 'dawn');
+  }
+
+  /* After anybody dies: let a dead Hunter fire, then see whether it's over. */
   function afterDeaths(then) {
-    const hunter = S.lastDeaths.find((id) => {
+    const h = S.deaths.find((id) => {
       const p = byId(S, id);
       return p && p.role === 'hunter' && !S.hunterDone[id];
     });
-    if (hunter) {
-      S.hunterDone[hunter] = true;
-      S.hunterPending = hunter;
+    if (h) {
+      S.hunterDone[h] = true;
+      S.hunter = h;
       S.hunterTarget = null;
-      S.hunterReturn = then;
+      S.hunterNext = then;
       S.phase = 'hunter';
       return;
     }
 
     const end = checkEnd(S);
-    if (end) { S.result = end; S.phase = 'over'; stopTimer(); return; }
+    if (end) {
+      S.result = end;
+      S.phase = 'over';
+      startTimer(0);
+      Sound.play('win');
+      return;
+    }
 
     if (then === 'day') {
       S.phase = 'day';
       startTimer(S.settings.dayMs);
-    } else if (then === 'nightfall') {
+    } else {
       S.round++;
       startNight();
-    } else {
-      S.phase = then;
     }
-  }
-
-  function startNight() {
-    S.phase = 'nightfall';
-    S.nightBeats = buildNight(S);
-    S.beatIndex = 0;
-    S.pendingKill = null;
-    S.seerAnswer = null;
-    S.nightLog = [];
-    S.lastDeaths = [];
-    stopTimer();
-  }
-
-  /* A tie means the village couldn't agree, so they go again. After a couple of
-     rounds of that, the rope goes back on the hook and the night comes anyway. */
-  function resolveVote() {
-    const out = voteOutcome(S);
-    if (out.tied && S.revotes < MAX_REVOTES) {
-      S.revotes++;
-      S.votes = {};
-      S.revoteNotice = true;
-      S.phase = 'vote';
-      startTimer(5000);
-      Sound.play('toll');
-      return;
-    }
-    S.lastDeaths = [];
-    S.lastCause = 'vote';
-    S.voteTied = out.tied;
-    S.voteCounts = out.counts;
-    if (out.id) { kill(S, out.id, 'vote'); S.lastDeaths = [out.id]; }
-    S.phase = 'lynch';
-    Sound.play(out.id ? 'stab' : 'toll');
-  }
-
-  function resolveDawn() {
-    S.lastDeaths = [];
-    S.lastCause = 'killers';
-    if (S.pendingKill && kill(S, S.pendingKill, 'killers')) S.lastDeaths = [S.pendingKill];
-    S.firstNightDone = true;
-    Sound.play(S.lastDeaths.length ? 'stab' : 'dawn');
   }
 
   function back() {
     switch (S.phase) {
-      case 'nightbeat': {
-        const b = beat();
-        if (b && b.applied) { undo(b); break; }
-        if (S.beatIndex > 0) { S.beatIndex--; S.seerAnswer = null; }
-        else S.phase = 'nightfall';
+      case 'rules': if (S.step > 0) S.step--; else return; break;
+      case 'story':
+        if (S.step > 0) S.step--;
+        else if (S.settings.showRules) { S.phase = 'rules'; S.step = RULES.length - 1; }
+        else return;
+        break;
+      case 'night': {
+        const b = beatOf(S);
+        if (b && b.done) { undoBeat(S, b); break; }
+        if (S.step > 0) { S.step--; S.seerAnswer = null; break; }
+        if (S.settings.showStory) { S.phase = 'story'; S.step = STORY.length - 1; }
+        else if (S.settings.showRules) { S.phase = 'rules'; S.step = RULES.length - 1; }
+        else return;
         break;
       }
-      case 'tutorial':
-        if (S.tutorialIndex > 0) S.tutorialIndex--;
-        else return;
-        break;
-      case 'opening':
-        if (S.prologueIndex > 0) S.prologueIndex--;
-        else if (S.settings.tutorial) { S.phase = 'tutorial'; S.tutorialIndex = TUTORIAL.length - 1; }
-        else return;
-        break;
-      case 'nightfall':
-        if (S.round === 1) { S.phase = 'opening'; S.prologueIndex = PROLOGUE.length - 1; }
-        break;
-      case 'wake':
-        S.phase = 'nightbeat';
-        S.beatIndex = Math.max(0, S.nightBeats.length - 1);
-        break;
-      case 'suspense':
-        stopTimer();
-        S.phase = S.suspenseNext === 'dawn' ? 'wake' : 'tally';
-        break;
-      case 'day': S.phase = 'dawn'; stopTimer(); break;
+      case 'day': S.phase = 'dawn'; startTimer(0); break;
       case 'vote': S.phase = 'day'; startTimer(S.settings.dayMs); break;
-      case 'tally': S.phase = 'vote'; startTimer(5000); break;
       default: return;
     }
     push();
-    render();
+    draw();
   }
 
-  /* ---------- night inputs ---------- */
+  /* ---------- drawing ---------- */
 
-  function needsInput(b) { return b.input !== 'none' && b.input !== 'self'; }
-
-  /* A disabled Next with no explanation reads as a frozen app. Say what's wanted. */
-  function gate(b) {
-    const ready = !!b.applied;
-    $('admNext').disabled = !ready;
-    if (!ready) $('admNext').textContent = b.input === 'swap' ? 'pick two first' : 'pick someone first';
-  }
-  function actorOf(b) {
-    const holder = aliveWith(S, b.role)[0];
-    return holder ? holder.id : null;
-  }
-
-  function apply(b, targets) {
-    undo(b);
-    b.targets = targets.slice();
-    b.actor = actorOf(b);
-    switch (b.input) {
-      case 'kill': S.pendingKill = targets[0]; break;
-      case 'look': applyLook(S, targets[0]); break;
-      case 'copy': {
-        const a = byId(S, b.actor);
-        b.prevRole = a ? a.role : '';
-        applyCopy(S, b.actor, targets[0]);
-        break;
-      }
-      case 'steal': applySteal(S, b.actor, targets[0]); break;
-      case 'swap': applySwap(S, targets[0], targets[1]); break;
-    }
-    b.applied = true;
-  }
-
-  function undo(b) {
-    if (!b || !b.applied) return;
-    switch (b.input) {
-      case 'kill': S.pendingKill = null; break;
-      case 'look': S.seerAnswer = null; break;
-      case 'copy': { const a = byId(S, b.actor); if (a) a.role = b.prevRole; break; }
-      case 'steal': applySteal(S, b.actor, b.targets[0]); break;   // its own inverse
-      case 'swap': applySwap(S, b.targets[0], b.targets[1]); break;
-    }
-    S.nightLog.pop();
-    b.applied = false;
-    b.targets = [];
-  }
-
-  function votesIn() { return alive(S).every((p) => !!S.votes[p.id]); }
-
-  /* ---------- render ---------- */
-
-  function render() {
-    ['admPicker', 'admVotes', 'admOutcome', 'admAnswer', 'admSkip'].forEach((id) => { $(id).hidden = true; });
-    $('admClockRow').hidden = !S.timer.total || S.phase === 'vote';
-    $('admPause').textContent = S.timer.running ? 'pause' : 'resume';
+  function draw() {
+    ['admScript', 'admAnswer', 'admPicker', 'admVotes', 'admResult'].forEach((id) => { $(id).hidden = true; });
+    $('admSkip').hidden = true;
+    $('admClockRow').hidden = !S.timer.total;
+    $('admPause').textContent = S.timer.running ? 'Pause' : 'Resume';
     $('admNext').disabled = false;
-    $('admNext').textContent = 'next';
-    $('admStory').textContent = '';
-    $('admCall').textContent = '';
-    $('admSayLabel').hidden = true;
-    $('roundLabel').textContent =
-      (S.phase === 'over' ? 'Finished'
-        : ['day', 'vote', 'tally', 'lynch'].indexOf(S.phase) !== -1 ? 'Day ' + roman(S.round)
-        : 'Night ' + roman(S.round));
+    $('admNext').textContent = 'Next';
+    $('admHint').textContent = '';
+    $('admRoster').hidden = false;
 
-    const head = (kicker, title) => { $('admKicker').textContent = kicker; $('admTitle').textContent = title; };
+    const head = (eyebrow, title) => {
+      $('admEyebrow').textContent = eyebrow;
+      $('admTitle').textContent = title;
+    };
 
     switch (S.phase) {
-      case 'tutorial': {
-        const t = TUTORIAL[S.tutorialIndex];
-        const last = S.tutorialIndex === TUTORIAL.length - 1;
-        head('how to play · ' + (S.tutorialIndex + 1) + ' of ' + TUTORIAL.length, t.title);
-        $('admStory').textContent = LINES[t.id];
-        if (S.tutorialIndex === 0) {
-          $('admCall').textContent = 'Everyone seated and holding their own role. Let the TV explain it, then hit skip if they already know.';
-        }
-        $('admNext').textContent = last ? 'on with the story' : 'go on';
-        showSkip('skip the rules', () => { S.phase = 'opening'; push(); render(); });
+      case 'rules': {
+        const r = RULES[S.step];
+        head('How to play · ' + (S.step + 1) + ' of ' + RULES.length, r.title);
+        $('admHint').textContent = r.body;
+        $('admNext').textContent = S.step === RULES.length - 1 ? (S.settings.showStory ? 'On to the story' : 'Start the night') : 'Next';
+        skip('Skip the rules', () => { if (S.settings.showStory) { S.phase = 'story'; S.step = 0; } else startNight(); push(); draw(); });
+        $('admRoster').hidden = true;
         break;
       }
 
-      case 'opening': {
-        const p = PROLOGUE[S.prologueIndex];
-        const last = S.prologueIndex === PROLOGUE.length - 1;
-        head('the story · ' + (S.prologueIndex + 1) + ' of ' + PROLOGUE.length, p.title);
-        $('admStory').textContent = LINES[p.id];
-        if (last) $('admCall').textContent = 'Next puts them to sleep and starts the first night.';
-        $('admNext').textContent = last ? 'nightfall' : 'go on';
-        showSkip('skip the story', () => { startNight(); push(); render(); });
+      case 'story': {
+        const t = STORY[S.step];
+        head('Story · ' + (S.step + 1) + ' of ' + STORY.length, t.title);
+        $('admHint').textContent = t.body;
+        $('admNext').textContent = S.step === STORY.length - 1 ? 'Start the night' : 'Next';
+        skip('Skip the story', () => { startNight(); push(); draw(); });
+        $('admRoster').hidden = true;
         break;
       }
 
-      case 'nightfall':
-        head('night ' + roman(S.round), 'Everybody, close your eyes');
-        $('admStory').textContent = S.round === 1 ? LINES.night_first : LINES.night_again;
-        $('admCall').textContent = 'Wait until the room is quiet, then work down the list. ' +
-          S.nightBeats.length + ' role' + (S.nightBeats.length === 1 ? '' : 's') + ' still to call.';
+      case 'night': drawBeat(); break;
+
+      case 'dawn': {
+        head('Dawn · day ' + roman(S.round), S.deaths.length ? nameOf(S, S.deaths[0]) + ' is dead' : 'Nobody died');
+        $('admHint').textContent = S.deaths.length
+          ? 'The town is told: ' + reveal(S, S.deaths[0]).text + '.'
+          : 'The killers came up empty. Everyone is still here.';
+        $('admNext').textContent = 'Start the day';
         break;
-
-      case 'nightbeat': renderBeat(); break;
-
-      case 'wake':
-        head('night ' + roman(S.round) + ' · over', 'Everybody, wake up');
-        $('admStory').textContent = LINES.dawn;
-        $('admCall').textContent = 'Wait for everyone to open their eyes. Next starts a three-second count, then the TV shows who didn\'t make it.';
-        $('admNext').textContent = 'count them down';
-        break;
-
-      case 'suspense':
-        head(S.suspenseNext === 'dawn' ? 'dawn' : 'the rope', 'Three…');
-        $('admCall').textContent = 'Eyes on the television.';
-        $('admNext').disabled = true;
-        break;
-
-      case 'dawn': renderDawn(); break;
+      }
 
       case 'hunter': {
-        head('the hunter falls', nameOf(S, S.hunterPending) + ' takes a shot');
-        $('admStory').textContent = LINES.hunter_dies;
-        $('admCall').textContent = 'Ask them, out loud, who they are taking with them.';
-        showPicker('Shot by ' + nameOf(S, S.hunterPending),
-          alive(S).map((p) => p.id), S.hunterTarget ? [S.hunterTarget] : [], 1,
-          (sel) => { S.hunterTarget = sel[0] || null; push(); render(); });
+        head('The Hunter falls', nameOf(S, S.hunter) + ' takes a shot');
+        $('admHint').textContent = 'Ask them out loud who they are taking with them.';
+        picker('Shot by ' + nameOf(S, S.hunter), living(S).map((p) => p.id),
+          S.hunterTarget ? [S.hunterTarget] : [], 1,
+          (sel) => { S.hunterTarget = sel[0] || null; push(); draw(); });
         $('admNext').disabled = !S.hunterTarget;
-        $('admNext').textContent = S.hunterTarget ? 'fire' : 'pick a target first';
+        $('admNext').textContent = S.hunterTarget ? 'Fire' : 'Pick a target';
         break;
       }
 
       case 'day':
-        head('day ' + roman(S.round), 'The village argues');
-        $('admStory').textContent = LINES.day;
-        $('admCall').textContent = 'Let them run. Hit next when you want the vote.';
-        $('admNext').textContent = 'call the vote';
+        head('Day ' + roman(S.round), 'The town argues');
+        $('admHint').textContent = 'Let them talk. Hit next when you want the vote.';
+        $('admNext').textContent = 'Call the vote';
         break;
 
-      case 'vote':
-        head('day ' + roman(S.round), S.revoteNotice ? 'Again — everybody points' : 'Everybody points');
-        $('admStory').textContent = S.revoteNotice
-          ? 'Nobody had a majority, so the village votes again. Attempt ' + (S.revotes + 1) + '.'
-          : '';
-        $('admCall').textContent = 'The TV counts three, two, one. Keep your hands up until it\'s all written down.';
-        $('admNext').textContent = 'take the tally';
-        break;
+      case 'vote': drawVote(); break;
 
-      case 'tally':
-        head('day ' + roman(S.round), 'Who pointed where?');
-        renderVotes();          // sets the call text and the next button itself
-        break;
-
-      case 'lynch': renderLynch(); break;
-
-      case 'over': renderOver(); break;
-    }
-
-    renderRoster();
-    renderClock();
-  }
-
-  function renderBeat() {
-    const b = beat();
-    if (!b) return;
-    const holders = aliveWith(S, b.role);
-    $('admKicker').textContent = 'night ' + roman(S.round) + ' · ' + (S.beatIndex + 1) + ' of ' + S.nightBeats.length;
-    $('admTitle').textContent = ROLES[b.role].name;
-    /* With the narrator set to story-only or silent, this text is the script —
-       the moderator reads it out themselves, so it's marked as such. */
-    $('admSayLabel').hidden = false;
-    $('admCall').textContent = b.call +
-      (b.notes ? ' ' + b.notes.map((n) => LINES[n]).join(' ') : '');
-
-    const others = (excludeIds) => alive(S).filter((p) => excludeIds.indexOf(p.id) === -1).map((p) => p.id);
-
-    /* Once the Killer has marked somebody, that person's role is settled — later
-       roles can't shuffle a corpse's card around. Without this a Troublemaker can
-       swap the victim into the Killer after the fact and the morning announces the
-       wrong thing entirely. The Seer is deliberately exempt: dropping the name from
-       their list would tell the table who the Killer picked. */
-    const swappable = (excludeIds) => others(excludeIds).filter((id) => id !== S.pendingKill);
-    const actor = actorOf(b);
-
-    switch (b.input) {
-      case 'kill':
-        showPicker('Who the Killer takes',
-          alive(S).filter((p) => p.role !== 'killer').map((p) => p.id),
-          b.targets, 1, (sel) => { if (sel.length) apply(b, sel); else undo(b); push(); render(); });
-        gate(b);
-        break;
-
-      case 'look':
-        showPicker('Who the Seer inspects', others([actor]), b.targets, 1,
-          (sel) => { if (sel.length) apply(b, sel); else undo(b); push(); render(); });
-        if (S.seerAnswer) {
-          const def = ROLES[S.seerAnswer.role];
-          const box = $('admAnswer');
-          box.hidden = false;
-          box.className = 'answer ' + (S.seerAnswer.isKiller ? 'killer' : 'clear');
-          box.innerHTML = '<p class="micro">Show this to the Seer — do not say it aloud</p><strong>' +
-            esc(nameOf(S, S.seerAnswer.targetId)) + ' is the ' +
-            esc(def ? def.name : '?') + '</strong>';
-          box.classList.toggle('killer', S.seerAnswer.isKiller);
-        }
-        gate(b);
-        break;
-
-      case 'copy':
-        showPicker('Who the Doppelgänger becomes', swappable([actor]), b.targets, 1,
-          (sel) => { if (sel.length) apply(b, sel); else undo(b); push(); render(); });
-        gate(b);
-        break;
-
-      case 'steal':
-        showPicker('Who the Robber steals from', swappable([actor]), b.targets, 1,
-          (sel) => { if (sel.length) apply(b, sel); else undo(b); push(); render(); });
-        gate(b);
-        break;
-
-      case 'swap':
-        showPicker('The two being swapped — pick two', swappable([actor]), b.targets, 2,
-          (sel) => { if (sel.length === 2) apply(b, sel); else { undo(b); b.targets = sel; } push(); render(); });
-        gate(b);
-        break;
-
-      case 'self': {
-        const box = $('admAnswer');
-        box.hidden = false;
-        box.className = 'answer';
-        box.innerHTML = '<p class="micro">Signal this to the Insomniac</p><strong>' +
-          holders.map((p) => esc(p.name) + ' is the ' + ROLES[p.role].name).join('<br>') + '</strong>';
+      case 'verdict': {
+        head('The vote · day ' + roman(S.round), S.deaths.length ? nameOf(S, S.deaths[0]) + ' is voted out' : 'Nobody is voted out');
+        $('admHint').textContent = S.deaths.length
+          ? 'The town is told: ' + reveal(S, S.deaths[0]).text + '.'
+          : 'No majority after ' + (S.revotes + 1) + ' rounds of voting. The day is wasted.';
+        $('admNext').textContent = 'Nightfall';
         break;
       }
 
-      case 'none':
-        $('admCall').textContent = b.call + (holders.length > 1
-          ? ' (' + holders.map((p) => p.name).join(', ') + ')'
-          : '');
-        break;
+      case 'over': drawResult(); break;
     }
+
+    drawRoster();
+    drawClock();
   }
 
-  function renderDawn() {
-    const dead = S.lastDeaths;
-    $('admKicker').textContent = 'dawn · day ' + roman(S.round);
-    if (!dead.length) {
-      $('admTitle').textContent = 'Nobody died';
-      $('admStory').textContent = LINES.dawn_quiet;
+  function skip(label, fn) {
+    const b = $('admSkip');
+    b.hidden = false;
+    b.textContent = label;
+    b.onclick = fn;
+  }
+
+  function drawBeat() {
+    const b = beatOf(S);
+    if (!b) return;
+    const role = ROLES[b.role];
+    const holders = livingWith(S, b.role);
+    const beat = NIGHT.find((x) => x.role === b.role);
+
+    $('admEyebrow').textContent = 'Night ' + roman(S.round) + ' · ' + (S.step + 1) + ' of ' + S.night.length;
+    $('admTitle').textContent = role.name;
+
+    $('admScript').hidden = false;
+    $('admScriptText').textContent = beat.say;
+
+    const actor = actorOf(S, b);
+    const others = (skipIds) => living(S).filter((p) => skipIds.indexOf(p.id) === -1).map((p) => p.id);
+    const gate = () => {
+      $('admNext').disabled = !b.done;
+      if (!b.done) $('admNext').textContent = b.input === 'swap' ? 'Pick two' : 'Pick someone';
+    };
+    const set = (sel, need) => {
+      if (sel.length === need) applyBeat(S, b, sel);
+      else { undoBeat(S, b); b.targets = sel; }
+      push(); draw();
+    };
+
+    if (b.input === 'kill') {
+      picker('Who the killers take', living(S).filter((p) => p.role !== 'killer').map((p) => p.id),
+        b.targets, 1, (sel) => set(sel, 1));
+      gate();
+
+    } else if (b.input === 'look') {
+      picker('Who the Seer looks at', others([actor]), b.targets, 1, (sel) => set(sel, 1));
+      if (S.seerAnswer) {
+        const def = ROLES[S.seerAnswer.role];
+        const isKiller = S.seerAnswer.role === 'killer';
+        const box = $('admAnswer');
+        box.hidden = false;
+        box.className = 'answer ' + (isKiller ? 'is-killer' : 'is-clear');
+        box.innerHTML = '<p class="eyebrow">Signal this to the Seer — don\'t say it aloud</p>' +
+          '<b>' + esc(nameOf(S, S.seerAnswer.targetId)) + ' is the ' + esc(def ? def.name : '?') + '</b>';
+      }
+      gate();
+
+    } else if (b.input === 'copy') {
+      picker('Who the Doppelgänger copies', others([actor]), b.targets, 1, (sel) => set(sel, 1));
+      $('admHint').textContent = 'They act on the new role if it is called later tonight, and stay that role from now on.';
+      gate();
+
+    } else if (b.input === 'steal') {
+      picker('Who the Robber steals from', others([actor]), b.targets, 1, (sel) => set(sel, 1));
+      gate();
+
+    } else if (b.input === 'swap') {
+      picker('The two being swapped', others([actor]), b.targets, 2, (sel) => set(sel, 2));
+      gate();
+
+    } else if (b.input === 'self') {
+      const box = $('admAnswer');
+      box.hidden = false;
+      box.className = 'answer';
+      box.innerHTML = '<p class="eyebrow">Signal this to the Insomniac</p><b>' +
+        holders.map((p) => esc(p.name) + ' is the ' + ROLES[p.role].name).join('<br>') + '</b>';
+
     } else {
-      $('admTitle').textContent = nameOf(S, dead[0]) + ' is dead';
-      $('admStory').textContent = LINES.dawn_body;
-      const r = deathReveal(S, dead[0]);
-      $('admCall').textContent = 'The village is told: ' + r.text + '.';
+      $('admHint').textContent = holders.length > 1
+        ? holders.map((p) => p.name).join(' and ') + ' are awake.'
+        : holders.map((p) => p.name).join('') + ' is awake.';
     }
-    $('admNext').textContent = 'daylight';
   }
 
-  function renderLynch() {
-    $('admKicker').textContent = 'the rope · day ' + roman(S.round);
-    if (!S.lastDeaths.length) {
-      $('admTitle').textContent = S.voteTied ? 'A tie. Nobody hangs.' : 'Nobody hangs';
-      $('admStory').textContent = LINES.lynch_none;
-    } else {
-      const id = S.lastDeaths[0];
-      $('admTitle').textContent = nameOf(S, id) + ' hangs';
-      $('admStory').textContent = LINES.lynch_body;
-      $('admCall').textContent = 'The village is told: ' + deathReveal(S, id).text + '.';
-    }
-    $('admNext').textContent = 'nightfall';
+  function picker(label, ids, chosen, limit, onChange) {
+    $('admPicker').hidden = false;
+    $('pickLabel').textContent = label;
+    $('picks').innerHTML = ids.map((id) =>
+      '<button type="button" class="pick" data-id="' + id + '" aria-pressed="' +
+      (chosen.indexOf(id) !== -1) + '">' + esc(nameOf(S, id)) + '</button>').join('');
+
+    $('picks').querySelectorAll('button').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        const sel = chosen.slice();
+        const at = sel.indexOf(id);
+        if (at !== -1) sel.splice(at, 1);
+        else { sel.push(id); while (sel.length > limit) sel.shift(); }
+        Sound.play('tap');
+        onChange(sel);
+      });
+    });
   }
 
-  function renderOver() {
+  function drawVote() {
+    const alive = living(S);
+    const short = alive.filter((p) => !S.votes[p.id]);
+
+    $('admEyebrow').textContent = 'Day ' + roman(S.round) + (S.revoted ? ' · revote ' + (S.revotes + 1) : '');
+    $('admTitle').textContent = S.revoted ? 'Tied — everyone votes again' : 'Who is everyone pointing at?';
+
+    $('admVotes').hidden = false;
+    $('voteLabel').textContent = (alive.length - short.length) + ' of ' + alive.length + ' recorded';
+    $('voteSheet').innerHTML = alive.map((p) => {
+      const targets = alive.filter((t) => t.id !== p.id).map((t) =>
+        '<button type="button" data-voter="' + p.id + '" data-target="' + t.id + '" aria-pressed="' +
+        (S.votes[p.id] === t.id) + '">' + esc(t.name) + '</button>').join('');
+      return '<div class="vote-row' + (S.votes[p.id] ? '' : ' todo') + '"><b>' + esc(p.name) + '</b>' +
+        '<div class="vote-targets">' + targets + '</div></div>';
+    }).join('');
+
+    $('voteSheet').querySelectorAll('button').forEach((b) => {
+      b.addEventListener('click', () => {
+        S.votes[b.dataset.voter] = b.dataset.target;
+        Sound.play('tap');
+        push(); draw();
+      });
+    });
+
+    /* A disabled button with no explanation reads as a frozen app, so name the
+       people still missing rather than just greying it out. */
+    $('admNext').disabled = short.length > 0;
+    $('admNext').textContent = short.length ? short.length + ' still to record' : 'Lock it in';
+    $('admHint').textContent = short.length
+      ? 'Waiting on ' + short.slice(0, 4).map((p) => p.name).join(', ') + (short.length > 4 ? ' and others' : '') + '.'
+      : 'Everyone accounted for.';
+  }
+
+  function drawResult() {
     const r = S.result;
-    $('admKicker').textContent = 'finished after ' + roman(S.round) + (S.round === 1 ? ' night' : ' nights');
+    $('admEyebrow').textContent = 'Finished after ' + roman(S.round) + (S.round === 1 ? ' night' : ' nights');
     $('admTitle').textContent = r.headline;
-    const box = $('admOutcome');
+
+    const box = $('admResult');
     box.hidden = false;
     box.innerHTML =
-      '<ul>' + S.players.map((p) => {
+      '<ul class="roster">' + S.players.map((p) => {
         const won = r.winners.indexOf(p.id) !== -1;
-        return '<li><span class="' + (won ? 'won' : 'lost') + '">' + esc(p.name) + '</span>' +
-          '<span class="lost">' + ROLES[p.role].name +
-          (p.startRole !== p.role ? ' (began as ' + ROLES[p.startRole].name + ')' : '') +
-          (p.alive ? '' : ' · died night ' + roman(p.diedRound)) + '</span></li>';
+        const changed = p.role !== p.startRole;
+        return '<li class="' + (p.alive ? '' : 'out') + '">' +
+          '<span class="who">' + (won ? '★ ' : '') + esc(p.name) + '</span>' +
+          '<span class="tag">' + ROLES[p.role].name +
+          (changed ? ' (began as ' + ROLES[p.startRole].name + ')' : '') + '</span></li>';
       }).join('') + '</ul>' +
-      '<div class="outcome-actions">' +
-        '<button type="button" class="link" id="againBtn">same cast, new game</button>' +
-        '<button type="button" class="link" id="setupBtn">back to setup</button>' +
+      '<div style="display:flex;gap:10px;margin-top:16px">' +
+        '<button type="button" class="btn" id="again">Same cast, new game</button>' +
+        '<button type="button" class="btn btn-ghost" id="toSetup">Back to setup</button>' +
       '</div>';
-    $('againBtn').addEventListener('click', playAgain);
-    $('setupBtn').addEventListener('click', quit);
+
+    $('again').addEventListener('click', playAgain);
+    $('toSetup').addEventListener('click', quit);
     $('admNext').disabled = true;
+    $('admRoster').hidden = true;
   }
 
   function playAgain() {
@@ -637,98 +526,29 @@ const Admin = (function () {
       id: p.id, name: p.name, role: p.startRole, startRole: p.startRole,
       alive: true, diedRound: 0, diedBy: '',
     }));
-    boot(fresh, !tvWindow || tvWindow.closed);
+    fresh.phase = fresh.settings.showRules ? 'rules' : (fresh.settings.showStory ? 'story' : null);
+    boot(fresh, !tv || tv.closed);
   }
 
-  /* A get-out for the run-up screens, so a table that already knows the rules
-     isn't tapping through twenty of them. */
-  function showSkip(label, fn) {
-    const b = $('admSkip');
-    b.hidden = false;
-    b.textContent = label;
-    b.onclick = fn;
-  }
-
-  function showPicker(label, ids, chosen, limit, onChange) {
-    const box = $('admPicker');
-    box.hidden = false;
-    $('pickerLabel').textContent = label;
-    const grid = $('pickerGrid');
-    grid.innerHTML = ids.map((id) =>
-      '<button type="button" data-pick="' + id + '" aria-pressed="' +
-      (chosen.indexOf(id) !== -1) + '">' + esc(nameOf(S, id)) + '</button>').join('');
-    grid.querySelectorAll('button').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const id = btn.dataset.pick;
-        let sel = chosen.slice();
-        const at = sel.indexOf(id);
-        if (at !== -1) sel.splice(at, 1);
-        else { sel.push(id); if (sel.length > limit) sel = sel.slice(sel.length - limit); }
-        Sound.play('blip');
-        onChange(sel);
-      });
-    });
-  }
-
-  function renderVotes() {
-    const box = $('admVotes');
-    box.hidden = false;
-    const living = alive(S);
-    box.innerHTML = living.map((p) => {
-      const targets = living.filter((t) => t.id !== p.id).map((t) =>
-        '<button type="button" data-voter="' + p.id + '" data-target="' + t.id + '" aria-pressed="' +
-        (S.votes[p.id] === t.id) + '">' + esc(t.name) + '</button>').join('');
-      return '<div class="vote-row' + (S.votes[p.id] ? ' done' : ' missing') + '"><b>' + esc(p.name) +
-        '</b><div class="vote-targets">' + targets + '</div></div>';
-    }).join('');
-    box.querySelectorAll('button').forEach((b) => {
-      b.addEventListener('click', () => {
-        S.votes[b.dataset.voter] = b.dataset.target;
-        Sound.play('blip');
-        push();
-        renderVotes();
-      });
-    });
-    voteProgress();
-  }
-
-  /* Everyone has to be accounted for before the rope comes out. Say who's
-     missing rather than just greying the button out and leaving them to guess. */
-  function voteProgress() {
-    const living = alive(S);
-    const short = living.filter((p) => !S.votes[p.id]);
-    const done = living.length - short.length;
-    $('admNext').disabled = short.length > 0;
-    $('admNext').textContent = short.length ? short.length + ' still to record' : 'lock it in';
-    $('admCall').textContent = short.length
-      ? done + ' of ' + living.length + ' recorded. Still waiting on ' +
-        short.slice(0, 4).map((p) => p.name).join(', ') + (short.length > 4 ? ' and others' : '') + '.'
-      : 'All ' + living.length + ' recorded. Lock it in.';
-  }
-
-  function renderRoster() {
-    const living = alive(S).length;
-    $('rosterCount').textContent = living + '/' + S.players.length;
-    $('rosterList').innerHTML = S.players.map((p) => {
-      const r = ROLES[p.role] || { name: '?', mark: '?', team: '' };
-      const cls = [p.alive ? '' : 'dead', r.team === 'killers' ? 'killer' : '', r.team === 'tanner' ? 'tan' : ''].join(' ');
-      return '<li class="' + cls + '"><span class="mark">' + r.mark + '</span>' +
+  function drawRoster() {
+    if ($('admRoster').hidden) return;
+    $('roster').innerHTML = S.players.map((p) => {
+      const r = ROLES[p.role];
+      return '<li class="' + (p.alive ? '' : 'out') + (r.team === 'killers' ? ' k' : '') + '">' +
         '<span class="who">' + esc(p.name) + '</span>' +
-        '<span class="micro">' + r.name + '</span></li>';
+        '<span class="tag">' + r.name + (p.alive ? '' : ' · out') + '</span></li>';
     }).join('');
   }
 
-  function renderClock() {
+  function drawClock() {
     if (!S || !S.timer.total) return;
-    const ms = timerRemaining(S.timer);
+    const ms = timeLeft(S.timer);
     const el = $('admClock');
-    el.textContent = fmtClock(ms);
+    el.textContent = clock(ms);
     el.classList.toggle('low', ms <= 15000);
   }
 
-  function esc(s) {
-    return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  }
+  const esc = (v) => String(v).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
-  return { launch, resume };
+  return { launch: launch, resume: resume };
 })();
