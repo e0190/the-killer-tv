@@ -1,183 +1,106 @@
 /* the killer tv — sound.
 
-   Effects are synthesised in the browser, so there is nothing to download.
-
-   The narrator has three tiers and always uses the best one available:
-     1. your own audio files in /audio — see AUDIO.md
-     2. Google Cloud TTS via /api/tts, if a key is configured
-     3. the browser's built-in speech engine
-
-   Every tier falls through to the next on failure, so the narrator is never
-   silent and a half-finished audio pack still plays fine. */
+   Effects are synthesised, so there is nothing to download. The narrator plays
+   files from /audio when they exist and falls back to the browser's own voice
+   when they don't, so the game always talks even with an empty audio folder. */
 
 const Sound = (function () {
-  let ctx = null, master = null, drone = null, enabled = true;
+  let ctx = null, out = null, on = true;
 
-  function ensure() {
+  function ready() {
     if (!ctx) {
       const AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) return null;
       ctx = new AC();
-      master = ctx.createGain();
-      master.gain.value = 0.45;
-      master.connect(ctx.destination);
+      out = ctx.createGain();
+      out.gain.value = 0.4;
+      out.connect(ctx.destination);
     }
     if (ctx.state === 'suspended') ctx.resume();
     return ctx;
   }
 
-  function setEnabled(v) { enabled = v; if (!v) stopDrone(); }
-
-  function env(node, gain, attack, hold, release, peak) {
+  function env(node, gain, a, h, r, peak) {
     const t = ctx.currentTime;
     gain.gain.setValueAtTime(0.0001, t);
-    gain.gain.exponentialRampToValueAtTime(peak, t + attack);
-    gain.gain.setValueAtTime(peak, t + attack + hold);
-    gain.gain.exponentialRampToValueAtTime(0.0001, t + attack + hold + release);
+    gain.gain.exponentialRampToValueAtTime(peak, t + a);
+    gain.gain.setValueAtTime(peak, t + a + h);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + a + h + r);
     node.start(t);
-    node.stop(t + attack + hold + release + 0.05);
+    node.stop(t + a + h + r + 0.05);
   }
 
-  function tone(freq, type, attack, hold, release, peak) {
-    if (!enabled || !ensure()) return;
+  function tone(freq, type, a, h, r, peak) {
+    if (!on || !ready()) return;
     const o = ctx.createOscillator(), g = ctx.createGain();
-    o.type = type || 'sine';
-    o.frequency.value = freq;
-    o.connect(g); g.connect(master);
-    env(o, g, attack, hold, release, peak);
+    o.type = type; o.frequency.value = freq;
+    o.connect(g); g.connect(out);
+    env(o, g, a, h, r, peak);
   }
 
-  function noise(duration, cutoff, peak) {
-    if (!enabled || !ensure()) return;
-    const len = Math.floor(ctx.sampleRate * duration);
+  function noise(dur, cut, peak) {
+    if (!on || !ready()) return;
+    const len = Math.floor(ctx.sampleRate * dur);
     const buf = ctx.createBuffer(1, len, ctx.sampleRate);
     const d = buf.getChannelData(0);
     for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
     const src = ctx.createBufferSource(); src.buffer = buf;
-    const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = cutoff || 1200;
-    const g = ctx.createGain(); g.gain.value = peak || 0.3;
-    src.connect(f); f.connect(g); g.connect(master);
+    const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = cut;
+    const g = ctx.createGain(); g.gain.value = peak;
+    src.connect(f); f.connect(g); g.connect(out);
     src.start();
   }
 
   const cues = {
-    thud() {
-      if (!enabled || !ensure()) return;
-      const o = ctx.createOscillator(), g = ctx.createGain();
-      o.type = 'sine';
-      o.frequency.setValueAtTime(130, ctx.currentTime);
-      o.frequency.exponentialRampToValueAtTime(34, ctx.currentTime + 0.55);
-      o.connect(g); g.connect(master);
-      env(o, g, 0.005, 0.05, 0.6, 0.65);
-      noise(0.2, 460, 0.14);
-    },
-    blip() { tone(760, 'triangle', 0.004, 0.02, 0.08, 0.1); },
-    tick() { tone(1400, 'square', 0.001, 0.004, 0.035, 0.05); },
-    stab() {
-      if (!enabled || !ensure()) return;
-      noise(0.7, 2600, 0.45);
-      const o = ctx.createOscillator(), g = ctx.createGain();
-      o.type = 'sawtooth';
-      o.frequency.setValueAtTime(1200, ctx.currentTime);
-      o.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.8);
-      o.connect(g); g.connect(master);
-      env(o, g, 0.005, 0.12, 0.8, 0.35);
-    },
-    riser() {
-      if (!enabled || !ensure()) return;
-      const o = ctx.createOscillator(), g = ctx.createGain(), f = ctx.createBiquadFilter();
-      o.type = 'sawtooth';
-      o.frequency.setValueAtTime(80, ctx.currentTime);
-      o.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 2.4);
-      f.type = 'lowpass';
-      f.frequency.setValueAtTime(280, ctx.currentTime);
-      f.frequency.exponentialRampToValueAtTime(3600, ctx.currentTime + 2.4);
-      o.connect(f); f.connect(g); g.connect(master);
-      env(o, g, 0.4, 1.4, 0.6, 0.2);
-    },
-    dawn() {
-      tone(392, 'sine', 0.03, 0.2, 1.4, 0.16);
-      setTimeout(() => tone(523.25, 'sine', 0.03, 0.2, 1.4, 0.13), 180);
-      setTimeout(() => tone(659.25, 'sine', 0.03, 0.25, 1.8, 0.11), 380);
-    },
-    toll() {
-      tone(110, 'sine', 0.01, 0.3, 2.2, 0.3);
-      tone(220.5, 'sine', 0.01, 0.3, 1.8, 0.12);
-    },
+    tap:  () => tone(660, 'triangle', .004, .015, .07, .08),
+    step: () => { if (on && ready()) { tone(150, 'sine', .005, .04, .3, .35); noise(.12, 500, .07); } },
+    dawn: () => { tone(523, 'sine', .02, .12, .9, .13); setTimeout(() => tone(784, 'sine', .02, .16, 1.1, .1), 150); },
+    dead: () => { if (on && ready()) { noise(.5, 2200, .3); tone(140, 'sawtooth', .005, .08, .6, .25); } },
+    vote: () => { tone(330, 'triangle', .01, .06, .3, .16); setTimeout(() => tone(247, 'triangle', .01, .1, .5, .16), 130); },
+    win:  () => [392, 523, 659, 784].forEach((f, i) => setTimeout(() => tone(f, 'triangle', .01, .1, .45, .16), i * 100)),
   };
 
-  function play(name) { const f = cues[name]; if (f) f(); }
-
-  function startDrone() {
-    if (!enabled || !ensure() || drone) return;
-    const o1 = ctx.createOscillator(), o2 = ctx.createOscillator();
-    const g = ctx.createGain(), f = ctx.createBiquadFilter();
-    o1.type = 'sawtooth'; o1.frequency.value = 52;
-    o2.type = 'sawtooth'; o2.frequency.value = 52.5;
-    f.type = 'lowpass'; f.frequency.value = 200;
-    g.gain.value = 0.0001;
-    o1.connect(f); o2.connect(f); f.connect(g); g.connect(master);
-    o1.start(); o2.start();
-    g.gain.exponentialRampToValueAtTime(0.05, ctx.currentTime + 2.5);
-    drone = { o1, o2, g };
-  }
-
-  function stopDrone() {
-    if (!drone || !ctx) return;
-    const d = drone; drone = null;
-    try {
-      d.g.gain.cancelScheduledValues(ctx.currentTime);
-      d.g.gain.setValueAtTime(d.g.gain.value, ctx.currentTime);
-      d.g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 1.2);
-      setTimeout(() => { try { d.o1.stop(); d.o2.stop(); } catch (e) {} }, 1500);
-    } catch (e) { /* ignore */ }
-  }
-
-  return { play, startDrone, stopDrone, setEnabled, ensure };
+  return {
+    play: (n) => { const f = cues[n]; if (f) f(); },
+    setEnabled: (v) => { on = v; },
+    unlock: ready,
+  };
 })();
 
 
 const Narrator = (function () {
   const DIR = 'audio/';
-  let EXT = '.mp3';        // overridden by the manifest's `format`, if it has one
-  const RATE = 0.84;
-  const PITCH = 0.55;
+  let ext = '.mp3';
 
   let enabled = true;
-  let mode = 'all';        // 'all' | 'story' | 'none'
+  let say = { night: true, deaths: true, day: true, endings: true };
   let voice = null;
-  let choice = '';
-  let cloudReady = null;
-  let cloudBackend = '';
+  let pick = '';
+  let seq = 0;
+  let queue = [];
   let current = null;
-  let packIds = [];        // line ids dropped into the browser
-  let shipped = 0;         // line ids shipped in /audio, per the manifest
-  let shippedVoice = '';
-  let seq = 0;             // bumps on every shush; stale callbacks check it
-  let queue = [];          // lines still to speak in this run
+  const missing = Object.create(null);
+  let have = 0;
 
-  const fileState = {};    // line id -> 'ok' | 'missing'
-  const cloudCache = new Map();
-
-  const BRITISH_MALE = [
+  /* en-GB males first, then anything English. */
+  const PREFERRED = [
     /^Google UK English Male$/i,
-    /\b(Ryan|George|Thomas|Oliver|Arthur|Brian|Alfie|Elliot|Ethan|Noah)\b/i,
-    /^Daniel$/i,
+    /\b(Ryan|George|Thomas|Oliver|Arthur|Brian|Daniel)\b/i,
     /\bmale\b/i,
   ];
 
-  const allVoices = () => ('speechSynthesis' in window ? speechSynthesis.getVoices() : []);
+  const voices = () => ('speechSynthesis' in window ? speechSynthesis.getVoices() : []);
 
-  function pickVoice() {
-    const all = allVoices();
+  function chooseVoice() {
+    const all = voices();
     if (!all.length) return;
-    if (choice && choice !== 'cloud') {
-      const exact = all.find((v) => v.name === choice);
+    if (pick) {
+      const exact = all.find((v) => v.name === pick);
       if (exact) { voice = exact; return; }
     }
     const gb = all.filter((v) => /^en[-_]GB/i.test(v.lang));
     const pool = gb.length ? gb : all;
-    for (const re of BRITISH_MALE) {
+    for (const re of PREFERRED) {
       const hit = pool.find((v) => re.test(v.name));
       if (hit) { voice = hit; return; }
     }
@@ -185,225 +108,117 @@ const Narrator = (function () {
   }
 
   if ('speechSynthesis' in window) {
-    pickVoice();
-    speechSynthesis.addEventListener('voiceschanged', pickVoice);
+    chooseVoice();
+    speechSynthesis.addEventListener('voiceschanged', chooseVoice);
   }
 
-  /* Find out what we've got to work with: what's been dropped into the
-     browser, what's sitting in /audio, and whether the cloud voice answers. */
   function warm() {
-    const jobs = [
-      refreshPack(),
-      fetch(DIR + 'manifest.json', { cache: 'no-cache' })
-        .then((r) => (r.ok ? r.json() : null))
-        .then((m) => {
-          if (!m || !Array.isArray(m.lines)) return;
-          if (m.format) EXT = '.' + String(m.format).replace(/^\./, '');
-          m.lines.forEach((id) => { fileState[id] = 'ok'; });
-          shipped = m.lines.length;
-          shippedVoice = m.voice || '';
-        })
-        .catch(() => {}),
-      fetch('api/tts', { method: 'GET' })
-        .then((r) => (r.ok ? r.json() : { ok: false }))
-        .then((j) => { cloudReady = !!j.ok; cloudBackend = j.backend || ''; })
-        .catch(() => { cloudReady = false; }),
-    ];
-    return Promise.all(jobs).then(() => ({ pack: packIds.length, cloud: cloudReady }));
+    return fetch(DIR + 'manifest.json', { cache: 'no-cache' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((m) => {
+        if (!m || !Array.isArray(m.lines)) return;
+        if (m.format) ext = '.' + String(m.format).replace(/^\./, '');
+        have = m.lines.length;
+        LINE_IDS.forEach((id) => { if (m.lines.indexOf(id) === -1) missing[id] = 1; });
+      })
+      .catch(() => {});
   }
 
-  function refreshPack() {
-    if (!Pack.available) return Promise.resolve([]);
-    return Pack.ids().then((k) => { packIds = k; return k; }).catch(() => []);
+  const allowed = (id) => enabled && say[lineCat(id)] !== false;
+
+  function speak(ids) {
+    stop();
+    queue = (Array.isArray(ids) ? ids : [ids]).filter((id) => id && allowed(id));
+    next(seq);
   }
 
-  /* ---- the ladder ----
-
-     pack (dropped in) → /audio file → cloud → the browser's own voice.
-     Every tier falls through to the next exactly once. `seq` is what stops a
-     failed tier from being retried by a stale callback and speaking twice. */
-
-  const TIERS = ['pack', 'file', 'cloud', 'voice'];
-
-  /* 'all' reads everything, 'story' reads only the prologue and atmosphere,
-     'none' keeps its mouth shut and leaves you the sound effects. */
-  function setMode(m) {
-    mode = m === true ? 'all' : m === false ? 'none' : (m || 'all');
-    if (mode === 'none') shush();
-  }
-
-  function allowed(id) {
-    if (mode === 'none') return false;
-    if (mode === 'story') return isStoryLine(id);
-    return true;
-  }
-
-  function say(id) { sayAll([id]); }
-
-  /* Several lines back to back, each starting when the one before it finishes.
-     Clip lengths aren't known ahead of time and vary by tier, so this waits for
-     the real end rather than guessing at a delay. */
-  function sayAll(ids) {
-    if (!enabled) return;
-    shush();
-    queue = (ids || []).filter(Boolean).filter(allowed);
-    advance(seq);
-  }
-
-  function advance(token) {
+  /* Lines run back to back, each starting when the last actually ends, so the
+     pacing holds whether a clip is half a second or four. The guard covers a
+     tier that never reports finishing — a muted tab, or a speech engine that
+     swallows its own end event — so the queue can't strand. */
+  function next(token) {
     if (token !== seq) return;
     const id = queue.shift();
     if (!id) return;
+
     let moved = false;
-    const onDone = () => {
+    const done = () => {
       if (moved || token !== seq) return;
       moved = true;
       clearTimeout(guard);
-      advance(token);
+      next(token);
     };
-    /* If a tier never reports finishing — muted tab, speech engine that swallows
-       its own end event — don't strand the rest of the queue. */
-    const guard = setTimeout(onDone, 2000 + (LINES[id] || '').split(/\s+/).length * 500);
-    step(id, token, 0, onDone);
+    const guard = setTimeout(done, 1800 + lineText(id).split(/\s+/).length * 420);
+
+    if (missing[id]) speakLocal(id, token, done);
+    else playFile(id, token, done);
   }
 
-  function step(id, token, i, onDone) {
-    if (token !== seq) return;
-    const tier = TIERS[i];
-    if (!tier) { onDone(); return; }
-    const fall = () => step(id, token, i + 1, onDone);
-
-    switch (tier) {
-      case 'pack':
-        if (!Pack.available || packIds.indexOf(id) === -1) return fall();
-        Pack.get(id).then((blob) => {
-          if (token !== seq) return;
-          if (!blob) return fall();
-          playMedia(URL.createObjectURL(blob), token, fall, true, onDone);
-        }).catch(fall);
-        return;
-
-      case 'file':
-        if (fileState[id] === 'missing') return fall();
-        playMedia(DIR + id + EXT, token, () => { fileState[id] = 'missing'; fall(); }, false, onDone);
-        return;
-
-      case 'cloud': {
-        if (!cloudReady || (choice && choice !== 'cloud')) return fall();
-        const hit = cloudCache.get(id);
-        if (hit) return playMedia(hit, token, fall, false, onDone);
-        const text = LINES[id];
-        if (!text) return fall();
-        fetch('api/tts', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: text }),
-        })
-          .then((r) => { if (!r.ok) throw new Error('tts ' + r.status); return r.blob(); })
-          .then((b) => {
-            if (token !== seq) return;
-            const u = URL.createObjectURL(b);
-            cloudCache.set(id, u);
-            playMedia(u, token, fall, false, onDone);
-          })
-          .catch(() => { cloudReady = false; fall(); });
-        return;
-      }
-
-      default:
-        sayLocal(id, token, onDone);
-    }
-  }
-
-  /* One outcome per attempt. A 404 fires both an error event and a rejected
-     play() promise, which is how this used to say every line twice. */
-  function playMedia(src, token, onFail, revoke, onDone) {
-    const a = new Audio(src);
+  /* One outcome per attempt: a 404 fires both an error event and a rejected
+     play(), and letting both through made every line speak twice. */
+  function playFile(id, token, done) {
+    const a = new Audio(DIR + id + ext);
     current = a;
     let settled = false;
-    const bail = () => {
+    const fail = () => {
       if (settled) return;
       settled = true;
-      if (revoke) URL.revokeObjectURL(src);
-      if (token === seq) onFail();
+      missing[id] = 1;
+      if (token === seq) speakLocal(id, token, done);
     };
-    a.addEventListener('error', bail);
-    a.addEventListener('ended', () => {
-      settled = true;
-      if (revoke) URL.revokeObjectURL(src);
-      if (onDone) onDone();
-    });
-    a.play().then(() => { settled = true; }).catch(bail);
+    a.addEventListener('error', fail);
+    a.addEventListener('ended', () => { settled = true; done(); });
+    a.play().then(() => { settled = true; }).catch(fail);
   }
 
-  function sayLocal(id, token, onDone) {
-    const text = LINES[id];
-    if (!text || !('speechSynthesis' in window)) { if (onDone) onDone(); return; }
-    if (!voice) pickVoice();
+  function speakLocal(id, token, done) {
+    const text = lineText(id);
+    if (!text || !('speechSynthesis' in window)) { done(); return; }
+    if (!voice) chooseVoice();
     const u = new SpeechSynthesisUtterance(text);
     if (voice) u.voice = voice;
-    u.rate = RATE;
-    u.pitch = PITCH;
-    u.onend = () => { if (token === seq && onDone) onDone(); };
-    u.onerror = () => { if (token === seq && onDone) onDone(); };
+    u.rate = 0.92;
+    u.pitch = 0.7;
+    u.onend = () => { if (token === seq) done(); };
+    u.onerror = () => { if (token === seq) done(); };
     speechSynthesis.speak(u);
   }
 
-  /* Speak raw text with no clip behind it — used only for the voice preview. */
   function preview(text) {
+    stop();
     if (!('speechSynthesis' in window)) return;
-    shush();
-    if (!voice) pickVoice();
+    if (!voice) chooseVoice();
     const u = new SpeechSynthesisUtterance(text);
     if (voice) u.voice = voice;
-    u.rate = RATE; u.pitch = PITCH;
+    u.rate = 0.92; u.pitch = 0.7;
     speechSynthesis.speak(u);
   }
 
-  function shush() {
-    seq++;                                     // anything in flight is now stale
+  function stop() {
+    seq++;
     queue = [];
     if ('speechSynthesis' in window) speechSynthesis.cancel();
     if (current) { try { current.pause(); } catch (e) {} current = null; }
   }
 
-  function setEnabled(v) { enabled = v; if (!v) shush(); }
-  function setVoice(name) { choice = name || ''; pickVoice(); }
-
   function options() {
-    const list = [{ value: '', label: 'Auto — best available' }];
-    if (cloudReady) list.push({ value: 'cloud', label: 'Generated voice (Gemini / Cloud)' });
-    allVoices().filter((v) => /^en/i.test(v.lang))
-      .forEach((v) => list.push({ value: v.name, label: v.name + ' · ' + v.lang }));
+    const list = [{ value: '', label: 'Automatic' }];
+    voices().filter((v) => /^en/i.test(v.lang))
+      .forEach((v) => list.push({ value: v.name, label: v.name }));
     return list;
   }
 
   function status() {
-    const total = LINE_IDS.length;
-    const have = packIds.length;
-    if (have >= total) return { tier: 'pack', have: have, total: total, detail: 'Your own recordings — all ' + total + ' lines.' };
-    if (have > 0) {
-      return {
-        tier: 'pack', have: have, total: total,
-        detail: 'Your own recordings for ' + have + ' of ' + total + ' lines. The rest use ' +
-          (shipped ? 'the pack that ships with the site.' : 'a fallback voice.'),
-      };
-    }
-    if (shipped >= total) {
-      return { tier: 'files', have: shipped, total: total, detail: 'The pack that ships with the site, all ' + total + ' lines' + (shippedVoice ? ' (' + shippedVoice + ')' : '') + '.' };
-    }
-    if (shipped > 0) {
-      return { tier: 'files', have: shipped, total: total, detail: shipped + ' of ' + total + ' lines ship with the site. The rest fall back.' };
-    }
-    if (cloudReady) return { tier: 'cloud', have: 0, total: total, detail: 'Generated voice' + (cloudBackend ? ' (' + cloudBackend + ')' : '') + '. Drop your own files in to replace it.' };
-    const v = voice;
-    return {
-      tier: 'browser', have: 0, total: total,
-      detail: v ? 'Browser voice — ' + v.name + (/^en[-_]GB/i.test(v.lang) ? '' : ' (not British)') : 'No voice available.',
-    };
+    if (have >= LINE_IDS.length) return 'Using the recordings in /audio.';
+    if (have > 0) return have + ' of ' + LINE_IDS.length + ' lines recorded; the rest are spoken by the browser.';
+    if (!voice) return 'No speech available in this browser.';
+    return voice.name + (/^en[-_]GB/i.test(voice.lang) ? '' : ' — not a British voice');
   }
 
-  const installed = () => packIds.slice();
-
-  return { say, sayAll, preview, shush, setEnabled, setMode, setVoice, warm, refreshPack, options, status, installed };
+  return {
+    speak: speak, preview: preview, stop: stop, warm: warm, options: options, status: status,
+    setEnabled: (v) => { enabled = v; if (!v) stop(); },
+    setSay: (s) => { say = Object.assign({ night: true, deaths: true, day: true, endings: true }, s || {}); },
+    setVoice: (name) => { pick = name || ''; chooseVoice(); },
+  };
 })();
