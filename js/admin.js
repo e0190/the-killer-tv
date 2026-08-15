@@ -310,6 +310,7 @@ const Admin = (function () {
       case 'rules': {
         const r = RULES[S.step];
         head('How to play · ' + (S.step + 1) + ' of ' + RULES.length, r.title);
+        art(r.scene);
         $('admHint').textContent = r.body;
         $('admNext').textContent = S.step === RULES.length - 1 ? (S.settings.showStory ? 'On to the story' : 'Start the night') : 'Next';
         skip('Skip the rules', () => { if (S.settings.showStory) { S.phase = 'story'; S.step = 0; } else startNight(); push(); draw(); });
