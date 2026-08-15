@@ -125,6 +125,8 @@ const TV = (function () {
 
   function paint(o) {
     $('tv').dataset.day = DAY.indexOf(S.phase) !== -1 || (S.phase === 'over' && S.result.team === 'town') ? '1' : '0';
+    $('tvScene').hidden = !o.scene;
+    if (o.scene) $('tvScene').innerHTML = sceneFor(o.scene);
     $('tvEyebrow').textContent = o.eyebrow || '';
     $('tvTitle').textContent = o.title || '';
     $('tvTitle').className = 'tv-title' + (o.small ? ' sm' : '');
