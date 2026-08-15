@@ -49,7 +49,13 @@ const Setup = (function () {
       Narrator.preview(lineText('call_killer'));
     });
 
-    $('start').addEventListener('click', begin);
+    $('start').addEventListener('click', () => { $('openDialog').hidden = false; });
+    $('openCancel').addEventListener('click', () => { $('openDialog').hidden = true; });
+    $('openWindow').addEventListener('click', () => begin('window'));
+    $('openTab').addEventListener('click', () => begin('tab'));
+    $('openDialog').addEventListener('click', (e) => {
+      if (e.target === $('openDialog')) $('openDialog').hidden = true;
+    });
 
     Narrator.warm().then(drawVoice);
     drawVoice();
