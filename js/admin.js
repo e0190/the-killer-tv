@@ -321,7 +321,9 @@ const Admin = (function () {
       case 'story': {
         const t = STORY[S.step];
         head('Story · ' + (S.step + 1) + ' of ' + STORY.length, t.title);
-        $('admHint').textContent = t.body;
+        art(t.scene);
+        $('admScript').hidden = false;
+        $('admScriptText').textContent = lineText(t.id);
         $('admNext').textContent = S.step === STORY.length - 1 ? 'Start the night' : 'Next';
         skip('Skip the story', () => { startNight(); push(); draw(); });
         $('admRoster').hidden = true;
