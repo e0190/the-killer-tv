@@ -73,8 +73,14 @@ swapped out from under the announcement.
 | **Tanner** | 1 | Wins by dying, and ends the game on the spot. |
 | **Villager** | 4 | No power. A vote and an opinion. |
 
-A role is only called if somebody **still alive** holds it, so the running order
-shrinks as people die and silence never gives anything away.
+Which roles get called depends on what the town is told about bodies.
+
+- **Told the role** — everyone already knows the Seer is dead, so there is nothing
+  to protect and the running order shrinks as people die.
+- **Told only killer or not** — the calls themselves would give it away, so **every
+  role dealt at the start keeps being called all game**, whether or not anybody is
+  left to answer. An empty call sounds exactly like a real one; only the remote
+  knows there is nobody there.
 
 The Doppelgänger overwrites rather than swaps, so after the first night nobody
 holds that role and it never wakes again. That is deliberate, and the call says so.
