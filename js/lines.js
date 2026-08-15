@@ -67,18 +67,22 @@ const lineCat = (id) => (LINES[id] ? LINES[id].cat : '');
 const RULES = [
   {
     title: 'One of you is the Killer',
+    scene: 'knife',
     body: 'Everyone gets a secret role. Most of you are ordinary townsfolk. One or two are killers, and they know each other.',
   },
   {
     title: 'At night, roles wake up',
+    scene: 'moon',
     body: 'Everyone shuts their eyes. The TV calls each role in turn — open your eyes only when yours is called. The killers go last and choose someone.',
   },
   {
     title: 'By day, you argue and vote',
+    scene: 'hand',
     body: 'You find out who died. Then you talk, accuse, and everyone points at once. Whoever gets the most votes is out, and their role is revealed.',
   },
   {
     title: 'How it ends',
+    scene: 'sun',
     body: 'The town wins by voting out every killer. The killers win once they equal the number of everyone else left.',
   },
 ];
