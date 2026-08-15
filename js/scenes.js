@@ -104,8 +104,8 @@ const SCENES = {
   </svg>`,
 
   swap: S_OPEN + `
-    <path d="M16 42h74l-16-16"/>
-    <path d="M104 78H30l16 16"/>
+    <path d="M18 44h84l-18-18"/>
+    <path d="M102 76H18l18 18"/>
   </svg>`,
 
   candle: S_OPEN + `
