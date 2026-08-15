@@ -70,12 +70,28 @@ function timeLeft(t) {
 
 /* ---------- building a night ---------- */
 
-/* A role is only called if somebody still breathing holds it, so the running
-   order shrinks as people die and silence never gives anything away. */
+/* Which roles get called tonight.
+ *
+ * When the town is told the role of every body, everyone already knows the Seer
+ * is dead, so there is nothing to protect and the running order shrinks.
+ *
+ * When they are only told killer or not, the calls themselves become the leak:
+ * skip the Seer and the table learns the Seer is gone. So every role that was
+ * dealt at the start keeps being called for the rest of the game, whether or not
+ * anybody is left to answer. An empty call sounds exactly like a real one. */
 function buildNight(s) {
+  const bluff = s.settings.reveal === 'team';
   return NIGHT
-    .filter((beat) => livingWith(s, beat.role).length > 0)
-    .map((beat) => ({ role: beat.role, input: beat.input, targets: [], done: false }));
+    .filter((beat) => (bluff
+      ? s.players.some((p) => p.startRole === beat.role)
+      : livingWith(s, beat.role).length > 0))
+    .map((beat) => ({
+      role: beat.role,
+      input: beat.input,
+      empty: livingWith(s, beat.role).length === 0,
+      targets: [],
+      done: false,
+    }));
 }
 
 const beatOf = (s) => s.night[s.step] || null;
