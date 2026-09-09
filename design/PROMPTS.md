@@ -94,16 +94,18 @@ Two rules that matter more than anything aesthetic:
 
 2. Which side a role is on must not be readable off the front. A player who
    glimpses someone else's card should learn nothing about whether they're a
-   killer. So no team colours, no red for the Killer and Minion, no shared motif
-   binding the town roles together. Whatever distinguishes the cards is
-   per-role, never per-team.
+   killer. With colour gone, the giveaway would be a shared motif, a common
+   border, or a repeated symbol binding the town roles together — so don't. Every
+   card is distinguished per-role, never per-team, and the Killer and Minion must
+   not resemble each other in any way a stranger could spot.
 
 The Doppelganger is the odd one: it copies another role on the first night and
 then permanently is that role, so its card stops being true partway through the
 game. If there's a nice way to acknowledge that on the card, take it.
 
 Give me one shared back, the eleven fronts, a layout sheet showing all 16 cards
-as they'd actually be printed, and a note on card size and stock.
+as they'd actually be printed, and a note on card size and stock. Vector, black
+only — nothing that would fall apart printed at home on a laser printer.
 ```
 
 ---
