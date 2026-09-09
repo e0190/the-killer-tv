@@ -57,6 +57,17 @@ and hidden for the rest of the game. So: readable in a dim room at a glance, and
 completely opaque from the back. No card can be identifiable by its edge, its
 thickness, or anything showing through from the front.
 
+The cards print in one ink: pure black on bare paper. No colour, and no greys —
+no tints, no screens, no halftones, no soft shadows, no 60%-black anything. Every
+mark is either full black or nothing. Tone can only come from line: hatching,
+stippling, varying weight, or letting white space do the work. If a drawing needs
+grey to read, it's the wrong drawing.
+
+That constraint is the interesting part of this brief, not a limitation to work
+around. One ink, in a dim room, is how playing cards and tarot decks have always
+worked — they're legible at a glance because the shapes are strong, not because
+they're rendered.
+
 The deck is 16 cards across 11 roles. Several roles appear more than once:
 
   4 x Villager      No power. A vote and an opinion.
