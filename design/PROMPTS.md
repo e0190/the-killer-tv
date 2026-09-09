@@ -30,6 +30,11 @@ I need the art direction before anything else. Give me:
 - the texture/finish decision: paper, ink, film grain, none of it — pick one and
   say why
 
+The palette is for the screens only. The physical cards print in a single black
+ink with no greys at all, so don't let the art direction depend on colour or
+tone to work — whatever carries the identity has to survive being reduced to
+pure black line on bare paper.
+
 Rules: everything serif, no sans anywhere. White is always an off-white — warm,
 like paper under a lamp — never pure white. Warm blacks, not blue-blacks; this is
 lamplight, not a dashboard. It should feel like an old parlour game somebody
