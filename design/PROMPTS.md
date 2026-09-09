@@ -110,6 +110,48 @@ only — nothing that would fall apart printed at home on a laser printer.
 
 ---
 
+## 2b · The print sheet
+
+Run this straight after prompt 2, in the same conversation, so it has the card
+artwork to place.
+
+```
+Now build the print page for that deck — a page whose only job is to come out of
+a printer as cards.
+
+One self-contained HTML file. Opening it shows nothing but the cards laid out on
+paper: no header, no navigation, no instructions on the page, no buttons, no
+background colour. Ctrl+P and it's right the first time.
+
+The specifics:
+
+- Poker size, 63 x 88 mm, 9 cards to a sheet in a 3 x 3 grid, on A4 with a
+  fallback for US Letter. 16 cards means two sheets of fronts — nine, then seven,
+  with the empty slots simply blank.
+- A matching page of 16 backs, so it can be printed double-sided.
+- Thin crop marks at the corners, outside the card area, so they can be cut with
+  a guillotine or a steel rule. No visible border printed on the card itself.
+- Pure black, no greys, no colour anywhere — same rule as the cards themselves.
+- @page set up with the right size and zero margin, and a print stylesheet that
+  stops the browser adding its own headers, footers or scaling.
+
+Two things that decide whether this is actually usable:
+
+1. Duplex misregistration. Home printers put the second side down 1-2 mm off.
+   If the back design has a thin border or a frame near the edge, that shift
+   makes every card's border slightly different, and in a game about hidden
+   information a card you can recognise from behind ruins it. Design the back so
+   it survives being 2 mm out — no edge detail, nothing that reads as a frame.
+
+2. Cutting. Leave enough space between cards that a slightly crooked cut doesn't
+   clip artwork, and make sure no card's design runs to its own edge for the
+   same reason.
+
+Give me the HTML file and one line on what to set in the print dialog.
+```
+
+---
+
 ## 3 · The setup screen
 
 ```
