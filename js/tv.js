@@ -183,11 +183,13 @@ const TV = (function () {
         if (!revealed) {
           paint({ eyebrow: 'Day ' + S.round, title: 'Morning' });
         } else {
+          /* No roster here. The name is already the headline and the slab is
+             the moment — a grid of everyone else underneath only competes with
+             it, and pushes the frame past the bottom of a 720p panel. */
           paint({
             scene: 'smoke', eyebrow: 'In the night, somebody died',
             title: nameOf(S, S.deaths[0]), slab: reveal(S, S.deaths[0]).text,
           });
-          people(S.deaths);
         }
         break;
       }
