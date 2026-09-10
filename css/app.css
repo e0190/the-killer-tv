@@ -391,6 +391,10 @@ details.help p{font-size:15px;color:var(--dim);margin-top:10px}
 .tv-person i{display:block;font-style:italic;font-size:1.8cqw;opacity:.7;margin-top:.3cqw}
 .tv-person.out{opacity:.45}
 .tv-person.out b{text-decoration:line-through}
+/* Winners are solid, not coloured — the only colour left in the box means death. */
+.tv-person.win{background:currentColor}
+.tv-person.win b,.tv-person.win i{color:var(--bg);mix-blend-mode:normal}
+#tv[data-day="1"] .tv-person.win b,#tv[data-day="1"] .tv-person.win i{color:var(--day-ground)}
 
 /* The accent's whole job, and its two opposite forms.
 
