@@ -389,14 +389,17 @@ details.help p{font-size:15px;color:var(--dim);margin-top:10px}
 .tv-track{display:flex;width:44cqw;height:1.2cqw;margin:3.2cqw auto 0;border:.16cqw solid currentColor}
 .tv-track i{display:block;height:100%;background:currentColor}
 
-.tv-steps{display:flex;gap:1.1cqw;justify-content:center;margin-bottom:2.4cqw}
+.tv-steps{display:flex;gap:1.1cqw;flex:none}
 .tv-steps span{width:1.3cqw;height:1.3cqw;border:.14cqw solid var(--night-rule)}
 .tv-steps span.done,.tv-steps span.now{background:currentColor;border-color:currentColor}
 
-.tv-people{display:flex;flex-wrap:wrap;justify-content:center;gap:1.2cqw;max-width:88cqw;margin-top:3cqw}
-.tv-person{border:.16cqw solid currentColor;padding:1.3cqw 2.2cqw;min-width:13cqw}
-.tv-person b{display:block;font-family:var(--display);font-size:2.5cqw;font-weight:700}
-.tv-person i{display:block;font-style:italic;font-size:1.8cqw;opacity:.7;margin-top:.3cqw}
+.tv-people{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:.9cqw;
+  max-width:86cqw;margin-top:2.4cqw;flex:none;
+}
+.tv-person{border:.16cqw solid currentColor;padding:.8cqw 1.6cqw;min-width:10cqw}
+.tv-person b{display:block;font-family:var(--display);font-size:1.9cqw;font-weight:700}
+.tv-person i{display:block;font-style:italic;font-size:1.5cqw;opacity:.7;margin-top:.2cqw}
 .tv-person.out{opacity:.45}
 .tv-person.out b{text-decoration:line-through}
 /* Winners are solid, not coloured — the only colour left in the box means death. */
