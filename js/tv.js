@@ -213,7 +213,6 @@ const TV = (function () {
       case 'verdict':
         if (S.deaths.length) {
           paint({ scene: 'door', eyebrow: 'Voted out', title: nameOf(S, S.deaths[0]), slab: reveal(S, S.deaths[0]).text });
-          people(S.deaths);
         } else {
           paint({ scene: 'hand', eyebrow: 'The vote', title: 'Nobody is going', body: lineText('no_majority'), small: true });
         }
