@@ -1,7 +1,7 @@
 /* the killer tv — the drawings.
 
    Fifteen line drawings, one hand, one pen weight, no shading. Everything
-   inherits currentColor, so a drawing is tinted by setting  on its
+   inherits currentColor, so a drawing is tinted by setting `color` on its
    container — which is how the same file works on the night face and the day
    face without a second copy.
 
