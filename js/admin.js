@@ -503,7 +503,12 @@ const Admin = (function () {
     $('pickLabel').textContent = label;
     $('picks').innerHTML = S.players.map((p) => {
       const pickable = ids.indexOf(p.id) !== -1;
-      return '<button type="button" class="pick' + (pickable ? '' : ' out') + '"' +
+      /* Two different reasons a name cannot be tapped, and they should not look
+         the same: the dead are struck through, while someone merely ineligible
+         tonight — a killer during the kill, the actor during their own call —
+         just sits quiet. */
+      const why = pickable ? '' : (p.alive ? ' off' : ' dead');
+      return '<button type="button" class="pick' + why + '"' +
         (pickable ? '' : ' disabled') + ' data-id="' + p.id + '" aria-pressed="' +
         (chosen.indexOf(p.id) !== -1) + '">' + esc(p.name) + '</button>';
     }).join('');

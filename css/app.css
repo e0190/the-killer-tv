@@ -276,7 +276,8 @@ details.help p{font-size:15px;color:var(--dim);margin-top:10px}
 }
 .pick:hover:not(:disabled){border-color:var(--dim)}
 .pick[aria-pressed="true"]{background:var(--fg);border-color:var(--fg);color:var(--bg);font-weight:700}
-.pick.out{color:var(--dim);border-style:dashed;opacity:.6}
+.pick.dead{color:var(--dim);border-style:dashed;text-decoration:line-through}
+.pick.off{color:var(--dim);opacity:.5}
 
 .answer{margin-top:18px;padding:16px 18px;border:1px solid var(--rule)}
 .answer .eyebrow{margin-bottom:9px}
