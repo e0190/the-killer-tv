@@ -222,14 +222,18 @@
 
 <!-- =============================== TV =============================== -->
 <main id="tv" class="view">
+  <!-- Three rows held apart, the way the frame is drawn: the phase along the
+       top, the one big thing in the middle, the quiet line along the bottom. -->
   <div class="tv-in">
-    <div class="tv-main">
-      <div class="tv-steps" id="tvSteps" hidden></div>
-      <figure class="tv-scene" id="tvScene" hidden></figure>
+    <div class="tv-top">
       <p class="tv-eyebrow" id="tvEyebrow"></p>
+      <div class="tv-steps" id="tvSteps" hidden></div>
+    </div>
+
+    <div class="tv-main">
+      <figure class="tv-scene" id="tvScene" hidden></figure>
       <h1 class="tv-title" id="tvTitle">The Killer TV</h1>
       <p id="tvSlabWrap" hidden><span class="tv-death" id="tvSlab"></span></p>
-      <p class="tv-body" id="tvBody">Waiting for the remote…</p>
 
       <div id="tvClockWrap" hidden>
         <div class="tv-clock" id="tvClock">0:00</div>
@@ -239,7 +243,11 @@
       <div class="tv-people" id="tvPeople" hidden></div>
       <div class="tv-teams" id="tvTeams" hidden></div>
     </div>
-    <div class="tv-foot" id="tvFoot"></div>
+
+    <div class="tv-bottom">
+      <p class="tv-body" id="tvBody">Waiting for the remote…</p>
+      <div class="tv-foot" id="tvFoot"></div>
+    </div>
   </div>
 
   <button type="button" class="tv-wake" id="tvWake">
