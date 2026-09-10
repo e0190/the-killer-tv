@@ -68,12 +68,12 @@ const RULES = [
   {
     title: 'One of you is the Killer',
     scene: 'knife',
-    body: 'Everyone gets a secret role. Most of you are ordinary townsfolk. One or two are killers, and they know each other.',
+    body: 'Everyone is dealt a card, face down. Most of you are ordinary townsfolk. One or two are killers, and they know each other. Look once, then leave it in front of you.',
   },
   {
     title: 'At night, roles wake up',
     scene: 'moon',
-    body: 'Everyone shuts their eyes. The TV calls each role in turn — open your eyes only when yours is called. The killers go last and choose someone.',
+    body: 'Everyone shuts their eyes. The TV calls each role in turn — open your eyes only when yours is called. Cards get shown and swapped while you sleep. The killers go last and choose someone.',
   },
   {
     title: 'By day, you argue and vote',
