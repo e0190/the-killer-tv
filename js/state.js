@@ -147,7 +147,6 @@ function applyBeat(s, beat, targets) {
   beat.logAt = s.log.length;
 
   if (beat.input === 'kill') s.pendingKill = targets[0];
-  else if (beat.input === 'look') doLook(s, targets[0]);
   else if (beat.input === 'copy') {
     const a = byId(s, beat.actor);
     beat.was = a ? a.role : '';
@@ -161,7 +160,6 @@ function applyBeat(s, beat, targets) {
 function undoBeat(s, beat) {
   if (!beat || !beat.done) return;
   if (beat.input === 'kill') s.pendingKill = null;
-  else if (beat.input === 'look') s.seerAnswer = null;
   else if (beat.input === 'copy') { const a = byId(s, beat.actor); if (a) a.role = beat.was; }
   else if (beat.input === 'steal') doSwap(s, beat.actor, beat.targets[0]);
   else if (beat.input === 'swap') doSwap(s, beat.targets[0], beat.targets[1]);
@@ -170,10 +168,11 @@ function undoBeat(s, beat) {
   beat.targets = [];
 }
 
-/* Nobody left to answer means nothing to record — the moderator just waits a
-   beat and moves on, so the pause reads like a real one. */
+/* Most beats need no tap at all — the cards answer them. Nobody left to answer
+   means nothing to record either: the moderator just waits a beat and moves on,
+   so the pause reads like a real one. */
 function beatNeedsInput(beat) {
-  return !beat.empty && beat.input !== 'none' && beat.input !== 'self';
+  return !beat.empty && beat.input !== 'none';
 }
 
 /* ---------- dying ---------- */
