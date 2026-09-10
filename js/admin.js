@@ -137,7 +137,7 @@ const Admin = (function () {
     S.step = 0;
     S.night = buildNight(S);
     S.pendingKill = null;
-    S.seerAnswer = null;
+
     S.log = [];
     S.deaths = [];
     startTimer(0);
@@ -159,7 +159,7 @@ const Admin = (function () {
       case 'night': {
         const b = beatOf(S);
         if (b && beatNeedsInput(b) && !b.done) return;
-        if (S.step < S.night.length - 1) { S.step++; S.seerAnswer = null; }
+        if (S.step < S.night.length - 1) S.step++;
         else resolveDawn();
         break;
       }
@@ -268,7 +268,7 @@ const Admin = (function () {
       case 'night': {
         const b = beatOf(S);
         if (b && b.done) { undoBeat(S, b); break; }
-        if (S.step > 0) { S.step--; S.seerAnswer = null; break; }
+        if (S.step > 0) { S.step--; break; }
         if (S.settings.showStory) { S.phase = 'story'; S.step = STORY.length - 1; }
         else if (S.settings.showRules) { S.phase = 'rules'; S.step = RULES.length - 1; }
         else return;
@@ -383,6 +383,9 @@ const Admin = (function () {
     b.onclick = fn;
   }
 
+  /* A night beat is now two instructions: the line to read to the room, and what
+     to do with the deck. Only three of the eight beats need anything tapped in —
+     the cards carry the rest, so most of the night is read-and-move-on. */
   function drawBeat() {
     const b = beatOf(S);
     if (!b) return;
@@ -401,12 +404,15 @@ const Admin = (function () {
     /* An empty call is a bluff: read it out exactly as normal, leave the same
        pause, and move on. Only this screen knows there is nobody there. */
     if (b.empty) {
+      cardNote('Handle the cards as if somebody had answered — reach for the deck, pause, put it down.');
       $('admHint').textContent =
         'Nobody is left to answer this. Read it out anyway, wait as long as you normally would, then carry on — ' +
         'skipping it would tell the table the ' + role.name + ' is gone.';
       $('admNext').textContent = 'Next';
       return;
     }
+
+    cardNote(beat.card);
 
     const actor = actorOf(S, b);
     const others = (skipIds) => living(S).filter((p) => skipIds.indexOf(p.id) === -1).map((p) => p.id);
@@ -425,19 +431,6 @@ const Admin = (function () {
         b.targets, 1, (sel) => set(sel, 1));
       gate();
 
-    } else if (b.input === 'look') {
-      picker('Who the Seer looks at', others([actor]), b.targets, 1, (sel) => set(sel, 1));
-      if (S.seerAnswer) {
-        const def = ROLES[S.seerAnswer.role];
-        const isKiller = S.seerAnswer.role === 'killer';
-        const box = $('admAnswer');
-        box.hidden = false;
-        box.className = 'answer ' + (isKiller ? 'is-killer' : 'is-clear');
-        box.innerHTML = '<p class="eyebrow">Signal this to the Seer — don\'t say it aloud</p>' +
-          '<b>' + esc(nameOf(S, S.seerAnswer.targetId)) + ' is the ' + esc(def ? def.name : '?') + '</b>';
-      }
-      gate();
-
     } else if (b.input === 'copy') {
       picker('Who the Doppelgänger copies', others([actor]), b.targets, 1, (sel) => set(sel, 1));
       $('admHint').textContent = 'They act on the new role if it is called later tonight, and stay that role from now on.';
@@ -451,18 +444,34 @@ const Admin = (function () {
       picker('The two being swapped', others([actor]), b.targets, 2, (sel) => set(sel, 2));
       gate();
 
-    } else if (b.input === 'self') {
-      const box = $('admAnswer');
-      box.hidden = false;
-      box.className = 'answer';
-      box.innerHTML = '<p class="eyebrow">Signal this to the Insomniac</p><b>' +
-        holders.map((p) => esc(p.name) + ' is the ' + ROLES[p.role].name).join('<br>') + '</b>';
-
     } else {
+      /* Nothing to record. Say who is awake so a silent room can be checked
+         against something. */
       $('admHint').textContent = holders.length > 1
         ? holders.map((p) => p.name).join(' and ') + ' are awake.'
         : holders.map((p) => p.name).join('') + ' is awake.';
+
+      /* The Seer is about to be shown a card, and one card in the game can be a
+         lie. Name it before it gets held up. */
+      if (b.role === 'seer') {
+        const stale = living(S).filter(cardStale);
+        if (stale.length) {
+          $('admHint').textContent += ' If they point at ' +
+            stale.map((p) => p.name).join(' or ') +
+            ', that card is out of date — show it anyway, it is meant to mislead.';
+        }
+      }
     }
+  }
+
+  /* What to do with the deck, kept visually apart from the line that gets read
+     out, because one is spoken and the other is done with your hands. */
+  function cardNote(text) {
+    if (!text) return;
+    const box = $('admAnswer');
+    box.hidden = false;
+    box.className = 'answer is-cards';
+    box.innerHTML = '<p class="eyebrow">The cards</p><b>' + esc(text) + '</b>';
   }
 
   function picker(label, ids, chosen, limit, onChange) {

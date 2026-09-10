@@ -176,6 +176,7 @@ const Setup = (function () {
       id: 'p' + i,
       name: (names[i] || '').trim() || 'Player ' + (i + 1),
       role: role,
+      card: role,
       startRole: role,
       alive: true,
       diedRound: 0,
