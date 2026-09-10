@@ -108,7 +108,11 @@ function actorOf(s, beat) {
 
 /* The Doppelgänger overwrites rather than swaps, so nobody holds the role
    afterwards and it never wakes again. That is the intended behaviour and the
-   call text says so out loud. */
+   call text says so out loud.
+
+   No card changes hands here — there is only one card per role in the deck, so
+   there is nothing to give them. Their card stays wrong for the rest of the
+   game, which is the one place the deck and the truth come apart. */
 function doCopy(s, actorId, targetId) {
   const a = byId(s, actorId), t = byId(s, targetId);
   if (!a || !t) return;
@@ -116,18 +120,21 @@ function doCopy(s, actorId, targetId) {
   s.log.push(nameOf(s, actorId) + ' copied ' + nameOf(s, targetId) + ' → ' + ROLES[a.role].name);
 }
 
+/* Both the Robber and the Troublemaker are a physical swap at the table, so the
+   cards travel with the roles and the deck stays true. */
 function doSwap(s, aId, bId) {
   const a = byId(s, aId), b = byId(s, bId);
   if (!a || !b) return;
-  const tmp = a.role; a.role = b.role; b.role = tmp;
+  const tmpRole = a.role; a.role = b.role; b.role = tmpRole;
+  const tmpCard = a.card; a.card = b.card; b.card = tmpCard;
   s.log.push(nameOf(s, aId) + ' ↔ ' + nameOf(s, bId));
 }
 
-function doLook(s, targetId) {
-  const p = byId(s, targetId);
-  s.seerAnswer = { targetId: targetId, role: p ? p.role : '' };
-  s.log.push('Seer saw ' + nameOf(s, targetId) + ' → ' + (p ? ROLES[p.role].name : '?'));
-}
+/* True when the card in front of somebody no longer says what they are. Only
+   ever the Doppelgänger, but worth flagging: the moderator is about to hold that
+   card up to the Seer. */
+const cardStale = (p) => !!p && p.card !== p.role;
+const anyStale = (s) => s.players.some((p) => p.alive && cardStale(p));
 
 /* Applying a beat is undoable, so Back works and a misheard pick is cheap to
    fix. Swaps are their own inverse; a copy has to remember what it painted over. */
