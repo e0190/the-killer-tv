@@ -234,16 +234,8 @@ const TV = (function () {
       '<span class="' + (i < S.step ? 'done' : i === S.step ? 'now' : '') + '"></span>').join('');
   }
 
-  function people(dead) {
-    const box = $('tvPeople');
-    box.hidden = false;
-    box.innerHTML = S.players.map((p) => {
-      const isDead = dead.indexOf(p.id) !== -1;
-      const cls = isDead ? 'dead' : (p.alive ? '' : 'out');
-      return '<div class="tv-person ' + cls + '"><b>' + esc(p.name) + '</b></div>';
-    }).join('');
-  }
-
+  /* The only frame that lists the whole table. Everywhere else the television
+     speaks in roles and the room supplies the names out loud. */
   function result() {
     const r = S.result;
     paint({
