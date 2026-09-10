@@ -559,7 +559,7 @@ const Admin = (function () {
     const fresh = newGame();
     fresh.settings = S.settings;
     fresh.players = S.players.map((p) => ({
-      id: p.id, name: p.name, role: p.startRole, startRole: p.startRole,
+      id: p.id, name: p.name, role: p.startRole, card: p.startRole, startRole: p.startRole,
       alive: true, diedRound: 0, diedBy: '',
     }));
     fresh.phase = fresh.settings.showRules ? 'rules' : (fresh.settings.showStory ? 'story' : null);
@@ -570,9 +570,12 @@ const Admin = (function () {
     if ($('admRoster').hidden) return;
     $('roster').innerHTML = S.players.map((p) => {
       const r = ROLES[p.role];
+      /* Flag anyone whose card no longer matches, so holding it up is a choice
+         rather than a mistake. */
+      const stale = cardStale(p) ? ' · card says ' + ROLES[p.card].name : '';
       return '<li class="' + (p.alive ? '' : 'out') + (r.team === 'killers' ? ' k' : '') + '">' +
         '<span class="who">' + esc(p.name) + '</span>' +
-        '<span class="tag">' + r.name + (p.alive ? '' : ' · out') + '</span></li>';
+        '<span class="tag">' + r.name + stale + (p.alive ? '' : ' · out') + '</span></li>';
     }).join('');
   }
 
