@@ -9,6 +9,26 @@ remote in the window you started from.
 
 No server, no accounts, no build step. It works offline.
 
+You also need **the cards**. [`cards.html`](cards.html) is a print sheet — open
+it, press <kbd>Ctrl</kbd>+<kbd>P</kbd>, and out come sixteen cards in one black
+ink. They are how the game is actually played: the Seer is shown a card rather
+than told, the Robber and the Troublemaker are real swaps at the table, and the
+app's job is to know the truth and announce it.
+
+---
+
+## The look
+
+Two faces of the same palette, inverted — night is lampblack, day is paper — and
+the cut between them at dawn is one frame, no fade. Bodoni Moda for anything
+announced, Libre Baskerville for anything read, and no sans anywhere. Pure `#fff`
+appears nowhere. The accent means death and nothing else: never a button, never a
+heading, and on the dark face never type, only a solid slab with lamplight
+reversed out of it. There are no rounded corners.
+
+The full art direction, including the swatches and the type scale, is in
+[`design/`](design/).
+
 ---
 
 ## The two screens
