@@ -383,10 +383,10 @@ details.help p{font-size:15px;color:var(--dim);margin-top:10px}
 .tv-body.lead{color:inherit}
 
 .tv-clock{
-  font-family:var(--display);font-weight:900;font-size:20cqw;line-height:.86;
+  font-family:var(--display);font-weight:900;font-size:17cqw;line-height:.86;
   letter-spacing:-.02em;font-variant-numeric:tabular-nums;
 }
-.tv-track{display:flex;width:44cqw;height:1.2cqw;margin:3.2cqw auto 0;border:.16cqw solid currentColor}
+.tv-track{display:flex;width:44cqw;height:1.2cqw;margin:2.8cqw auto 0;border:.16cqw solid currentColor}
 .tv-track i{display:block;height:100%;background:currentColor}
 
 .tv-steps{display:flex;gap:1.1cqw;flex:none}
@@ -414,8 +414,8 @@ details.help p{font-size:15px;color:var(--dim);margin-top:10px}
    with lamplight set on top, back up at 6.1:1. Same colour, opposite job. */
 .tv-death{
   display:inline-block;background:var(--death);color:var(--death-on);
-  font-family:var(--display);font-weight:900;font-size:10cqw;line-height:1;
-  padding:.6cqw 2.2cqw 1.1cqw;
+  font-family:var(--display);font-weight:900;font-size:8cqw;line-height:1;
+  padding:.6cqw 2.2cqw 1.1cqw;margin-top:.8cqw;
 }
 #tv[data-day="1"] .tv-person.dead{border-color:var(--death);color:var(--death);opacity:1}
 .tv-person.dead{border-color:var(--death)}
