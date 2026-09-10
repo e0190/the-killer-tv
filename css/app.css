@@ -1,25 +1,54 @@
-/* the killer tv */
+/* the killer tv
+
+   Two faces of the same five steps, inverted: night is lampblack, day is paper.
+   Nothing is blue-black — every dark here sits in the same warm hue family, so a
+   television across a room reads as lamplight rather than backlight.
+
+   Three rules that are load-bearing, not decoration:
+
+     Pure #fff appears nowhere in this game.
+     The accent means death and nothing else. It is never a button, never a
+       highlight, never a heading. If a player sees it, somebody has died.
+     There are no rounded corners.
+
+   The finish is ink: solid fills at 100% or nothing, a coarse dot screen where
+   tone is needed, and a double rule — one thick, one hairline — which is the
+   signature that ties the screens to the printed cards. */
 
 :root{
-  /* night. Warm blacks, never blue — this is lamplight, not a dashboard. */
-  --bg:#14120e;
-  --card:#1c1a15;
-  --card-2:#24211b;
-  --line:#332e25;
-  --line-2:#443d31;
-  --fg:#ece5d5;          /* off-white, never #fff */
-  --fg-2:#a99f8b;
-  --fg-3:#7b7263;
-  --accent:#b8262f;
-  --accent-2:#d0343d;
-  --accent-soft:rgba(184,38,47,.14);
-  --ok:#5e8f61;
+  /* night face */
+  --night-ground:#100c0a;   /* lampblack  · full-bleed background     */
+  --night-panel:#1c1512;    /* cupboard   · raised panels             */
+  --night-rule:#322721;     /* hairline   · 1px rules only            */
+  --night-dim:#8a7a6b;      /* ash        · phase labels and asides   */
+  --night-text:#ede3d4;     /* lamplight  · anything read across a room */
 
-  --r:10px;
-  --r-lg:14px;
+  /* day face */
+  --day-ground:#f4ede0;     /* lamp paper */
+  --day-panel:#eae0cf;      /* foxed      */
+  --day-rule:#cbbba3;       /* pencil     */
+  --day-quiet:#6e6151;      /* slate      */
+  --day-ink:#1a1310;        /* warm ink   */
 
-  --serif:'Iowan Old Style','Palatino Linotype','Book Antiqua',Palatino,Georgia,'Times New Roman',serif;
+  /* death. nothing else. */
+  --death:#9e3423;
+  --death-on:#f4ede0;
+
+  --display:'Bodoni Moda',Georgia,'Times New Roman',serif;
+  --read:'Libre Baskerville',Georgia,'Times New Roman',serif;
+
+  --dot-pitch:9px;
+  --rule-thick:5px;
+  --rule-thin:1px;
+
   --pad:clamp(18px,4vw,26px);
+
+  /* the app runs on the night face unless something says otherwise */
+  --bg:var(--night-ground);
+  --panel:var(--night-panel);
+  --rule:var(--night-rule);
+  --dim:var(--night-dim);
+  --fg:var(--night-text);
 }
 
 *{box-sizing:border-box}
@@ -28,15 +57,15 @@ html,body{height:100%}
 
 body{
   margin:0;background:var(--bg);color:var(--fg);
-  font-family:var(--serif);font-size:17px;line-height:1.55;
+  font-family:var(--read);font-size:17px;line-height:1.55;
   -webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;
-  overscroll-behavior:none;
+  overscroll-behavior:none;text-wrap:pretty;
 }
-h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.01em;line-height:1.15}
+h1,h2,h3{margin:0;font-family:var(--display);font-weight:700;line-height:1.1}
 p{margin:0}
-button,input,select{font-family:var(--serif);font-size:inherit;color:inherit}
+button,input,select{font-family:var(--read);font-size:inherit;color:inherit}
 button{background:none;border:0;padding:0;cursor:pointer}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
 
 .view{display:none}
 body[data-view="setup"] #setup{display:block}
@@ -46,263 +75,356 @@ body[data-view="tv"]{overflow:hidden}
 
 /* ============================ primitives ============================ */
 
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:var(--pad)}
-.card + .card{margin-top:16px}
-
-/* Small caps rather than a different family, so the whole thing stays serif. */
-.eyebrow{
-  font-size:12px;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--fg-3);font-variant:small-caps;
+/* The signature. One thick rule, one hairline, four pixels apart — the same
+   mark that runs along the top and bottom of every printed card. */
+.card{
+  background:var(--panel);padding:var(--pad);
+  border-top:var(--rule-thick) solid var(--rule);
+  border-bottom:var(--rule-thin) solid var(--rule);
 }
-.muted{color:var(--fg-2)}
+.card + .card{margin-top:18px}
+
+.eyebrow{
+  font-family:var(--display);font-size:12px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--dim);
+}
+.muted{color:var(--dim)}
 .small{font-size:14.5px}
 
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  border-radius:var(--r);padding:10px 16px;font-size:15px;
-  border:1px solid var(--line-2);background:var(--card-2);color:var(--fg);
-  transition:background .12s,border-color .12s;
+  padding:12px 18px;font-family:var(--display);font-size:15px;
+  letter-spacing:.16em;text-transform:uppercase;
+  border:1px solid var(--rule);background:transparent;color:var(--dim);
+  transition:background .12s,color .12s,border-color .12s;
 }
-.btn:hover:not(:disabled){background:#2c2820;border-color:#554c3d}
+.btn:hover:not(:disabled){border-color:var(--fg);color:var(--fg)}
 .btn:disabled{opacity:.4;cursor:not-allowed}
-.btn-primary{background:var(--accent);border-color:var(--accent);color:#fdf6ec}
-.btn-primary:hover:not(:disabled){background:var(--accent-2);border-color:var(--accent-2)}
-.btn-primary:disabled{background:var(--card-2);border-color:var(--line);color:var(--fg-3)}
-.btn-ghost{background:none;border-color:transparent;color:var(--fg-2);padding:8px 10px}
-.btn-ghost:hover{background:var(--card-2);color:var(--fg)}
-.btn-lg{padding:15px 24px;font-size:19px}
+/* The primary action is lamplight reversed out — never the accent, which is
+   spoken for. */
+.btn-primary{background:var(--fg);border-color:var(--fg);color:var(--bg);font-weight:700}
+.btn-primary:hover:not(:disabled){background:var(--day-panel);border-color:var(--day-panel)}
+.btn-primary:disabled{background:transparent;border-color:var(--rule);color:var(--dim)}
+.btn-ghost{border-color:transparent;padding:10px 12px;letter-spacing:.14em}
+.btn-ghost:hover{border-color:var(--rule);color:var(--fg)}
+.btn-lg{padding:18px 24px;font-size:17px}
 .btn-block{width:100%}
 
 .row{
   display:flex;align-items:center;justify-content:space-between;gap:18px;
-  padding:15px 0;border-bottom:1px solid var(--line);
+  padding:16px 0;border-bottom:1px solid var(--rule);
 }
 .row:last-child{border-bottom:0;padding-bottom:0}
 .row:first-child{padding-top:0}
 .row-text{min-width:0}
-.row-text b{display:block;font-size:16px;font-weight:600}
-.row-text span{display:block;font-size:14.5px;color:var(--fg-2);margin-top:2px}
+.row-text b{display:block;font-family:var(--display);font-size:17px;font-weight:700}
+.row-text span{display:block;font-size:14px;color:var(--dim);margin-top:4px;line-height:1.5}
 .row-ctl{flex:none;display:flex;align-items:center;gap:10px}
 
-.switch{position:relative;display:inline-block;width:46px;height:27px;flex:none}
+/* A switch with square corners is a lever, which suits the box better than a
+   pill does. */
+.switch{position:relative;display:inline-block;width:52px;height:26px;flex:none}
 .switch input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer;z-index:1}
-.switch i{position:absolute;inset:0;background:var(--line-2);border-radius:999px;transition:background .16s}
+.switch i{position:absolute;inset:0;border:1px solid var(--rule);background:transparent}
 .switch i::after{
-  content:'';position:absolute;top:3px;left:3px;width:21px;height:21px;
-  background:var(--fg);border-radius:50%;transition:transform .16s;
+  content:'';position:absolute;top:3px;left:3px;width:20px;height:18px;
+  background:var(--dim);transition:transform .14s,background .14s;
 }
-.switch input:checked + i{background:var(--accent)}
-.switch input:checked + i::after{transform:translateX(19px);background:#fdf6ec}
+.switch input:checked + i{border-color:var(--fg)}
+.switch input:checked + i::after{transform:translateX(24px);background:var(--fg)}
 
-.seg{display:inline-flex;background:var(--card-2);border:1px solid var(--line);border-radius:var(--r);padding:3px}
-.seg button{padding:7px 14px;font-size:14.5px;border-radius:7px;color:var(--fg-2);white-space:nowrap}
-.seg button[aria-checked="true"]{background:var(--accent);color:#fdf6ec}
+.seg{display:inline-flex;border:1px solid var(--rule)}
+.seg button{
+  padding:9px 15px;font-family:var(--display);font-size:13px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--dim);white-space:nowrap;
+}
+.seg button + button{border-left:1px solid var(--rule)}
+.seg button[aria-checked="true"]{background:var(--fg);color:var(--bg);font-weight:700}
 
 .input,.select{
-  background:var(--card-2);border:1px solid var(--line-2);border-radius:var(--r);
-  padding:10px 12px;font-size:16px;width:100%;
+  background:transparent;border:1px solid var(--rule);
+  padding:11px 12px;font-size:16px;width:100%;
 }
-.input:focus,.select:focus{outline:none;border-color:var(--accent)}
-.input::placeholder{color:var(--fg-3);font-style:italic}
+.input:focus,.select:focus{outline:none;border-color:var(--fg)}
+.input::placeholder{color:var(--dim);font-style:italic}
 .select{cursor:pointer}
 
-.stepper{display:flex;align-items:center;gap:2px;background:var(--card-2);border:1px solid var(--line);border-radius:var(--r);padding:3px}
-.stepper button{width:34px;height:34px;border-radius:7px;font-size:19px;color:var(--fg-2);line-height:1}
-.stepper button:hover:not(:disabled){background:var(--line);color:var(--fg)}
+.stepper{display:flex;align-items:stretch;border:1px solid var(--rule)}
+.stepper button{width:40px;font-family:var(--display);font-size:20px;line-height:1;color:var(--dim)}
+.stepper button:hover:not(:disabled){background:var(--fg);color:var(--bg)}
 .stepper button:disabled{opacity:.3;cursor:not-allowed}
-.stepper output{min-width:34px;text-align:center;font-weight:600}
+.stepper output{
+  min-width:52px;text-align:center;padding:9px 6px;font-family:var(--display);
+  font-weight:700;font-size:22px;border-left:1px solid var(--rule);border-right:1px solid var(--rule);
+}
 
 .pill{
-  display:inline-flex;align-items:center;gap:5px;background:var(--card-2);
-  border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:14px;color:var(--fg-2);
+  display:inline-flex;align-items:center;gap:6px;border:1px solid var(--rule);
+  padding:5px 11px;font-size:13px;color:var(--dim);
 }
-.pill b{color:var(--fg);font-weight:600}
-.pill.killers{border-color:#5a2a2e;background:var(--accent-soft);color:#e0989c}
-.pill.tanner{border-color:#544a2a;background:rgba(184,150,60,.1);color:#d8bd7e}
+.pill b{color:var(--fg);font-family:var(--display);font-weight:700}
 
-.notice{
-  padding:12px 15px;border-radius:var(--r);font-size:15px;
-  background:var(--accent-soft);border:1px solid #5a2a2e;color:#e0989c;
-}
+/* A problem is not a death, so it gets the hairline treatment and italics
+   rather than the accent. */
+.notice{padding:11px 14px;font-size:15px;font-style:italic;border-left:var(--rule-thick) solid var(--dim)}
 
 /* the drawings */
-.scene{width:96px;margin:0 auto 6px;color:var(--fg-3)}
+.scene{width:104px;margin:0 auto 10px;color:var(--dim)}
 .scene svg{width:100%;height:auto;display:block}
 
 /* ============================== setup ============================== */
-#setup{min-height:100dvh;padding:0 18px 130px}
-.wrap{max-width:640px;margin:0 auto}
+#setup{min-height:100dvh;padding:0 18px 140px}
+.wrap{max-width:660px;margin:0 auto}
 
-.masthead{padding:52px 0 30px;text-align:center}
-.masthead h1{font-size:clamp(34px,8vw,46px);letter-spacing:-.02em}
-.masthead p{color:var(--fg-2);margin-top:8px;font-style:italic;font-size:17px}
-.masthead .rule{
-  display:flex;align-items:center;gap:14px;margin-top:22px;
-  color:var(--fg-3);font-size:12px;letter-spacing:.2em;text-transform:uppercase;
+.masthead{padding:56px 0 26px;border-bottom:6px double var(--rule)}
+.masthead h1{
+  font-family:var(--display);font-weight:900;
+  font-size:clamp(44px,12vw,68px);line-height:.92;letter-spacing:-.015em;
 }
-.masthead .rule::before,.masthead .rule::after{content:'';flex:1;height:1px;background:var(--line)}
+.masthead p{color:var(--dim);margin-top:18px;font-size:16px;max-width:30em}
+.masthead .rule{
+  margin-top:20px;color:var(--dim);font-family:var(--display);
+  font-size:12px;letter-spacing:.24em;text-transform:uppercase;
+}
 
-.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:16px}
-.sec-head h2{font-size:20px}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:18px}
+.sec-head h2{font-size:26px}
 .sec-head .tools{display:flex;gap:4px}
 
-.cast{display:flex;flex-direction:column;gap:8px}
-.cast-row{display:grid;grid-template-columns:1fr 176px;gap:8px;align-items:center}
-.cast-row .select[data-team="killers"]{color:#e0989c;border-color:#5a2a2e}
-.cast-row .select[data-team="tanner"]{color:#d8bd7e;border-color:#544a2a}
+.cast{display:flex;flex-direction:column}
+/* Ruled lines rather than boxes: it reads as a list written out by hand, which
+   is what dealing a game in actually is. */
+.cast-row{
+  display:grid;grid-template-columns:22px 1fr 170px;gap:10px;align-items:center;
+  padding:7px 0;border-bottom:1px solid var(--rule);
+}
+.cast-row:last-child{border-bottom:0}
+.cast-row .num{font-family:var(--display);font-size:13px;color:var(--dim);text-align:right}
+.cast-row .input,.cast-row .select{border:0;padding:8px 2px}
+.cast-row .select{text-align:right;font-family:var(--display);font-size:15px}
 
-.cast-foot{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:20px}
+.cast-foot{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:22px}
 .tally{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
-.problems{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.problems{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
 
 .start-bar{
   position:fixed;left:0;right:0;bottom:0;padding:16px 18px;
   padding-bottom:max(16px,env(safe-area-inset-bottom));
-  background:linear-gradient(to top,var(--bg) 62%,transparent);
+  background:var(--bg);border-top:1px solid var(--rule);
 }
-.start-bar .wrap{display:flex;flex-direction:column;gap:8px}
-.start-hint{text-align:center;font-size:14px;color:var(--fg-3);font-style:italic}
+.start-bar .wrap{display:flex;flex-direction:column;gap:10px}
+.start-hint{text-align:center;font-size:14px;color:var(--dim);font-style:italic}
 
-details.help{margin-top:22px}
-details.help summary{font-size:15px;color:var(--fg-2);cursor:pointer;padding:8px 0}
-details.help p{font-size:15px;color:var(--fg-2);margin-top:8px}
+details.help{margin-top:26px;border-top:1px solid var(--rule);padding-top:14px}
+details.help summary{
+  font-family:var(--display);font-size:12px;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--dim);cursor:pointer;padding:6px 0;
+}
+details.help p{font-size:15px;color:var(--dim);margin-top:10px}
 
-/* where the TV should open */
 .dialog{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:20px}
-.dialog::before{content:'';position:absolute;inset:0;background:rgba(10,8,6,.72)}
+.dialog::before{content:'';position:absolute;inset:0;background:rgba(16,12,10,.86)}
 .dialog-box{
-  position:relative;background:var(--card);border:1px solid var(--line);
-  border-radius:var(--r-lg);padding:26px;max-width:400px;width:100%;text-align:center;
+  position:relative;background:var(--panel);padding:30px 26px;max-width:420px;width:100%;
+  border-top:var(--rule-thick) solid var(--fg);border-bottom:var(--rule-thin) solid var(--fg);
 }
-.dialog-box h3{font-size:23px}
-.dialog-box p{color:var(--fg-2);font-size:15.5px;margin-top:8px}
-.dialog-actions{display:flex;flex-direction:column;gap:10px;margin-top:22px}
+.dialog-box h3{font-size:28px}
+.dialog-box p{color:var(--dim);font-size:15px;margin-top:10px}
+.dialog-actions{display:flex;flex-direction:column;gap:10px;margin-top:24px}
 
 /* ============================== admin ============================== */
+/* A dark phone in a dark room goes unnoticed. Nothing here flashes, animates or
+   brightens — a screen that lights up when it matters is itself the tell. */
 #admin{flex-direction:column;min-height:100dvh}
 
 .bar{
   display:flex;align-items:center;justify-content:space-between;gap:12px;
   padding:12px 18px;padding-top:max(12px,env(safe-area-inset-top));
-  border-bottom:1px solid var(--line);background:var(--bg);position:sticky;top:0;z-index:5;
+  border-bottom:1px solid var(--rule);background:var(--bg);position:sticky;top:0;z-index:5;
 }
 .bar-left{display:flex;align-items:center;gap:9px;min-width:0}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--fg-3);flex:none}
-.dot.on{background:var(--ok)}
+.dot{width:6px;height:6px;background:var(--rule);flex:none}
+.dot.on{background:var(--dim)}
 .bar-right{display:flex;gap:2px}
 
-.stage{flex:1;width:100%;max-width:640px;margin:0 auto;padding:24px 18px 24px}
-.stage h2{font-size:clamp(26px,6vw,34px);margin-top:6px}
+.stage{flex:1;width:100%;max-width:660px;margin:0 auto;padding:22px 18px}
+.stage h2{font-size:clamp(28px,7vw,34px);line-height:1.12;margin-top:8px}
 
+/* The line to read out, marked by the double rule so the eye finds it first. */
 .script{
-  margin-top:18px;background:var(--card);border:1px solid var(--line);
-  border-left:3px solid var(--accent);border-radius:var(--r);padding:15px 18px;
+  margin-top:18px;padding:16px 0 14px;
+  border-top:var(--rule-thick) solid var(--rule);border-bottom:var(--rule-thin) solid var(--rule);
 }
-.script .eyebrow{margin-bottom:6px}
-.script p{font-size:19px;line-height:1.5}
+.script .eyebrow{margin-bottom:8px}
+.script p{font-family:var(--display);font-weight:700;font-size:26px;line-height:1.15}
 
-.hint{margin-top:14px;font-size:16px;color:var(--fg-2)}
+.hint{margin-top:14px;font-size:14px;color:var(--dim);line-height:1.55}
 
-.clock-row{display:flex;align-items:center;gap:14px;margin-top:20px}
-.clock{font-size:38px;font-weight:600;font-variant-numeric:tabular-nums}
-.clock.low{color:var(--accent-2)}
+.clock-row{display:flex;align-items:center;gap:14px;margin-top:22px}
+.clock{font-family:var(--display);font-size:44px;font-weight:700;font-variant-numeric:tabular-nums}
+.clock.low{color:var(--fg)}
 
-.panel{margin-top:20px}
-.panel-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px}
+.panel{margin-top:22px}
+.panel-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:12px}
 
-.picks{display:flex;flex-wrap:wrap;gap:8px}
-.pick{border:1px solid var(--line-2);background:var(--card-2);border-radius:var(--r);padding:10px 15px;font-size:16px}
-.pick:hover:not(:disabled){border-color:var(--fg-3)}
-.pick[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fdf6ec}
+/* The dead stay in the grid. Taking them out would redraw the board every night
+   and cost the host a second of hunting for a name that moved. */
+.picks{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pick{
+  border:1px solid var(--rule);padding:16px 6px;font-size:16px;line-height:1.2;
+  min-height:64px;display:flex;align-items:center;justify-content:center;text-align:center;
+}
+.pick:hover:not(:disabled){border-color:var(--dim)}
+.pick[aria-pressed="true"]{background:var(--fg);border-color:var(--fg);color:var(--bg);font-weight:700}
+.pick.out{color:var(--dim);border-style:dashed;opacity:.6}
 
-.answer{margin-top:16px;border-radius:var(--r);padding:15px 18px;border:1px solid var(--line)}
-.answer b{display:block;font-size:23px;margin-top:4px;font-weight:600}
-.answer.is-killer{background:var(--accent-soft);border-color:#5a2a2e}
-.answer.is-killer b{color:var(--accent-2)}
-.answer.is-clear{background:rgba(94,143,97,.1);border-color:#2f4a31}
-.answer.is-clear b{color:var(--ok)}
-/* Something to do with your hands, not something to read out — quieter than the
-   script, and set at reading size rather than announcement size. */
-.answer.is-cards{background:var(--card-2);border-style:dashed}
-.answer.is-cards b{font-size:17px;font-weight:400;line-height:1.5;color:var(--fg)}
+.answer{margin-top:18px;padding:16px 18px;border:1px solid var(--rule)}
+.answer .eyebrow{margin-bottom:9px}
+.answer b{display:block;font-size:20px;font-weight:400;line-height:1.45}
+/* Something to do with your hands rather than something to read out. */
+.answer.is-cards b{font-size:16px;line-height:1.5}
+.answer.is-cards .eyebrow{color:var(--dim)}
 
-.votes{display:flex;flex-direction:column;gap:6px}
-.vote-row{display:grid;grid-template-columns:104px 1fr;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:var(--r)}
-.vote-row.todo{border-color:#5a2a2e;background:rgba(184,38,47,.05)}
-.vote-row > b{font-size:15px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.votes{display:flex;flex-direction:column}
+.vote-row{
+  display:grid;grid-template-columns:104px 1fr;gap:10px;align-items:center;
+  padding:10px 0;border-bottom:1px solid var(--rule);
+}
+.vote-row:last-child{border-bottom:0}
+.vote-row.todo > b{color:var(--fg)}
+.vote-row > b{font-family:var(--display);font-size:15px;font-weight:700;color:var(--dim);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .vote-targets{display:flex;flex-wrap:wrap;gap:5px}
-.vote-targets button{border:1px solid var(--line-2);border-radius:7px;padding:5px 10px;font-size:14px;color:var(--fg-2)}
-.vote-targets button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fdf6ec}
+.vote-targets button{border:1px solid var(--rule);padding:6px 10px;font-size:14px;color:var(--dim)}
+.vote-targets button[aria-pressed="true"]{background:var(--fg);border-color:var(--fg);color:var(--bg)}
 
-.roster{list-style:none;margin:0;padding:0}
-.roster li{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:16px}
+/* ---- the roster, and the shoulder problem ----
+
+   Everyone at the table already knows the names; they can see each other. The
+   only secret on this phone is which name sits beside which role. So the names
+   stay visible and the roles are sealed until a thumb is held on the list — and
+   they seal again the moment it lifts. No timeout to forget, no toggle left on,
+   and no state in which the phone is dangerous lying on a table. */
+.roster{list-style:none;margin:0;padding:0;user-select:none;cursor:pointer}
+.roster li{
+  display:flex;align-items:center;gap:12px;padding:10px 0;
+  border-bottom:1px solid var(--rule);font-size:16px;
+}
 .roster li:last-child{border-bottom:0}
 .roster .who{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.roster .tag{font-size:14.5px;color:var(--fg-2)}
-.roster li.out{opacity:.45}
+.roster .tag{
+  font-family:var(--display);font-size:13px;letter-spacing:.1em;color:var(--dim);
+  text-align:right;min-width:9em;
+}
+.roster li.out{color:var(--dim)}
 .roster li.out .who{text-decoration:line-through}
-.roster li.k .tag{color:#e0989c}
+
+/* Sealed: the role column becomes a dot screen — the only greyness in the whole
+   system, and it is made of black dots rather than grey ink. */
+.roster.sealed .tag{
+  color:transparent;
+  background-image:radial-gradient(var(--rule) 1.4px,transparent 1.5px);
+  background-size:var(--dot-pitch) var(--dot-pitch);
+}
+.roster-hint{
+  display:flex;justify-content:space-between;gap:12px;margin-top:12px;
+  font-family:var(--display);font-size:11px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--dim);
+}
 
 .controls{
-  position:sticky;bottom:0;display:flex;gap:10px;width:100%;max-width:640px;margin:0 auto;
-  padding:12px 18px;padding-bottom:max(12px,env(safe-area-inset-bottom));
-  background:linear-gradient(to top,var(--bg) 62%,transparent);
+  position:sticky;bottom:0;display:flex;gap:10px;width:100%;max-width:660px;margin:0 auto;
+  padding:14px 18px;padding-bottom:max(14px,env(safe-area-inset-bottom));
+  background:var(--bg);border-top:1px solid var(--rule);
 }
 .controls .btn-primary{flex:1}
 
 /* ================================ tv ================================ */
-#tv{position:fixed;inset:0;background:var(--bg);color:var(--fg);transition:background .6s,color .6s}
-#tv[data-day="1"]{
-  --bg:#f2ede1; --card:#fbf8f0; --card-2:#e8e2d3; --line:#dcd4c2; --line-2:#c9bfa9;
-  --fg:#191510; --fg-2:#5f584a; --fg-3:#8d8474; --accent:#9c1c24; --accent-2:#8a161d;
-  background:var(--bg);color:var(--fg);
+/* Container units, not viewport units: the frame is the container, so the whole
+   screen scales as one thing and 141px at 720p becomes 282px at 4K with the same
+   measure and the same line breaks. */
+#tv{
+  position:fixed;inset:0;container-type:inline-size;
+  background:var(--night-ground);color:var(--night-text);
 }
+/* Dawn is a cut, not a fade. One frame, the way a card is turned over. */
+#tv[data-day="1"]{
+  --bg:var(--day-ground);--panel:var(--day-panel);--rule:var(--day-rule);
+  --dim:var(--day-quiet);--fg:var(--day-ink);
+  background:var(--day-ground);color:var(--day-ink);
+}
+#tv[data-day="1"] .tv-eyebrow,#tv[data-day="1"] .tv-body,#tv[data-day="1"] .tv-foot{color:var(--day-quiet)}
+#tv[data-day="1"] .tv-scene{color:var(--day-ink)}
 
-.tv-in{position:absolute;inset:0;display:flex;flex-direction:column;padding:4vmin 5vmin}
-.tv-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:2.2vmin;min-height:0}
+.tv-in{position:absolute;inset:0;display:flex;flex-direction:column;padding:5.5cqw 6cqw}
+.tv-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:0}
 
-.tv-scene{width:min(17vmin,170px);color:var(--fg-3);margin-bottom:.6vmin}
+.tv-scene{width:16cqw;max-width:230px;color:var(--night-dim);margin-bottom:2.4cqw}
 .tv-scene svg{width:100%;height:auto;display:block}
 
-.tv-eyebrow{font-size:2vmin;letter-spacing:.26em;text-transform:uppercase;color:var(--accent);font-variant:small-caps}
-.tv-title{font-size:min(10vmin,13vw);line-height:1.03;letter-spacing:-.025em;font-weight:600;max-width:19ch}
-.tv-title.sm{font-size:min(6.2vmin,8vw);max-width:26ch}
-.tv-body{font-size:min(3.1vmin,4.4vw);line-height:1.45;color:var(--fg-2);max-width:36ch;font-style:italic}
-.tv-body.lead{color:var(--fg);font-style:normal}
+.tv-eyebrow{
+  font-family:var(--display);font-size:1.9cqw;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--night-dim);margin-bottom:2.2cqw;
+}
+.tv-title{
+  font-family:var(--display);font-weight:900;font-size:10.5cqw;line-height:.92;
+  letter-spacing:-.01em;max-width:16ch;
+}
+.tv-title.sm{font-size:6.4cqw;max-width:24ch;line-height:1}
+.tv-body{font-size:2.6cqw;line-height:1.4;color:var(--night-dim);max-width:30ch;margin-top:2.6cqw}
+.tv-body.lead{color:inherit}
 
-.tv-clock{font-size:14vmin;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.03em;line-height:1}
-.tv-clock.low{color:var(--accent)}
-.tv-track{width:min(58vw,760px);height:4px;background:var(--card-2);border-radius:999px;overflow:hidden;margin-top:2.6vmin}
-.tv-track i{display:block;height:100%;background:var(--accent)}
+.tv-clock{
+  font-family:var(--display);font-weight:900;font-size:20cqw;line-height:.86;
+  letter-spacing:-.02em;font-variant-numeric:tabular-nums;
+}
+.tv-track{display:flex;width:44cqw;height:1.2cqw;margin:3.2cqw auto 0;border:.16cqw solid currentColor}
+.tv-track i{display:block;height:100%;background:currentColor}
 
-.tv-steps{display:flex;gap:1.1vmin;justify-content:center}
-.tv-steps span{width:1.4vmin;height:1.4vmin;border-radius:50%;background:var(--line-2)}
-.tv-steps span.done{background:var(--fg-3)}
-.tv-steps span.now{background:var(--accent);transform:scale(1.35)}
+.tv-steps{display:flex;gap:1.1cqw;justify-content:center;margin-bottom:2.4cqw}
+.tv-steps span{width:1.3cqw;height:1.3cqw;border:.14cqw solid var(--night-rule)}
+.tv-steps span.done,.tv-steps span.now{background:currentColor;border-color:currentColor}
 
-.tv-people{display:flex;flex-wrap:wrap;justify-content:center;gap:1.2vmin;max-width:88vw}
-.tv-person{background:var(--card);border:.2vmin solid var(--line);border-radius:1.2vmin;padding:1.3vmin 2.2vmin;min-width:13vmin}
-.tv-person b{display:block;font-size:2.5vmin;font-weight:600}
-.tv-person i{display:block;font-style:italic;font-size:1.8vmin;color:var(--fg-2);margin-top:.3vmin}
-.tv-person.out{opacity:.42}
+.tv-people{display:flex;flex-wrap:wrap;justify-content:center;gap:1.2cqw;max-width:88cqw;margin-top:3cqw}
+.tv-person{border:.16cqw solid currentColor;padding:1.3cqw 2.2cqw;min-width:13cqw}
+.tv-person b{display:block;font-family:var(--display);font-size:2.5cqw;font-weight:700}
+.tv-person i{display:block;font-style:italic;font-size:1.8cqw;opacity:.7;margin-top:.3cqw}
+.tv-person.out{opacity:.45}
 .tv-person.out b{text-decoration:line-through}
-.tv-person.dead{border-color:var(--accent);background:var(--accent-soft);opacity:1}
-.tv-person.win{border-color:var(--ok)}
 
-.tv-teams{display:flex;gap:1.4vmin;justify-content:center;flex-wrap:wrap}
-.tv-team{border:.25vmin solid var(--ok);color:var(--ok);border-radius:999px;padding:.7vmin 2.6vmin;font-size:2.5vmin;font-weight:600}
+/* The accent's whole job, and its two opposite forms.
 
-.tv-foot{display:flex;justify-content:center;font-size:1.6vmin;color:var(--fg-3);letter-spacing:.12em}
+   On paper it is ink — 6.5:1, safe for a name at any size. On lampblack the dark
+   ground drops it to 2.4:1, so at night death is never type: it is a solid block
+   with lamplight set on top, back up at 6.1:1. Same colour, opposite job. */
+.tv-death{
+  display:inline-block;background:var(--death);color:var(--death-on);
+  font-family:var(--display);font-weight:900;font-size:10cqw;line-height:1;
+  padding:.6cqw 2.2cqw 1.1cqw;
+}
+#tv[data-day="1"] .tv-person.dead{border-color:var(--death);color:var(--death);opacity:1}
+.tv-person.dead{border-color:var(--death)}
+
+.tv-teams{display:flex;gap:1.4cqw;justify-content:center;flex-wrap:wrap;margin-top:3cqw}
+.tv-team{
+  border:.2cqw solid currentColor;padding:.7cqw 2.6cqw;
+  font-family:var(--display);font-size:2.5cqw;font-weight:700;
+}
+
+.tv-foot{display:flex;justify-content:center;font-family:var(--display);
+  font-size:1.6cqw;letter-spacing:.2em;text-transform:uppercase;color:var(--night-dim)}
 
 .tv-wake{
   position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:1.6vmin;background:var(--bg);width:100%;color:var(--fg);
+  align-items:center;justify-content:center;gap:2.4cqw;
+  background:var(--night-ground);width:100%;color:var(--night-text);
 }
 .tv-wake.gone{display:none}
-.tv-wake b{font-size:min(6vmin,8vw);font-weight:600}
-.tv-wake span{font-size:2vmin;color:var(--fg-2);font-style:italic}
+.tv-wake b{font-family:var(--display);font-weight:900;font-size:8cqw}
+.tv-wake span{font-size:2cqw;color:var(--night-dim);font-style:italic}
 
 @media (max-width:520px){
-  .cast-row{grid-template-columns:1fr 146px}
+  .cast-row{grid-template-columns:20px 1fr 132px}
   .vote-row{grid-template-columns:1fr;gap:8px}
+  .picks{grid-template-columns:repeat(2,1fr)}
 }
