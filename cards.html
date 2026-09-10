@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<!--
+  THE KILLER TV — print sheet. 16 cards, 63 x 88 mm, 9-up on US Letter.
+  Page order is duplex-ready: FRONTS 1, BACKS 1, FRONTS 2, BACKS 2.
+  For A4: swap the ONE line marked `/* PAPER */` below to  @page { size: A4 portrait; margin: 0; }
+  and set --page-w: 210mm; --page-h: 297mm; in :root.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The Killer TV — cards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,700;1,6..96,700&family=Libre+Baskerville:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+  /* PAPER — US Letter. For A4 use instead:  @page { size: A4 portrait; margin: 0; }
+     and set --page-w: 210mm; --page-h: 297mm; in :root. Nothing else changes. */
+  @page { size: letter portrait; margin: 0; }
+
+  :root {
+    --page-w: 215.9mm;
+    --page-h: 279.4mm;
+    --card-w: 63mm;
+    --card-h: 88mm;
+    --gap-x: 5mm;
+    --gap-y: 3mm;
+    --safe: 8mm;          /* nothing on a card sits inside this of its own trim */
+    --hair: 0.25mm;
+  }
+
+  html, body { margin: 0; padding: 0; background: #fff; }
+  body {
+    font-family: 'Libre Baskerville', Georgia, 'Times New Roman', serif;
+    color: #000;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .sheet {
+    width: var(--page-w);
+    height: var(--page-h);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    break-after: page;
+    page-break-after: always;
+  }
+  .sheet:last-of-type { break-after: auto; page-break-after: auto; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, var(--card-w));
+    grid-template-rows: repeat(3, var(--card-h));
+    column-gap: var(--gap-x);
+    row-gap: var(--gap-y);
+  }
+
+  .slot { position: relative; width: var(--card-w); height: var(--card-h); }
+
+  /* the only guide on the sheet: a dotted line sitting exactly on the cut */
+  .slot::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 0.3mm dotted #000;
+  }
+  .slot.blank::before { content: none; }
+  /* never on the backs: a hairline at the trim leaves a different sliver on every
+     card if the cut wanders, which is precisely what makes a back identifiable.
+     You cut the duplexed stack once, registered on the front sheet. */
+  .slot:has(.back)::before { content: none; }
+
+  /* ---- card front ---- */
+  .front {
+    position: absolute;
+    inset: var(--safe);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+  }
+  .name {
+    font-family: 'Bodoni Moda', Georgia, 'Times New Roman', serif;
+    font-weight: 700;
+    font-size: 14pt;
+    line-height: 1;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+  }
+  .name.long { font-size: 11pt; letter-spacing: 0.05em; }
+  .name.mid  { font-size: 12.5pt; letter-spacing: 0.07em; }
+  .mark { width: 28mm; height: 28mm; display: block; }
+  .foot { width: 100%; }
+  .foot hr { border: 0; border-top: var(--hair) solid #000; width: 60%; margin: 0 auto 2.2mm; }
+  .rule-line { font-size: 8pt; line-height: 1.4; margin: 0; }
+
+  .doppel .name, .doppel .rule-line { font-style: italic; }
+
+  /* ---- card back: one centred medallion, no frame, no edge detail ----
+     Every mark sits >= 11 mm inside the trim, so a 2 mm duplex shift
+     changes nothing a player could see from across a room.            */
+  .back { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+  .back svg { width: 40mm; height: 40mm; display: block; }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <clipPath id="cp-killer"><polygon points="50,3 61.5,52 50,97 38.5,52"/></clipPath>
+    <clipPath id="cp-trouble"><polygon points="15,19 85,19 50,89"/></clipPath>
+    <clipPath id="cp-insom"><circle cx="50" cy="50" r="34"/></clipPath>
+    <clipPath id="cp-back-diamond"><polygon points="50,20 80,50 50,80 20,50"/></clipPath>
+  </defs>
+
+  <symbol id="m-villager" viewBox="0 0 100 100"><circle cx="50" cy="50" r="17"/></symbol>
+
+  <symbol id="m-killer" viewBox="0 0 100 100">
+    <g clip-path="url(#cp-killer)" stroke="#000" stroke-width="4.5">
+      <line x1="-30" y1="10" x2="130" y2="-150"/><line x1="-30" y1="24" x2="130" y2="-136"/>
+      <line x1="-30" y1="38" x2="130" y2="-122"/><line x1="-30" y1="52" x2="130" y2="-108"/>
+      <line x1="-30" y1="66" x2="130" y2="-94"/><line x1="-30" y1="80" x2="130" y2="-80"/>
+      <line x1="-30" y1="94" x2="130" y2="-66"/><line x1="-30" y1="108" x2="130" y2="-52"/>
+      <line x1="-30" y1="122" x2="130" y2="-38"/><line x1="-30" y1="136" x2="130" y2="-24"/>
+      <line x1="-30" y1="150" x2="130" y2="-10"/><line x1="-30" y1="164" x2="130" y2="4"/>
+      <line x1="-30" y1="178" x2="130" y2="18"/><line x1="-30" y1="192" x2="130" y2="32"/>
+      <line x1="-30" y1="206" x2="130" y2="46"/><line x1="-30" y1="220" x2="130" y2="60"/>
+      <line x1="-30" y1="234" x2="130" y2="74"/><line x1="-30" y1="248" x2="130" y2="88"/>
+    </g>
+    <polygon points="50,3 61.5,52 50,97 38.5,52" fill="none" stroke="#000" stroke-width="4"/>
+  </symbol>
+
+  <symbol id="m-mason" viewBox="0 0 100 100">
+    <rect x="10" y="35" width="30" height="30"/><rect x="60" y="35" width="30" height="30"/>
+    <rect x="40" y="45" width="20" height="10"/>
+  </symbol>
+
+  <symbol id="m-minion" viewBox="0 0 100 100">
+    <circle cx="28" cy="50" r="14"/>
+    <circle cx="70" cy="50" r="16" fill="none" stroke="#000" stroke-width="8"/>
+  </symbol>
+
+  <symbol id="m-seer" viewBox="0 0 100 100">
+    <circle cx="50" cy="50" r="34" fill="none" stroke="#000" stroke-width="5"/>
+    <circle cx="50" cy="50" r="21" fill="none" stroke="#000" stroke-width="5"/>
+    <circle cx="50" cy="50" r="9"/>
+  </symbol>
+
+  <symbol id="m-robber" viewBox="0 0 100 100">
+    <rect x="30" y="26" width="52" height="9"/><polygon points="14,30.5 32,19 32,42"/>
+    <rect x="18" y="65" width="52" height="9"/><polygon points="86,69.5 68,58 68,81"/>
+  </symbol>
+
+  <symbol id="m-trouble" viewBox="0 0 100 100">
+    <g clip-path="url(#cp-trouble)" stroke="#000" stroke-width="5">
+      <line x1="5" y1="27" x2="95" y2="27"/><line x1="5" y1="40" x2="95" y2="40"/>
+      <line x1="5" y1="53" x2="95" y2="53"/><line x1="5" y1="66" x2="95" y2="66"/>
+      <line x1="5" y1="79" x2="95" y2="79"/>
+    </g>
+    <polygon points="15,19 85,19 50,89" fill="none" stroke="#000" stroke-width="4.5"/>
+  </symbol>
+
+  <symbol id="m-insomniac" viewBox="0 0 100 100">
+    <g clip-path="url(#cp-insom)" stroke="#000" stroke-width="5">
+      <line x1="8" y1="55" x2="92" y2="55"/><line x1="8" y1="68" x2="92" y2="68"/>
+      <line x1="8" y1="81" x2="92" y2="81"/>
+    </g>
+    <circle cx="50" cy="50" r="34" fill="none" stroke="#000" stroke-width="5"/>
+  </symbol>
+
+  <symbol id="m-doppel" viewBox="0 0 100 100">
+    <polygon points="36,14 58,50 36,86 14,50"/>
+    <polygon points="64,14 86,50 64,86 42,50" fill="none" stroke="#000" stroke-width="6"/>
+  </symbol>
+
+  <symbol id="m-hunter" viewBox="0 0 100 100">
+    <polygon points="18,8 82,8 50,46"/><polygon points="18,92 82,92 50,54"/>
+  </symbol>
+
+  <symbol id="m-tanner" viewBox="0 0 100 100">
+    <g stroke="#000" stroke-width="9" fill="none" stroke-linecap="square">
+      <line x1="17" y1="17" x2="62" y2="17"/><line x1="83" y1="38" x2="83" y2="83"/>
+      <line x1="83" y1="83" x2="17" y2="83"/><line x1="17" y1="83" x2="17" y2="17"/>
+    </g>
+  </symbol>
+
+  <!-- Back medallion: engraved rosette. Nothing within 11 mm of trim, 180deg symmetric. -->
+  <symbol id="m-back" viewBox="0 0 100 100">
+    <g fill="#000">
+      <polygon points="50,2 54,24 46,24"/>
+      <polygon points="50,2 54,24 46,24" transform="rotate(45 50 50)"/>
+      <polygon points="50,2 54,24 46,24" transform="rotate(90 50 50)"/>
+      <polygon points="50,2 54,24 46,24" transform="rotate(135 50 50)"/>
+      <polygon points="50,2 54,24 46,24" transform="rotate(180 50 50)"/>
+      <polygon points="50,2 54,24 46,24" transform="rotate(225 50 50)"/>
+      <polygon points="50,2 54,24 46,24" transform="rotate(270 50 50)"/>
+      <polygon points="50,2 54,24 46,24" transform="rotate(315 50 50)"/>
+    </g>
+    <g clip-path="url(#cp-back-diamond)" stroke="#000" stroke-width="1.5">
+      <line x1="24" y1="0" x2="24" y2="100"/><line x1="29" y1="0" x2="29" y2="100"/>
+      <line x1="34" y1="0" x2="34" y2="100"/><line x1="39" y1="0" x2="39" y2="100"/>
+      <line x1="44" y1="0" x2="44" y2="100"/><line x1="49" y1="0" x2="49" y2="100"/>
+      <line x1="54" y1="0" x2="54" y2="100"/><line x1="59" y1="0" x2="59" y2="100"/>
+      <line x1="64" y1="0" x2="64" y2="100"/><line x1="69" y1="0" x2="69" y2="100"/>
+      <line x1="74" y1="0" x2="74" y2="100"/>
+    </g>
+    <circle cx="50" cy="50" r="30" fill="none" stroke="#000" stroke-width="2"/>
+    <polygon points="50,20 80,50 50,80 20,50" fill="none" stroke="#000" stroke-width="2.6"/>
+    <circle cx="50" cy="50" r="12" fill="#fff"/>
+    <circle cx="50" cy="50" r="12" fill="none" stroke="#000" stroke-width="1.6"/>
+    <polygon points="50,39 61,50 50,61 39,50"/>
+    <polygon points="50,45.5 54.5,50 50,54.5 45.5,50" fill="#fff"/>
+  </symbol>
+</svg>
+
+<!-- ============ SHEET 1 — FRONTS (9) ============ -->
+<section class="sheet">
+  <div class="grid">
+
+    <div class="slot">
+      <div class="front"><div class="name">Villager</div>
+        <svg class="mark" viewBox="0 0 100 100"><use href="#m-villager"/></svg>
+        <div class="foot"><hr><p class="rule-line">No power. A vote and an opinion.</p></div>
+      </div></div>
+
+    <div class="slot">
+      <div class="front"><div class="name">Villager</div>
+        <svg class="mark" viewBox="0 0 100 100"><use href="#m-villager"/></svg>
+        <div class="foot"><hr><p class="rule-line">No power. A vote and an opinion.</p></div>
+      </div></div>
+
+    <div class="slot">
+      <div class="front"><div class="name">Villager</div>
+        <svg class="mark" viewBox="0 0 100 100"><use href="#m-villager"/></svg>
+        <div class="foot"><hr><p class="rule-line">No power. A vote and an opinion.</p></div>
+      </div></div>
+
+    <div class="slot">
+      <div class="front"><div class="name">Villager</div>
+        <svg class="mark" viewBox="0 0 100 100"><use href="#m-villager"/></svg>
+        <div class="foot"><hr><p class="rule-line">No power. A vote and an opinion.</p></div>
+      </div></div>
+
+    <div class="slot">
+      <div class="front"><div class="name">Killer</div>
+        <svg class="mark" viewBox="0 0 100 100"><use href="#m-killer"/></svg>
+        <div class="foot"><hr><p class="rule-line">Picks someone to kill each night.</p></div>
+      </div></div>
+
+    <div class="slot">
+      <div class="front"><div class="name">Killer</div>
+        <svg class="mark" viewBox="0 0 100 100"><use href="#m-killer"/></svg>
+        <div class="foot"><hr><p class="rule-line">Picks someone to kill each night.</p></div>
+      </div></div>
+
+    <div class="slot">
+      <div class="front"><div class="name">Mason</div>
+        <svg class="mark" viewBox="0 0 100 100"><use href="#m-mason"/></svg>
+        <div class="foot"><hr><p class="rule-line">The two Masons know each other for certain.</p></div>
+      </div></div>
+
+    <div class="slot">
+      <div class="front"><div class="name">Mason</div>
+        <svg class="mark" viewBox="0 0 100 100"><use href="#m-mason"/></svg>
+        <div class="foot"><hr><p class="rule-line">The two Masons know each other for certain.</p></div>
+      </div></div>
+
+    <div class="slot">
+      <div class="front"><div class="name">Minion</div>
+        <svg class="mark" viewBox="0 0 100 100"><use href="#m-minion"/></svg>
+        <div class="foot"><hr><p class="rule-line">Knows the Killer. Wins with them, but dies like anyone else.</p></div>
+      </div></div>
+
+  </div>
+</section>
+
+<!-- ============ SHEET 2 — BACKS for sheet 1 (9) ============ -->
+<section class="sheet">
+  <div class="grid">
+    <div class="slot"><div class="back"><svg viewBox="0 0 100 100"><use href="#m-back"/></svg></div></div>
+    <div class="slot"><div class="back"><svg viewBox="0 0 100 100"><use href="#m-back"/></svg></div></div>
+    <div class="slot"><div class="back"><svg viewBox="0 0 100 100"><use href="#m-back"/></svg></div></div>
+    <div class="slot"><div class="back"><svg viewBox="0 0 100 100"><use href="#m-back"/></svg></div></div>
+    <div class="slot"><div class="back"><svg viewBox="0 0 100 100"><use href="#m-back"/></svg></div></div>
+    <div class="slot"><div class="back"><svg viewBox="0 0 100 100"><use href="#m-back"/></svg></div></div>
+    <div class="slot"><div class="back"><svg viewBox="0 0 100 100"><use href="#m-back"/></svg></div></div>
+    <div class="slot"><div class="back"><svg viewBox="0 0 100 100"><use href="#m-back"/></svg></div></div>
+    <div class="slot"><div class="back"><svg viewBox="0 0 100 100"><use href="#m-back"/></svg></div></div>
+  </div>
+</section>
+
+<!-- ============ SHEET 3 — FRONTS (7) ============ -->
+<section class="sheet">
+  <div class="grid">
+
+    <div class="slot">
+      <div class="front"><div class="name">Seer</div>
+        <svg class="mark" viewBox="0 0 100 100"><use href="#m-seer"/></svg>
+        <div class="foot"><hr><p class="rule-line">Learns exactly what one person is, each night.</p></div>
+      </div></div>
+
+    <div class="slot">
+      <div class="front"><div class="name">Robber</div>
+        <svg class="mark" viewBox="0 0 100 100"><use href="#m-robber"/></svg>
+        <div class="foot"><hr><p class="rule-line">Swaps roles with someone. Neither of them chose it.</p></div>
+      </div></div>
+
+    <div class="slot">
+      <div class="front"><div class="name long">Troublemaker</div>
+        <svg class="mark" viewBox="0 0 100 100"><use href="#m-trouble"/></svg>
+        <div class="foot"><hr><p class="rule-line">Swaps two other people's roles. Nobody is told.</p></div>
+      </div></div>
+
+    <div class="slot">
+      <div class="front"><div class="name mid">Insomniac</div>
+        <svg class="mark" viewBox="0 0 100 100"><use href="#m-insomniac"/></svg>
+        <div class="foot"><hr><p class="rule-line">Is shown what they have become, after everything else moved.</p></div>
+      </div></div>
+
+    <div class="slot doppel">
+      <div class="front"><div class="name long">Doppelganger</div>
+        <svg class="mark" viewBox="0 0 100 100"><use href="#m-doppel"/></svg>
+        <div class="foot"><hr><p class="rule-line">Copies someone on the first night and stays that role.</p></div>
+      </div></div>
+
+    <div class="slot">
+      <div class="front"><div class="name">Hunter</div>
+        <svg class="mark" viewBox="0 0 100 100"><use href="#m-hunter"/></svg>
+        <div class="foot"><hr><p class="rule-line">When they die, they take somebody with them.</p></div>
+      </div></div>
+
+    <div class="slot">
+      <div class="front"><div class="name">Tanner</div>
+        <svg class="mark" viewBox="0 0 100 100"><use href="#m-tanner"/></svg>
+        <div class="foot"><hr><p class="rule-line">Wins by dying, and ends the game on the spot.</p></div>
+      </div></div>
+
+    <div class="slot blank"></div>
+    <div class="slot blank"></div>
+
+  </div>
+</section>
+
+<!-- ==== SHEET 4 — BACKS for sheet 3 (7), column-mirrored for long-edge duplex ==== -->
+<section class="sheet">
+  <div class="grid">
+    <div class="slot"><div class="back"><svg viewBox="0 0 100 100"><use href="#m-back"/></svg></div></div>
+    <div class="slot"><div class="back"><svg viewBox="0 0 100 100"><use href="#m-back"/></svg></div></div>
+    <div class="slot"><div class="back"><svg viewBox="0 0 100 100"><use href="#m-back"/></svg></div></div>
+    <div class="slot"><div class="back"><svg viewBox="0 0 100 100"><use href="#m-back"/></svg></div></div>
+    <div class="slot"><div class="back"><svg viewBox="0 0 100 100"><use href="#m-back"/></svg></div></div>
+    <div class="slot"><div class="back"><svg viewBox="0 0 100 100"><use href="#m-back"/></svg></div></div>
+    <div class="slot blank"></div>
+    <div class="slot blank"></div>
+    <div class="slot"><div class="back"><svg viewBox="0 0 100 100"><use href="#m-back"/></svg></div></div>
+  </div>
+</section>
+
+</body>
+</html>
