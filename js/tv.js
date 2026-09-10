@@ -135,6 +135,12 @@ const TV = (function () {
     $('tvTitle').className = 'tv-title' + (o.small ? ' sm' : '');
     $('tvBody').textContent = o.body || '';
     $('tvBody').className = 'tv-body' + (o.lead ? ' lead' : '');
+
+    /* The accent's only appearance. A solid slab rather than coloured type,
+       because on the dark ground the colour alone drops to 2.4:1 — reversed out
+       of a filled block it is back up above 6:1 and survives a cheap panel. */
+    $('tvSlabWrap').hidden = !o.slab;
+    if (o.slab) $('tvSlab').textContent = o.slab;
   }
 
   function draw() {
@@ -171,10 +177,16 @@ const TV = (function () {
           paint({ scene: 'sun', eyebrow: 'Dawn', title: 'Everyone survived', body: lineText('survived'), small: true });
           break;
         }
+        /* The cut to paper lands on this frame, not on the body. One word on a
+           bright empty page for two or three seconds — the room exhales,
+           somebody laughs, and only then does it say who is gone. */
         if (!revealed) {
-          paint({ scene: 'sun', eyebrow: 'Dawn', title: 'The town wakes up…', small: true });
+          paint({ eyebrow: 'Day ' + S.round, title: 'Morning' });
         } else {
-          paint({ scene: 'smoke', eyebrow: 'Dawn', title: nameOf(S, S.deaths[0]), body: reveal(S, S.deaths[0]).text, lead: true });
+          paint({
+            scene: 'smoke', eyebrow: 'In the night, somebody died',
+            title: nameOf(S, S.deaths[0]), slab: reveal(S, S.deaths[0]).text,
+          });
           people(S.deaths);
         }
         break;
