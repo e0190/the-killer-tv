@@ -245,7 +245,11 @@ const TV = (function () {
 
   function result() {
     const r = S.result;
-    paint({ scene: r.team === 'town' ? 'sun' : r.team === 'tanner' ? 'crown' : 'knife', eyebrow: 'After ' + S.round + (S.round === 1 ? ' night' : ' nights'), title: r.headline, small: true });
+    paint({
+      scene: r.team === 'town' ? 'ended' : r.team === 'tanner' ? 'crown' : 'knife',
+      eyebrow: 'After ' + S.round + (S.round === 1 ? ' night' : ' nights'),
+      title: r.headline, small: true,
+    });
 
     $('tvTeams').hidden = false;
     $('tvTeams').innerHTML = '<span class="tv-team">' + teamName(r.team) + '</span>';
