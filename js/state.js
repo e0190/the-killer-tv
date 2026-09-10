@@ -13,10 +13,13 @@ function newGame() {
     step: 0,              // index within rules / story / the night
     round: 1,
 
-    players: [],          // {id, name, role, startRole, alive, diedRound, diedBy}
+    /* `role` is what a player actually is; `card` is what the piece of card in
+       front of them says. They match all game except for the Doppelgänger, who
+       changes role without changing card. Keeping both means the app can tell
+       the moderator when the deck has gone out of date. */
+    players: [],          // {id, name, role, card, startRole, alive, diedRound, diedBy}
     night: [],            // the beats running tonight
     pendingKill: null,    // the killers' pick, resolved at dawn
-    seerAnswer: null,     // {targetId, role} — moderator's eyes only
     log: [],              // what actually happened, for the debrief
 
     votes: {},            // voterId -> targetId
