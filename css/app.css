@@ -221,6 +221,10 @@ details.help p{font-size:15px;color:var(--fg-2);margin-top:8px}
 .answer.is-killer b{color:var(--accent-2)}
 .answer.is-clear{background:rgba(94,143,97,.1);border-color:#2f4a31}
 .answer.is-clear b{color:var(--ok)}
+/* Something to do with your hands, not something to read out — quieter than the
+   script, and set at reading size rather than announcement size. */
+.answer.is-cards{background:var(--card-2);border-style:dashed}
+.answer.is-cards b{font-size:17px;font-weight:400;line-height:1.5;color:var(--fg)}
 
 .votes{display:flex;flex-direction:column;gap:6px}
 .vote-row{display:grid;grid-template-columns:104px 1fr;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:var(--r)}
