@@ -494,14 +494,21 @@ const Admin = (function () {
     box.innerHTML = '<p class="eyebrow">The cards</p><b>' + esc(text) + '</b>';
   }
 
+  /* Everyone is drawn, always, in the order they were dealt in. The dead are
+     shown struck through and cannot be tapped — pulling them out would reflow
+     the grid every night and cost the host a second hunting for a name that
+     moved. */
   function picker(label, ids, chosen, limit, onChange) {
     $('admPicker').hidden = false;
     $('pickLabel').textContent = label;
-    $('picks').innerHTML = ids.map((id) =>
-      '<button type="button" class="pick" data-id="' + id + '" aria-pressed="' +
-      (chosen.indexOf(id) !== -1) + '">' + esc(nameOf(S, id)) + '</button>').join('');
+    $('picks').innerHTML = S.players.map((p) => {
+      const pickable = ids.indexOf(p.id) !== -1;
+      return '<button type="button" class="pick' + (pickable ? '' : ' out') + '"' +
+        (pickable ? '' : ' disabled') + ' data-id="' + p.id + '" aria-pressed="' +
+        (chosen.indexOf(p.id) !== -1) + '">' + esc(p.name) + '</button>';
+    }).join('');
 
-    $('picks').querySelectorAll('button').forEach((btn) => {
+    $('picks').querySelectorAll('button:not([disabled])').forEach((btn) => {
       btn.addEventListener('click', () => {
         const id = btn.dataset.id;
         const sel = chosen.slice();
