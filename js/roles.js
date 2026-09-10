@@ -34,16 +34,29 @@ const ROLE_IDS = Object.keys(ROLES);
 /* The night, in order. A beat only runs if somebody still alive holds the role.
    The Killer goes last on purpose: nothing acts after them, so the victim's role
    is settled the moment it is picked and the morning cannot announce the wrong
-   thing. `input` is the only thing the moderator has to tell the app. */
+   thing.
+
+   `say` is read to the room. `card` is what the moderator physically does with
+   the deck — the cards answer most of these, so the app never has to. `input` is
+   the short list of things the app genuinely cannot see: who was copied, who
+   swapped with whom, and who dies. Everything else is `none` and costs no taps. */
 const NIGHT = [
-  { role: 'doppelganger', input: 'copy',  say: 'Doppelgänger, open your eyes. Point at someone. You are that role now.' },
-  { role: 'minion',       input: 'none',  say: 'Minion, open your eyes. Killer, raise a hand so your minion can see you.' },
-  { role: 'mason',        input: 'none',  say: 'Masons, open your eyes and find each other.' },
-  { role: 'seer',         input: 'look',  say: 'Seer, open your eyes. Point at one person.' },
-  { role: 'robber',       input: 'steal', say: 'Robber, open your eyes. Point at someone. You take their role, they take yours.' },
-  { role: 'troublemaker', input: 'swap',  say: 'Troublemaker, open your eyes. Point at two other people. Their roles swap.' },
-  { role: 'insomniac',    input: 'self',  say: 'Insomniac, open your eyes and see what you are now.' },
-  { role: 'killer',       input: 'kill',  say: 'Killers, open your eyes. Choose who dies tonight.' },
+  { role: 'doppelganger', input: 'copy',  say: 'Doppelgänger, open your eyes. Point at someone. You are that role now.',
+    card: 'Show them that card, then put it back where it was. Their own card stays put — it is out of date from here on, and only you need to know that.' },
+  { role: 'minion',       input: 'none',  say: 'Minion, open your eyes. Killer, raise a hand so your minion can see you.',
+    card: 'Nothing to do with the cards. Just watch that a hand actually goes up.' },
+  { role: 'mason',        input: 'none',  say: 'Masons, open your eyes and find each other.',
+    card: 'Nothing to do with the cards.' },
+  { role: 'seer',         input: 'none',  say: 'Seer, open your eyes. Point at one person.',
+    card: 'Pick up that person\'s card and hold it so only the Seer can see it. Put it straight back.' },
+  { role: 'robber',       input: 'steal', say: 'Robber, open your eyes. Point at someone. You take their role, they take yours.',
+    card: 'Swap the two cards over, then let the Robber look at the one they have just taken.' },
+  { role: 'troublemaker', input: 'swap',  say: 'Troublemaker, open your eyes. Point at two other people. Their roles swap.',
+    card: 'Swap those two cards over. Neither of them looks, and neither of them is told.' },
+  { role: 'insomniac',    input: 'none',  say: 'Insomniac, open your eyes and see what you are now.',
+    card: 'Hand them their own card, let them look, and take it back.' },
+  { role: 'killer',       input: 'kill',  say: 'Killers, open your eyes. Choose who dies tonight.',
+    card: 'Nothing to do with the cards. They point; you tap it in below.' },
 ];
 
 /* Suggested line-ups. Every player holds exactly one role. */
