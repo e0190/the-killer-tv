@@ -85,10 +85,15 @@ const Admin = (function () {
     /* The roster seals the moment the thumb lifts — including if the finger
        slides off the list, or the window loses focus with it still held. */
     const list = $('roster');
-    const seal = () => { list.classList.add('sealed'); $('rosterHint').textContent = 'Press and hold'; };
+    const seal = () => {
+      list.classList.add('sealed');
+      $('rosterState').textContent = 'Roles sealed';
+      $('rosterHint').textContent = 'Press and hold';
+    };
     const open = (e) => {
       e.preventDefault();
       list.classList.remove('sealed');
+      $('rosterState').textContent = 'Roles showing';
       $('rosterHint').textContent = 'Let go to seal';
     };
     list.addEventListener('pointerdown', open);
