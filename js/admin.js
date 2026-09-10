@@ -416,11 +416,18 @@ const Admin = (function () {
 
     /* An empty call is a bluff: read it out exactly as normal, leave the same
        pause, and move on. Only this screen knows there is nobody there. */
+    /* An empty call is a bluff, and the screen never says so. It gives a stage
+       direction — how long to wait — rather than a spoiler, so the host is
+       reading an instruction instead of keeping a secret, and their face has
+       nothing to hide. */
     if (b.empty) {
-      cardNote('Handle the cards as if somebody had answered — reach for the deck, pause, put it down.');
-      $('admHint').textContent =
-        'Nobody is left to answer this. Read it out anyway, wait as long as you normally would, then carry on — ' +
-        'skipping it would tell the table the ' + role.name + ' is gone.';
+      const box = $('admAnswer');
+      box.hidden = false;
+      box.className = 'answer is-cards';
+      box.innerHTML = '<p class="eyebrow">Nothing to tap</p>' +
+        '<b>Nobody will move. Reach for the deck, give it the same seven or eight seconds ' +
+        'you gave the last call, then close it.</b>';
+      $('admHint').textContent = 'A call that gets skipped is a call the room can count. The pause is the point.';
       $('admNext').textContent = 'Next';
       return;
     }
