@@ -92,6 +92,7 @@ const Setup = (function () {
       const row = document.createElement('div');
       row.className = 'cast-row';
       row.innerHTML =
+        '<span class="num">' + (i + 1) + '</span>' +
         '<input class="input" type="text" maxlength="14" autocomplete="off" placeholder="Player ' + (i + 1) + '" value="' + esc(names[i] || '') + '">' +
         '<select class="select" data-slot="' + i + '" data-team="' + team + '">' + roleOptions(roles[i]) + '</select>';
       box.appendChild(row);

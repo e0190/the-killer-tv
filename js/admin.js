@@ -82,6 +82,19 @@ const Admin = (function () {
       else if (e.code === 'ArrowLeft') { e.preventDefault(); back(); }
     });
 
+    /* The roster seals the moment the thumb lifts — including if the finger
+       slides off the list, or the window loses focus with it still held. */
+    const list = $('roster');
+    const seal = () => { list.classList.add('sealed'); $('rosterHint').textContent = 'Press and hold'; };
+    const open = (e) => {
+      e.preventDefault();
+      list.classList.remove('sealed');
+      $('rosterHint').textContent = 'Let go to seal';
+    };
+    list.addEventListener('pointerdown', open);
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach((ev) => list.addEventListener(ev, seal));
+    window.addEventListener('blur', seal);
+
     Bus.on((msg) => { if (msg.type === 'hello') push(); });
     window.addEventListener('beforeunload', () => {
       try { if (tv && !tv.closed) tv.close(); } catch (e) {}
