@@ -553,21 +553,24 @@ const Admin = (function () {
       '<div class="ph-title">' + (S.revoted ? 'Tied. Everyone votes again.' : 'Who did each of them accuse?') + '</div>' +
       '<div class="ph-sub">Go round the table. Tap a name, then tap who they pointed at.</div>');
 
-    if (voter && !S.votes[voter]) {
+    /* The list is the screen. Tapping a name opens the grid for that one
+       person, and recording their answer drops straight back to the list, so
+       the host's eye returns to the same place every time. */
+    if (voter) {
       const me = byId(S, voter);
       body('<div class="ph-pad">' +
         '<div class="ph-call"><span>' + esc(me.name) + ' points at</span>' +
-        '<button type="button" id="voteSkip" style="font-family:var(--display);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--night-dim)">Back to the list</button></div>' +
+        '<button type="button" id="voteSkip">Back</button></div>' +
         '<div style="height:14px"></div>' +
-        picks(alive.filter((p) => p.id !== voter).map((p) => p.id), []) +
+        picks(alive.filter((p) => p.id !== voter).map((p) => p.id),
+          S.votes[voter] ? [S.votes[voter]] : []) +
         '</div>');
       $('voteSkip').addEventListener('click', () => { voter = null; draw(); });
       $('admBody').querySelectorAll('.pick:not(.off):not(.dead)').forEach((btn) => {
         btn.addEventListener('click', () => {
           S.votes[voter] = btn.dataset.id;
           Sound.play('tap');
-          const rest = living(S).filter((p) => !S.votes[p.id]);
-          voter = rest.length ? rest[0].id : null;
+          voter = null;
           push(); draw();
         });
       });
