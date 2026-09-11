@@ -1,17 +1,24 @@
 /* the killer tv — the remote.
 
    Owns the game, runs the phases, and pushes a copy to the TV after every
-   change. Shows every role, so it is the one screen nobody else should see. */
+   change. It is held in one pair of hands, in the dark, at a table of people who
+   would all like a look at it — so nothing here flashes, animates or brightens,
+   and the roles stay sealed until a thumb is held on them. */
 
 const Admin = (function () {
   const $ = (id) => document.getElementById(id);
-  const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
-  const roman = (n) => ROMAN[n] || String(n);
+  const WORDS = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven',
+                 'eight', 'nine', 'ten', 'eleven', 'twelve'];
+  const ORD = ['', 'first', 'second', 'third', 'fourth', 'fifth', 'sixth',
+               'seventh', 'eighth', 'ninth', 'tenth'];
+  const word = (n) => WORDS[n] || String(n);
 
   let S = null;
   let tv = null;
   let ticker = null;
   let wired = false;
+  let voter = null;          // whose vote is being recorded
+  let heldFrom = 0;          // when the current empty call was opened
 
   /* ---------- lifecycle ---------- */
 
@@ -36,8 +43,7 @@ const Admin = (function () {
     if (!wired) { wire(); wired = true; }
 
     Link.start('admin', (up) => {
-      $('link').classList.toggle('on', up);
-      $('linkText').textContent = up ? 'TV connected' : 'TV not responding';
+      $('admWhen').dataset.link = up ? 'on' : 'off';
       if (up) push();
     });
 
@@ -60,7 +66,7 @@ const Admin = (function () {
         ? window.open(url, 'killer_tv')
         : window.open(url, 'killer_tv', 'width=1280,height=720');
     } catch (e) { tv = null; }
-    if (!tv) { $('linkText').textContent = 'TV window blocked — use the TV button'; return; }
+    if (!tv) return;
     Bus.setPeer(tv);
     try { tv.focus(); } catch (e) {}
     setTimeout(push, 400);
@@ -69,41 +75,43 @@ const Admin = (function () {
   function wire() {
     $('admNext').addEventListener('click', next);
     $('admBack').addEventListener('click', back);
-    $('admPause').addEventListener('click', togglePause);
-    $('admPlus').addEventListener('click', () => addTime(30000));
-    $('reopenTv').addEventListener('click', openTvWindow);
-    $('quit').addEventListener('click', quit);
-    $('clearVotes').addEventListener('click', () => { S.votes = {}; push(); draw(); });
 
     document.addEventListener('keydown', (e) => {
       if (document.body.dataset.view !== 'admin') return;
       if (e.target.matches('input,select,textarea')) return;
       if (e.code === 'Space' || e.code === 'ArrowRight') { e.preventDefault(); next(); }
-      else if (e.code === 'ArrowLeft') { e.preventDefault(); back(); }
+      else if (e.code === 'Backspace' || e.code === 'ArrowLeft') { e.preventDefault(); back(); }
+      else if (e.key === 'r' || e.key === 'R') { if (!e.repeat) openRail(); }
+    });
+    document.addEventListener('keyup', (e) => {
+      if (e.key === 'r' || e.key === 'R') sealRail();
     });
 
-    /* The roster seals the moment the thumb lifts — including if the finger
-       slides off the list, or the window loses focus with it still held. */
-    const list = $('roster');
-    const seal = () => {
-      list.classList.add('sealed');
-      $('rosterState').textContent = 'Roles sealed';
-      $('rosterHint').textContent = 'Press and hold';
-    };
-    const open = (e) => {
-      e.preventDefault();
-      list.classList.remove('sealed');
-      $('rosterState').textContent = 'Roles showing';
-      $('rosterHint').textContent = 'Let go to seal';
-    };
-    list.addEventListener('pointerdown', open);
-    ['pointerup', 'pointerleave', 'pointercancel'].forEach((ev) => list.addEventListener(ev, seal));
-    window.addEventListener('blur', seal);
+    /* Press and hold to read the roles; let go and it seals. No timeout to
+       forget about, and no state in which the phone is dangerous lying down. */
+    const bar = $('admRosterBar');
+    bar.addEventListener('pointerdown', (e) => { e.preventDefault(); openRail(); });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach((ev) =>
+      bar.addEventListener(ev, sealRail));
+    $('admRail').addEventListener('pointerup', sealRail);
+    $('admRail').addEventListener('pointerleave', sealRail);
+    window.addEventListener('blur', sealRail);
 
     Bus.on((msg) => { if (msg.type === 'hello') push(); });
     window.addEventListener('beforeunload', () => {
       try { if (tv && !tv.closed) tv.close(); } catch (e) {}
     });
+  }
+
+  function openRail() {
+    if (!S) return;
+    drawRail();
+    $('admRail').hidden = false;
+    $('rosterHint').textContent = 'Let go to seal';
+  }
+  function sealRail() {
+    $('admRail').hidden = true;
+    $('rosterHint').textContent = 'Press and hold';
   }
 
   function quit() {
@@ -137,15 +145,33 @@ const Admin = (function () {
     if (!S.timer.total) return;
     S.timer.total += ms;
     if (S.timer.running) S.timer.endsAt += ms; else S.timer.left += ms;
-    Sound.play('tap'); push(); drawClock();
+    Sound.play('tap'); push(); draw();
   }
+
   function tick() {
     if (!S) return;
-    drawClock();
+    const now = new Date();
+    $('admTime').textContent = now.getHours() + '.' + String(now.getMinutes()).padStart(2, '0');
+
+    if (S.phase === 'day') {
+      const el = document.querySelector('.ph-clock');
+      if (el) el.textContent = clock(timeLeft(S.timer));
+    }
+    /* The held counter on an empty call: the screen never says the role is
+       dead, it says how long you have waited. */
+    const held = document.querySelector('.held');
+    if (held) paintHeld(held);
+
     if (S.timer.running && timeLeft(S.timer) <= 0) {
       S.timer.running = false;
       if (S.phase === 'day') next();
     }
+  }
+
+  function paintHeld(box) {
+    const secs = Math.min(8, Math.floor((Date.now() - heldFrom) / 1000));
+    box.querySelectorAll('span').forEach((s, i) => s.classList.toggle('on', i < secs));
+    box.querySelector('em').textContent = secs === 1 ? 'one second held' : word(secs) + ' seconds held';
   }
 
   /* ---------- phases ---------- */
@@ -155,7 +181,6 @@ const Admin = (function () {
     S.step = 0;
     S.night = buildNight(S);
     S.pendingKill = null;
-
     S.log = [];
     S.deaths = [];
     startTimer(0);
@@ -191,6 +216,7 @@ const Admin = (function () {
         S.votes = {};
         S.revotes = 0;
         S.revoted = false;
+        voter = null;
         startTimer(0);
         break;
 
@@ -202,6 +228,7 @@ const Admin = (function () {
           S.revotes++;
           S.revoted = true;
           S.votes = {};
+          voter = null;
           Sound.play('vote');
           break;
         }
@@ -293,7 +320,7 @@ const Admin = (function () {
         break;
       }
       case 'day': S.phase = 'dawn'; startTimer(0); break;
-      case 'vote': S.phase = 'day'; startTimer(S.settings.dayMs); break;
+      case 'vote': S.phase = 'day'; voter = null; startTimer(S.settings.dayMs); break;
       default: return;
     }
     push();
@@ -303,293 +330,293 @@ const Admin = (function () {
   /* ---------- drawing ---------- */
 
   function draw() {
-    ['admScript', 'admAnswer', 'admPicker', 'admVotes', 'admResult'].forEach((id) => { $(id).hidden = true; });
-    $('admSkip').hidden = true;
-    $('admClockRow').hidden = !S.timer.total;
-    $('admPause').textContent = S.timer.running ? 'Pause' : 'Resume';
+    const when = S.phase === 'night' || S.phase === 'dawn'
+      ? 'Night ' + word(S.round)
+      : 'Day ' + word(S.round);
+    $('admWhen').textContent = S.phase === 'over' ? 'Finished' : when;
+
     $('admNext').disabled = false;
     $('admNext').textContent = 'Next';
-    $('admHint').textContent = '';
-    $('admRoster').hidden = false;
-
-    $('admScene').hidden = true;
-
-    const head = (eyebrow, title) => {
-      $('admEyebrow').textContent = eyebrow;
-      $('admTitle').textContent = title;
-    };
-    const art = (id) => {
-      if (!id) return;
-      $('admScene').hidden = false;
-      $('admScene').innerHTML = sceneFor(id);
-    };
+    $('admBack').hidden = false;
 
     switch (S.phase) {
-      case 'rules': {
-        const r = RULES[S.step];
-        head('How to play · ' + (S.step + 1) + ' of ' + RULES.length, r.title);
-        art(r.scene);
-        $('admHint').textContent = r.body;
-        $('admNext').textContent = S.step === RULES.length - 1 ? (S.settings.showStory ? 'On to the story' : 'Start the night') : 'Next';
-        skip('Skip the rules', () => { if (S.settings.showStory) { S.phase = 'story'; S.step = 0; } else startNight(); push(); draw(); });
-        $('admRoster').hidden = true;
-        break;
-      }
-
-      case 'story': {
-        const t = STORY[S.step];
-        head('Story · ' + (S.step + 1) + ' of ' + STORY.length, t.title);
-        art(t.scene);
-        $('admScript').hidden = false;
-        $('admScriptText').textContent = lineText(t.id);
-        $('admNext').textContent = S.step === STORY.length - 1 ? 'Start the night' : 'Next';
-        skip('Skip the story', () => { startNight(); push(); draw(); });
-        $('admRoster').hidden = true;
-        break;
-      }
-
-      case 'night': drawBeat(); break;
-
-      case 'dawn': {
-        head('Dawn · day ' + roman(S.round), S.deaths.length ? nameOf(S, S.deaths[0]) + ' is dead' : 'Nobody died');
-        $('admHint').textContent = S.deaths.length
-          ? 'The town is told: ' + reveal(S, S.deaths[0]).text + '.'
-          : 'The killers came up empty. Everyone is still here.';
-        $('admNext').textContent = 'Start the day';
-        break;
-      }
-
-      case 'hunter': {
-        head('The Hunter falls', nameOf(S, S.hunter) + ' takes a shot');
-        $('admHint').textContent = 'Ask them out loud who they are taking with them.';
-        picker('Shot by ' + nameOf(S, S.hunter), living(S).map((p) => p.id),
-          S.hunterTarget ? [S.hunterTarget] : [], 1,
-          (sel) => { S.hunterTarget = sel[0] || null; push(); draw(); });
-        $('admNext').disabled = !S.hunterTarget;
-        $('admNext').textContent = S.hunterTarget ? 'Fire' : 'Pick a target';
-        break;
-      }
-
-      case 'day':
-        head('Day ' + roman(S.round), 'The town argues');
-        $('admHint').textContent = 'Let them talk. Hit next when you want the vote.';
-        $('admNext').textContent = 'Call the vote';
-        break;
-
-      case 'vote': drawVote(); break;
-
-      case 'verdict': {
-        head('The vote · day ' + roman(S.round), S.deaths.length ? nameOf(S, S.deaths[0]) + ' is voted out' : 'Nobody is voted out');
-        $('admHint').textContent = S.deaths.length
-          ? 'The town is told: ' + reveal(S, S.deaths[0]).text + '.'
-          : 'No majority after ' + (S.revotes + 1) + ' rounds of voting. The day is wasted.';
-        $('admNext').textContent = 'Nightfall';
-        break;
-      }
-
-      case 'over': drawResult(); break;
+      case 'rules':   drawSheet(RULES[S.step], 'How to play', RULES.length); break;
+      case 'story':   drawSheet(STORY[S.step], 'Before we start', STORY.length, true); break;
+      case 'night':   drawBeat(); break;
+      case 'dawn':    drawDeath('The night is over', 'Say who it was out loud.'); break;
+      case 'hunter':  drawHunter(); break;
+      case 'day':     drawDay(); break;
+      case 'vote':    drawVote(); break;
+      case 'verdict': drawDeath('The town has spoken', 'Say the name out loud, then turn their card over.'); break;
+      case 'over':    drawOver(); break;
     }
-
-    drawRoster();
-    drawClock();
   }
 
-  function skip(label, fn) {
-    const b = $('admSkip');
-    b.hidden = false;
-    b.textContent = label;
-    b.onclick = fn;
+  function head(html) { $('admHead').innerHTML = html; }
+  function body(html) { $('admBody').innerHTML = html; }
+
+  function drawSheet(item, kicker, total, narrated) {
+    head(
+      '<div class="ph-call"><span>' + kicker + '</span><span>' +
+      (S.step + 1) + ' of ' + total + '</span></div>' +
+      '<div class="ph-script">' + esc(item.title) + '</div>');
+    body(
+      '<div class="ph-pad"><div class="ph-box">' +
+        '<div class="k">' + (narrated ? 'The television reads this' : 'On the screen') + '</div>' +
+        '<div class="t">' + esc(narrated ? lineText(item.id) : item.body) + '</div>' +
+      '</div></div>');
+    $('admNext').textContent = S.step === total - 1 ? 'Begin' : 'Next';
   }
 
-  /* A night beat is now two instructions: the line to read to the room, and what
-     to do with the deck. Only three of the eight beats need anything tapped in —
-     the cards carry the rest, so most of the night is read-and-move-on. */
   function drawBeat() {
     const b = beatOf(S);
     if (!b) return;
     const role = ROLES[b.role];
-    const holders = livingWith(S, b.role);
     const beat = NIGHT.find((x) => x.role === b.role);
+    const holders = livingWith(S, b.role);
 
-    $('admEyebrow').textContent = 'Night ' + roman(S.round) + ' · ' + (S.step + 1) + ' of ' + S.night.length;
-    $('admTitle').textContent = role.name;
-    $('admScene').hidden = false;
-    $('admScene').innerHTML = sceneFor(ROLE_SCENE[b.role]);
+    head(
+      '<div class="ph-call"><span>Call ' + word(S.step + 1) + ' of ' + word(S.night.length) +
+      '</span><span>' + esc(role.name) + '</span></div>' +
+      '<div class="ph-script">' + esc(beat.say) + '</div>' +
+      '<div class="ph-sub">' + (b.empty
+        ? 'Read it exactly as written. Wait. Then read the next line.'
+        : beatNeedsInput(b)
+          ? 'Read it aloud, then tap who they pointed at.'
+          : 'Read it aloud, then do the cards.') + '</div>');
 
-    $('admScript').hidden = false;
-    $('admScriptText').textContent = beat.say;
-
-    /* An empty call is a bluff: read it out exactly as normal, leave the same
-       pause, and move on. Only this screen knows there is nobody there. */
-    /* An empty call is a bluff, and the screen never says so. It gives a stage
-       direction — how long to wait — rather than a spoiler, so the host is
-       reading an instruction instead of keeping a secret, and their face has
-       nothing to hide. */
+    /* An empty call is a bluff and the screen never says so. It gives a stage
+       direction — how long to wait — rather than a spoiler, so the host reads an
+       instruction instead of keeping a secret, and their face has nothing to
+       hide. A call that gets skipped is a call the room can count. */
     if (b.empty) {
-      const box = $('admAnswer');
-      box.hidden = false;
-      box.className = 'answer is-cards';
-      box.innerHTML = '<p class="eyebrow">Nothing to tap</p>' +
-        '<b>Nobody will move. Reach for the deck, give it the same seven or eight seconds ' +
-        'you gave the last call, then close it.</b>';
-      $('admHint').textContent = 'A call that gets skipped is a call the room can count. The pause is the point.';
-      $('admNext').textContent = 'Next';
+      heldFrom = Date.now();
+      body(
+        '<div class="ph-pad"><div class="ph-box">' +
+          '<div class="k">Nothing to tap</div>' +
+          '<div class="t">Nobody will move. Reach for the deck, give it the same seven or eight ' +
+            'seconds you gave the last call, then close it.</div>' +
+          '<div class="u">A call that gets skipped is a call the room can count. The pause is the point.</div>' +
+        '</div>' +
+        '<div class="held">' + new Array(8).fill('<span></span>').join('') + '<em>nothing held</em></div>' +
+        '</div>');
+      paintHeld(document.querySelector('.held'));
       return;
     }
 
-    cardNote(beat.card);
+    if (!beatNeedsInput(b)) {
+      const stale = living(S).filter(cardStale);
+      body(
+        '<div class="ph-pad"><div class="ph-box">' +
+          '<div class="k">The cards</div>' +
+          '<div class="t">' + esc(beat.card) + '</div>' +
+          '<div class="u">' + esc(holders.length > 1
+            ? holders.map((p) => p.name).join(' and ') + ' are awake.'
+            : holders.map((p) => p.name).join('') + ' is awake.') +
+            (b.role === 'seer' && stale.length
+              ? ' If they point at ' + esc(stale.map((p) => p.name).join(' or ')) +
+                ', that card is out of date — hold it up anyway.'
+              : '') +
+          '</div>' +
+        '</div></div>');
+      return;
+    }
 
     const actor = actorOf(S, b);
-    const others = (skipIds) => living(S).filter((p) => skipIds.indexOf(p.id) === -1).map((p) => p.id);
-    const gate = () => {
-      $('admNext').disabled = !b.done;
-      if (!b.done) $('admNext').textContent = b.input === 'swap' ? 'Pick two' : 'Pick someone';
-    };
+    const others = (skip) => living(S).filter((p) => skip.indexOf(p.id) === -1).map((p) => p.id);
     const set = (sel, need) => {
       if (sel.length === need) applyBeat(S, b, sel);
       else { undoBeat(S, b); b.targets = sel; }
       push(); draw();
     };
 
+    let ids, need = 1, note = '';
     if (b.input === 'kill') {
-      picker('Who the killers take', living(S).filter((p) => p.role !== 'killer').map((p) => p.id),
-        b.targets, 1, (sel) => set(sel, 1));
-      gate();
-
-    } else if (b.input === 'copy') {
-      picker('Who the Doppelgänger copies', others([actor]), b.targets, 1, (sel) => set(sel, 1));
-      $('admHint').textContent = 'They act on the new role if it is called later tonight, and stay that role from now on.';
-      gate();
-
-    } else if (b.input === 'steal') {
-      picker('Who the Robber steals from', others([actor]), b.targets, 1, (sel) => set(sel, 1));
-      gate();
-
+      ids = living(S).filter((p) => p.role !== 'killer').map((p) => p.id);
     } else if (b.input === 'swap') {
-      picker('The two being swapped', others([actor]), b.targets, 2, (sel) => set(sel, 2));
-      gate();
-
+      ids = others([actor]); need = 2;
+      note = 'Two names. Swap those two cards over once you have them.';
     } else {
-      /* Nothing to record. Say who is awake so a silent room can be checked
-         against something. */
-      $('admHint').textContent = holders.length > 1
-        ? holders.map((p) => p.name).join(' and ') + ' are awake.'
-        : holders.map((p) => p.name).join('') + ' is awake.';
-
-      /* The Seer is about to be shown a card, and one card in the game can be a
-         lie. Name it before it gets held up. */
-      if (b.role === 'seer') {
-        const stale = living(S).filter(cardStale);
-        if (stale.length) {
-          $('admHint').textContent += ' If they point at ' +
-            stale.map((p) => p.name).join(' or ') +
-            ', that card is out of date — show it anyway, it is meant to mislead.';
-        }
-      }
+      ids = others([actor]);
+      note = b.input === 'steal' ? 'Then swap the two cards over.' : 'Then show them that card.';
     }
-  }
 
-  /* What to do with the deck, kept visually apart from the line that gets read
-     out, because one is spoken and the other is done with your hands. */
-  function cardNote(text) {
-    if (!text) return;
-    const box = $('admAnswer');
-    box.hidden = false;
-    box.className = 'answer is-cards';
-    box.innerHTML = '<p class="eyebrow">The cards</p><b>' + esc(text) + '</b>';
-  }
+    body('<div class="ph-pad">' + picks(ids, b.targets) + deadNote() +
+      (note ? '<div class="ph-note">' + note + '</div>' : '') + '</div>');
 
-  /* Everyone is drawn, always, in the order they were dealt in. The dead are
-     shown struck through and cannot be tapped — pulling them out would reflow
-     the grid every night and cost the host a second hunting for a name that
-     moved. */
-  function picker(label, ids, chosen, limit, onChange) {
-    $('admPicker').hidden = false;
-    $('pickLabel').textContent = label;
-    $('picks').innerHTML = S.players.map((p) => {
-      const pickable = ids.indexOf(p.id) !== -1;
-      /* Two different reasons a name cannot be tapped, and they should not look
-         the same: the dead are struck through, while someone merely ineligible
-         tonight — a killer during the kill, the actor during their own call —
-         just sits quiet. */
-      const why = pickable ? '' : (p.alive ? ' off' : ' dead');
-      return '<button type="button" class="pick' + why + '"' +
-        (pickable ? '' : ' disabled') + ' data-id="' + p.id + '" aria-pressed="' +
-        (chosen.indexOf(p.id) !== -1) + '">' + esc(p.name) + '</button>';
-    }).join('');
-
-    $('picks').querySelectorAll('button:not([disabled])').forEach((btn) => {
+    $('admBody').querySelectorAll('.pick:not(.off):not(.dead)').forEach((btn) => {
       btn.addEventListener('click', () => {
         const id = btn.dataset.id;
-        const sel = chosen.slice();
+        const sel = b.targets.slice();
         const at = sel.indexOf(id);
         if (at !== -1) sel.splice(at, 1);
-        else { sel.push(id); while (sel.length > limit) sel.shift(); }
+        else { sel.push(id); while (sel.length > need) sel.shift(); }
         Sound.play('tap');
-        onChange(sel);
+        set(sel, need);
       });
     });
+
+    $('admNext').disabled = !b.done;
+    if (!b.done) $('admNext').textContent = need === 2 ? 'Pick two' : 'Pick a name';
   }
 
-  function drawVote() {
-    const alive = living(S);
-    const short = alive.filter((p) => !S.votes[p.id]);
+  /* Everyone is drawn, always, in the order they were dealt. Taking the dead out
+     would redraw the board every night and cost the host a second hunting for a
+     name that moved. */
+  function picks(ids, chosen) {
+    return '<div class="picks">' + S.players.map((p) => {
+      const can = ids.indexOf(p.id) !== -1;
+      const cls = can ? '' : (p.alive ? ' off' : ' dead');
+      return '<button type="button" class="pick' + cls + '" data-id="' + p.id +
+        '" aria-pressed="' + (chosen.indexOf(p.id) !== -1) + '"' + (can ? '' : ' disabled') + '>' +
+        (p.alive ? esc(p.name) : '<b>' + esc(p.name) + '</b>') + '</button>';
+    }).join('') + '</div>';
+  }
 
-    $('admEyebrow').textContent = 'Day ' + roman(S.round) + (S.revoted ? ' · revote ' + (S.revotes + 1) : '');
-    $('admTitle').textContent = S.revoted ? 'Tied — everyone votes again' : 'Who is everyone pointing at?';
+  function deadNote() {
+    const gone = S.players.filter((p) => !p.alive);
+    if (!gone.length) return '';
+    return '<div class="ph-note">' + esc(gone.map((p) => p.name).join(', ')) +
+      (gone.length === 1 ? ' is dead and cannot be seen.' : ' are dead and cannot be seen.') + '</div>';
+  }
 
-    $('admVotes').hidden = false;
-    $('voteLabel').textContent = (alive.length - short.length) + ' of ' + alive.length + ' recorded';
-    $('voteSheet').innerHTML = alive.map((p) => {
-      const targets = alive.filter((t) => t.id !== p.id).map((t) =>
-        '<button type="button" data-voter="' + p.id + '" data-target="' + t.id + '" aria-pressed="' +
-        (S.votes[p.id] === t.id) + '">' + esc(t.name) + '</button>').join('');
-      return '<div class="vote-row' + (S.votes[p.id] ? '' : ' todo') + '"><b>' + esc(p.name) + '</b>' +
-        '<div class="vote-targets">' + targets + '</div></div>';
-    }).join('');
+  function drawDeath(kicker, sub) {
+    const dead = S.deaths.length ? byId(S, S.deaths[0]) : null;
+    head('<div class="ph-call"><span>' + kicker + '</span><span>' +
+      word(living(S).length) + ' left</span></div>' +
+      '<div class="ph-script">' + (dead ? esc(dead.name) + ' is dead' : 'Nobody died') + '</div>' +
+      '<div class="ph-sub">' + (dead ? sub : 'The killers came up empty.') + '</div>');
 
-    $('voteSheet').querySelectorAll('button').forEach((b) => {
-      b.addEventListener('click', () => {
-        S.votes[b.dataset.voter] = b.dataset.target;
+    body('<div class="ph-pad"><div class="ph-box">' +
+      '<div class="k">The television is showing</div>' +
+      '<div class="t">' + (dead ? esc(reveal(S, dead.id).text) : 'Everyone survived') + '</div>' +
+      (dead ? '<div class="u">Their card comes off the table. Everything else stays where it is.</div>' : '') +
+      '</div></div>');
+
+    $('admNext').textContent = S.phase === 'dawn' ? 'Start the day' : 'Nightfall';
+  }
+
+  function drawHunter() {
+    head('<div class="ph-call"><span>One shot left</span><span>The Hunter</span></div>' +
+      '<div class="ph-script">' + esc(nameOf(S, S.hunter)) + ' takes somebody with them</div>' +
+      '<div class="ph-sub">Ask them out loud, then tap the name.</div>');
+
+    body('<div class="ph-pad">' +
+      picks(living(S).filter((p) => p.id !== S.hunter).map((p) => p.id),
+        S.hunterTarget ? [S.hunterTarget] : []) + deadNote() + '</div>');
+
+    $('admBody').querySelectorAll('.pick:not(.off):not(.dead)').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        S.hunterTarget = S.hunterTarget === btn.dataset.id ? null : btn.dataset.id;
         Sound.play('tap');
         push(); draw();
       });
     });
 
-    /* A disabled button with no explanation reads as a frozen app, so name the
-       people still missing rather than just greying it out. */
-    $('admNext').disabled = short.length > 0;
-    $('admNext').textContent = short.length ? short.length + ' still to record' : 'Lock it in';
-    $('admHint').textContent = short.length
-      ? 'Waiting on ' + short.slice(0, 4).map((p) => p.name).join(', ') + (short.length > 4 ? ' and others' : '') + '.'
-      : 'Everyone accounted for.';
+    $('admNext').disabled = !S.hunterTarget;
+    $('admNext').textContent = S.hunterTarget ? 'Fire' : 'Pick a name';
   }
 
-  function drawResult() {
-    const r = S.result;
-    $('admEyebrow').textContent = 'Finished after ' + roman(S.round) + (S.round === 1 ? ' night' : ' nights');
-    $('admTitle').textContent = r.headline;
+  /* The one screen the host does not have to read: the clock is already on the
+     television, so this is just somewhere to put a thumb. */
+  function drawDay() {
+    head('<div class="ph-call"><span>The town is arguing</span></div>');
+    body(
+      '<div class="ph-mid">' +
+        '<div class="ph-clock">' + clock(timeLeft(S.timer)) + '</div>' +
+        '<div class="ph-of">' + (S.timer.total ? 'of ' + word(Math.round(S.timer.total / 60000)) + ' minutes' : 'no clock') + '</div>' +
+        (S.timer.total
+          ? '<div class="ph-two">' +
+              '<button type="button" id="admPause">' + (S.timer.running ? 'Pause' : 'Resume') + '</button>' +
+              '<button type="button" id="admPlus">+30s</button>' +
+            '</div>'
+          : '') +
+        '<div class="ph-foot-note">The television is showing the same clock. ' +
+          word(living(S).length) + ' remain.</div>' +
+      '</div>');
 
-    const box = $('admResult');
-    box.hidden = false;
-    box.innerHTML =
-      '<ul class="roster">' + S.players.map((p) => {
-        const won = r.winners.indexOf(p.id) !== -1;
-        const changed = p.role !== p.startRole;
-        return '<li class="' + (p.alive ? '' : 'out') + '">' +
-          '<span class="who">' + (won ? '★ ' : '') + esc(p.name) + '</span>' +
-          '<span class="tag">' + ROLES[p.role].name +
-          (changed ? ' (began as ' + ROLES[p.startRole].name + ')' : '') + '</span></li>';
-      }).join('') + '</ul>' +
-      '<div style="display:flex;gap:10px;margin-top:16px">' +
-        '<button type="button" class="btn" id="again">Same cast, new game</button>' +
-        '<button type="button" class="btn btn-ghost" id="toSetup">Back to setup</button>' +
-      '</div>';
+    if (S.timer.total) {
+      $('admPause').addEventListener('click', togglePause);
+      $('admPlus').addEventListener('click', () => addTime(30000));
+    }
+    $('admNext').textContent = 'Call the vote';
+  }
+
+  /* Go round the table: tap a name, then tap who they pointed at. The button is
+     the counter — it carries the number still missing rather than a separate
+     progress line, and it only becomes a button when that number reaches zero. */
+  function drawVote() {
+    const alive = living(S);
+    const short = alive.filter((p) => !S.votes[p.id]);
+    if (!voter || !S.votes[voter] === false) { /* keep the current voter */ }
+    if (!voter) voter = (short[0] || alive[0]).id;
+
+    head(
+      '<div class="ph-title">' + (S.revoted ? 'Tied. Everyone votes again.' : 'Who did each of them accuse?') + '</div>' +
+      '<div class="ph-sub">Go round the table. Tap a name, then tap who they pointed at.</div>');
+
+    if (voter && !S.votes[voter]) {
+      const me = byId(S, voter);
+      body('<div class="ph-pad">' +
+        '<div class="ph-call"><span>' + esc(me.name) + ' points at</span>' +
+        '<button type="button" id="voteSkip" style="font-family:var(--display);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--night-dim)">Back to the list</button></div>' +
+        '<div style="height:14px"></div>' +
+        picks(alive.filter((p) => p.id !== voter).map((p) => p.id), []) +
+        '</div>');
+      $('voteSkip').addEventListener('click', () => { voter = null; draw(); });
+      $('admBody').querySelectorAll('.pick:not(.off):not(.dead)').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          S.votes[voter] = btn.dataset.id;
+          Sound.play('tap');
+          const rest = living(S).filter((p) => !S.votes[p.id]);
+          voter = rest.length ? rest[0].id : null;
+          push(); draw();
+        });
+      });
+    } else {
+      body(alive.map((p) => {
+        const t = S.votes[p.id];
+        return '<div class="vote-row" data-voter="' + p.id + '">' +
+          '<span class="who">' + esc(p.name) + '</span>' +
+          '<span class="to' + (t ? '' : ' waiting') + '">' + (t ? esc(nameOf(S, t)) : 'Waiting') + '</span>' +
+        '</div>';
+      }).join(''));
+      $('admBody').querySelectorAll('.vote-row').forEach((row) => {
+        row.addEventListener('click', () => { voter = row.dataset.voter; draw(); });
+      });
+    }
+
+    $('admNext').disabled = short.length > 0;
+    $('admNext').textContent = short.length
+      ? word(short.length) + (short.length === 1 ? ' still to vote' : ' still to vote')
+      : 'Lock it in';
+  }
+
+  function drawOver() {
+    const r = S.result;
+    head('<div class="ph-call"><span>After ' + word(S.round) +
+      (S.round === 1 ? ' night' : ' nights') + '</span></div>' +
+      '<div class="ph-script">' + esc(r.headline) + '</div>');
+
+    body('<div class="ph-pad">' + S.players.map((p) => {
+      const won = r.winners.indexOf(p.id) !== -1;
+      const changed = p.role !== p.startRole;
+      return '<div class="rail-row' + (p.alive ? '' : ' out') + '">' +
+        '<span class="role">' + ROLES[p.role].name + '</span>' +
+        '<span class="name">' + (won ? '· ' : '') + esc(p.name) +
+          (changed ? ' <i style="opacity:.6;font-size:13px">began as ' + ROLES[p.startRole].name + '</i>' : '') +
+        '</span></div>';
+    }).join('') +
+      '<div style="display:flex;gap:10px;margin-top:20px">' +
+        '<button type="button" class="ph-back" style="flex:1" id="again">Again</button>' +
+        '<button type="button" class="ph-back" style="flex:1" id="toSetup">Setup</button>' +
+      '</div></div>');
 
     $('again').addEventListener('click', playAgain);
     $('toSetup').addEventListener('click', quit);
     $('admNext').disabled = true;
-    $('admRoster').hidden = true;
+    $('admNext').textContent = 'Finished';
+    $('admBack').hidden = true;
   }
 
   function playAgain() {
@@ -603,25 +630,20 @@ const Admin = (function () {
     boot(fresh, !tv || tv.closed);
   }
 
-  function drawRoster() {
-    if ($('admRoster').hidden) return;
-    $('roster').innerHTML = S.players.map((p) => {
-      const r = ROLES[p.role];
-      /* Flag anyone whose card no longer matches, so holding it up is a choice
-         rather than a mistake. */
-      const stale = cardStale(p) ? ' · card says ' + ROLES[p.card].name : '';
-      return '<li class="' + (p.alive ? '' : 'out') + (r.team === 'killers' ? ' k' : '') + '">' +
-        '<span class="who">' + esc(p.name) + '</span>' +
-        '<span class="tag">' + r.name + stale + (p.alive ? '' : ' · out') + '</span></li>';
-    }).join('');
-  }
-
-  function drawClock() {
-    if (!S || !S.timer.total) return;
-    const ms = timeLeft(S.timer);
-    const el = $('admClock');
-    el.textContent = clock(ms);
-    el.classList.toggle('low', ms <= 15000);
+  /* Names stay put; only the left column changes. Nothing moves, so the host's
+     eye already knows where the answer is going to appear. */
+  function drawRail() {
+    $('admRail').innerHTML =
+      '<div class="rail-head"><b>The roster</b><span>' +
+        word(living(S).length) + ' alive</span></div>' +
+      '<div class="rail-list">' + S.players.map((p) =>
+        '<div class="rail-row' + (p.alive ? '' : ' out') + '">' +
+          '<span class="role">' + ROLES[p.role].name + '</span>' +
+          '<span class="name">' + esc(p.name) + '</span>' +
+          (cardStale(p) ? '<span class="role" style="flex:none;opacity:.6">card: ' + ROLES[p.card].name + '</span>' : '') +
+        '</div>').join('') + '</div>' +
+      '<div class="rail-foot"><div class="rail-seal">' +
+        '<span class="sq"></span><p>Open. Let go.</p></div></div>';
   }
 
   const esc = (v) => String(v).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
