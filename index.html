@@ -3,250 +3,296 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#100c0a">
+<meta name="theme-color" content="#F4EDE0">
 <meta name="description" content="A social deduction party game for one television and a phone.">
 <title>The Killer TV</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23100c0a'/><rect x='5' y='10' width='22' height='15' fill='none' stroke='%23ede3d4' stroke-width='2'/><path d='M11 10 8 5M21 10l3-5' stroke='%23ede3d4' stroke-width='2'/></svg>">
-<!-- Bodoni for anything announced, Baskerville for anything read. Both fall back
-     to Georgia, so an offline game still comes up serif and still fits. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,700;6..96,900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;0,6..96,900;1,6..96,400;1,6..96,900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/app.css">
 </head>
 <body data-view="setup">
 
-<!-- ============================== SETUP ============================== -->
-<main id="setup" class="view">
-  <div class="wrap">
+<!-- The deck's marks. One symbol per role plus the card back, used on the setup
+     cards, in the moderator's roster, and on the printed cards. -->
+<svg class="marks" aria-hidden="true" focusable="false">
+  <defs>
+    <clipPath id="s-cp-killer"><polygon points="50,3 61.5,52 50,97 38.5,52"></polygon></clipPath>
+    <clipPath id="s-cp-trouble"><polygon points="15,19 85,19 50,89"></polygon></clipPath>
+    <clipPath id="s-cp-insom"><circle cx="50" cy="50" r="34"></circle></clipPath>
+    <clipPath id="s-cp-diamond"><polygon points="50,20 80,50 50,80 20,50"></polygon></clipPath>
+  </defs>
+  <symbol id="s-villager" viewBox="0 0 100 100"><circle cx="50" cy="50" r="17"></circle></symbol>
+  <symbol id="s-killer" viewBox="0 0 100 100">
+    <g clip-path="url(#s-cp-killer)" stroke="currentColor" stroke-width="4.5">
+      <line x1="-30" y1="10" x2="130" y2="-150"></line><line x1="-30" y1="38" x2="130" y2="-122"></line>
+      <line x1="-30" y1="66" x2="130" y2="-94"></line><line x1="-30" y1="94" x2="130" y2="-66"></line>
+      <line x1="-30" y1="122" x2="130" y2="-38"></line><line x1="-30" y1="150" x2="130" y2="-10"></line>
+      <line x1="-30" y1="178" x2="130" y2="18"></line><line x1="-30" y1="206" x2="130" y2="46"></line>
+      <line x1="-30" y1="234" x2="130" y2="74"></line>
+    </g>
+    <polygon points="50,3 61.5,52 50,97 38.5,52" fill="none" stroke="currentColor" stroke-width="4"></polygon>
+  </symbol>
+  <symbol id="s-mason" viewBox="0 0 100 100">
+    <rect x="10" y="35" width="30" height="30"></rect><rect x="60" y="35" width="30" height="30"></rect>
+    <rect x="40" y="45" width="20" height="10"></rect>
+  </symbol>
+  <symbol id="s-minion" viewBox="0 0 100 100">
+    <circle cx="28" cy="50" r="14"></circle>
+    <circle cx="70" cy="50" r="16" fill="none" stroke="currentColor" stroke-width="8"></circle>
+  </symbol>
+  <symbol id="s-seer" viewBox="0 0 100 100">
+    <circle cx="50" cy="50" r="34" fill="none" stroke="currentColor" stroke-width="5"></circle>
+    <circle cx="50" cy="50" r="21" fill="none" stroke="currentColor" stroke-width="5"></circle>
+    <circle cx="50" cy="50" r="9"></circle>
+  </symbol>
+  <symbol id="s-robber" viewBox="0 0 100 100">
+    <rect x="30" y="26" width="52" height="9"></rect><polygon points="14,30.5 32,19 32,42"></polygon>
+    <rect x="18" y="65" width="52" height="9"></rect><polygon points="86,69.5 68,58 68,81"></polygon>
+  </symbol>
+  <symbol id="s-trouble" viewBox="0 0 100 100">
+    <g clip-path="url(#s-cp-trouble)" stroke="currentColor" stroke-width="5">
+      <line x1="5" y1="27" x2="95" y2="27"></line><line x1="5" y1="40" x2="95" y2="40"></line>
+      <line x1="5" y1="53" x2="95" y2="53"></line><line x1="5" y1="66" x2="95" y2="66"></line>
+      <line x1="5" y1="79" x2="95" y2="79"></line>
+    </g>
+    <polygon points="15,19 85,19 50,89" fill="none" stroke="currentColor" stroke-width="4.5"></polygon>
+  </symbol>
+  <symbol id="s-insomniac" viewBox="0 0 100 100">
+    <g clip-path="url(#s-cp-insom)" stroke="currentColor" stroke-width="5">
+      <line x1="8" y1="55" x2="92" y2="55"></line><line x1="8" y1="68" x2="92" y2="68"></line>
+      <line x1="8" y1="81" x2="92" y2="81"></line>
+    </g>
+    <circle cx="50" cy="50" r="34" fill="none" stroke="currentColor" stroke-width="5"></circle>
+  </symbol>
+  <symbol id="s-doppel" viewBox="0 0 100 100">
+    <polygon points="36,14 58,50 36,86 14,50"></polygon>
+    <polygon points="64,14 86,50 64,86 42,50" fill="none" stroke="currentColor" stroke-width="6"></polygon>
+  </symbol>
+  <symbol id="s-hunter" viewBox="0 0 100 100">
+    <polygon points="18,8 82,8 50,46"></polygon><polygon points="18,92 82,92 50,54"></polygon>
+  </symbol>
+  <symbol id="s-tanner" viewBox="0 0 100 100">
+    <g stroke="currentColor" stroke-width="9" fill="none" stroke-linecap="square">
+      <line x1="17" y1="17" x2="62" y2="17"></line><line x1="83" y1="38" x2="83" y2="83"></line>
+      <line x1="83" y1="83" x2="17" y2="83"></line><line x1="17" y1="83" x2="17" y2="17"></line>
+    </g>
+  </symbol>
+  <symbol id="s-back" viewBox="0 0 100 100">
+    <g fill="currentColor">
+      <polygon points="50,2 54,24 46,24"></polygon>
+      <polygon points="50,2 54,24 46,24" transform="rotate(45 50 50)"></polygon>
+      <polygon points="50,2 54,24 46,24" transform="rotate(90 50 50)"></polygon>
+      <polygon points="50,2 54,24 46,24" transform="rotate(135 50 50)"></polygon>
+      <polygon points="50,2 54,24 46,24" transform="rotate(180 50 50)"></polygon>
+      <polygon points="50,2 54,24 46,24" transform="rotate(225 50 50)"></polygon>
+      <polygon points="50,2 54,24 46,24" transform="rotate(270 50 50)"></polygon>
+      <polygon points="50,2 54,24 46,24" transform="rotate(315 50 50)"></polygon>
+    </g>
+    <g clip-path="url(#s-cp-diamond)" stroke="currentColor" stroke-width="1.5">
+      <line x1="24" y1="0" x2="24" y2="100"></line><line x1="31" y1="0" x2="31" y2="100"></line>
+      <line x1="38" y1="0" x2="38" y2="100"></line><line x1="45" y1="0" x2="45" y2="100"></line>
+      <line x1="52" y1="0" x2="52" y2="100"></line><line x1="59" y1="0" x2="59" y2="100"></line>
+      <line x1="66" y1="0" x2="66" y2="100"></line><line x1="73" y1="0" x2="73" y2="100"></line>
+    </g>
+    <circle cx="50" cy="50" r="30" fill="none" stroke="currentColor" stroke-width="2"></circle>
+    <polygon points="50,20 80,50 50,80 20,50" fill="none" stroke="currentColor" stroke-width="2.6"></polygon>
+    <circle cx="50" cy="50" r="12" fill="var(--stock,#F4EDE0)"></circle>
+    <circle cx="50" cy="50" r="12" fill="none" stroke="currentColor" stroke-width="1.6"></circle>
+    <polygon points="50,39 61,50 50,61 39,50"></polygon>
+    <polygon points="50,45.5 54.5,50 50,54.5 45.5,50" fill="var(--stock,#F4EDE0)"></polygon>
+  </symbol>
+</svg>
 
-    <header class="masthead">
-      <h1>The Killer TV</h1>
-      <p>One of you is the Killer. Nobody is coming to help.</p>
-      <div class="rule"><span>Four to twelve players</span></div>
+<!-- ============================== SETUP ==============================
+     The day face. A player is a card lying on a table — paper stock, one hard
+     shadow, a mark ruled off at the left — not a form field with a label. -->
+<main id="setup" class="view">
+  <div class="sheet">
+
+    <header class="mast">
+      <div>
+        <p class="over">The Killer TV</p>
+        <h1>Set the table</h1>
+      </div>
+      <p class="mast-note">Deal everybody in, then hand the phone to whoever is running it.
+        The television takes over from here.</p>
     </header>
 
-    <section class="card">
-      <div class="sec-head">
-        <h2>Players</h2>
-        <div class="tools">
-          <button type="button" class="btn btn-ghost" id="fillCast">Suggest roles</button>
-          <button type="button" class="btn btn-ghost" id="clearCast">Clear</button>
-        </div>
-      </div>
+    <div class="cols">
 
-      <div class="cast" id="cast"></div>
-
-      <div class="cast-foot">
-        <div class="stepper">
-          <button type="button" id="fewer" aria-label="Fewer players">−</button>
-          <output id="count">8</output>
-          <button type="button" id="more" aria-label="More players">+</button>
-        </div>
-        <div class="tally" id="tally"></div>
-      </div>
-
-      <ul class="problems" id="problems"></ul>
-    </section>
-
-    <section class="card">
-      <div class="sec-head"><h2>Game</h2></div>
-
-      <div class="row">
-        <div class="row-text">
-          <b>Show the rules first</b>
-          <span>Four screens on how a round works.</span>
-        </div>
-        <div class="row-ctl">
-          <label class="switch"><input type="checkbox" id="optRules" checked><i></i></label>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="row-text">
-          <b>Show the story first</b>
-          <span>Four screens of set-up before the first night.</span>
-        </div>
-        <div class="row-ctl">
-          <label class="switch"><input type="checkbox" id="optStory" checked><i></i></label>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="row-text">
-          <b>When somebody dies</b>
-          <span>What the town is told about the body. Hiding the role also keeps every role
-            being called at night, so a missing call never gives anyone away.</span>
-        </div>
-        <div class="row-ctl">
-          <div class="seg" id="optReveal" role="radiogroup" aria-label="Reveal">
-            <button type="button" role="radio" data-reveal="role" aria-checked="true">Their role</button>
-            <button type="button" role="radio" data-reveal="team" aria-checked="false">Killer or not</button>
+      <section class="col-wide">
+        <div class="sec-head">
+          <div>
+            <p class="over">The hand</p>
+            <h2>Players</h2>
+          </div>
+          <div class="sec-tools">
+            <div class="stepper">
+              <button type="button" id="fewer" aria-label="One fewer player">−</button>
+              <div class="stepper-read">
+                <b id="count">8</b>
+                <span>players</span>
+              </div>
+              <button type="button" id="more" aria-label="One more player">+</button>
+            </div>
+            <button type="button" class="btn-solid" id="fillCast">Suggest roles</button>
           </div>
         </div>
-      </div>
 
-      <div class="row">
-        <div class="row-text">
-          <b>Length of the day</b>
-          <span>How long the town gets to argue.</span>
+        <div class="hand" id="cast"></div>
+      </section>
+
+      <section class="col-side">
+
+        <div>
+          <p class="over">On the table</p>
+          <div class="tally-box">
+            <b class="tally-head" id="tallyHead">Eight at the table</b>
+            <p class="tally-sub" id="tallySub"></p>
+            <div class="balance" id="balance"></div>
+            <div class="tally" id="tally"></div>
+          </div>
+
+          <div class="problems-box">
+            <p class="over" id="problemsHead">Before you start</p>
+            <div id="problems"></div>
+          </div>
         </div>
-        <div class="row-ctl">
-          <select class="select" id="optDay" style="width:auto">
-            <option value="180000">3 min</option>
-            <option value="300000" selected>5 min</option>
-            <option value="420000">7 min</option>
-            <option value="0">No timer</option>
-          </select>
+
+        <div>
+          <p class="over">Game</p>
+          <div class="ruled">
+            <button type="button" class="check" id="optRules" aria-pressed="true">
+              <span class="box"></span>
+              <span class="check-text"><b>Show the rules first</b><i>Four screens on how a round works.</i></span>
+            </button>
+            <button type="button" class="check" id="optStory" aria-pressed="true">
+              <span class="box"></span>
+              <span class="check-text"><b>Show the story first</b><i>Four screens before the first night.</i></span>
+            </button>
+
+            <div class="ruled-block">
+              <b>When a body is found, the town is told</b>
+              <i>This changes the whole shape of the argument.</i>
+              <div class="pick2" id="optReveal" role="radiogroup" aria-label="What the town is told">
+                <button type="button" role="radio" data-reveal="role" aria-checked="true">Their role</button>
+                <button type="button" role="radio" data-reveal="team" aria-checked="false">Killer or not</button>
+              </div>
+            </div>
+
+            <label class="ruled-row">
+              <span>The day lasts</span>
+              <select id="optDay">
+                <option value="180000">3 minutes</option>
+                <option value="300000" selected>5 minutes</option>
+                <option value="420000">7 minutes</option>
+                <option value="0">No clock</option>
+              </select>
+            </label>
+          </div>
         </div>
-      </div>
-    </section>
 
-    <section class="card">
-      <div class="sec-head">
-        <h2>Narration</h2>
-        <button type="button" class="btn btn-ghost" id="testVoice">Test voice</button>
-      </div>
-      <p class="small muted" style="margin-bottom:14px">
-        Pick what the TV reads out and what you say yourself. Everything stays on screen either way.
-      </p>
+        <div>
+          <p class="over">Narration</p>
+          <p class="over-note">Who says each thing out loud.</p>
+          <div class="ruled">
+            <div id="sayRows"></div>
 
-      <div id="sayRows"></div>
+            <label class="ruled-row">
+              <span>Voice</span>
+              <select id="optVoice"></select>
+            </label>
 
-      <div class="row">
-        <div class="row-text">
-          <b>Voice</b>
-          <span id="voiceNote">Checking what's available…</span>
+            <div class="ruled-row">
+              <button type="button" class="btn-line" id="testVoice">Test voice</button>
+              <span class="ruled-note" id="voiceNote">Checking what's available…</span>
+            </div>
+
+            <button type="button" class="check" id="optSfx" aria-pressed="true">
+              <span class="box"></span>
+              <span class="check-text"><b>Sound effects</b><i>A clock, a door, a held breath.</i></span>
+            </button>
+          </div>
         </div>
-        <div class="row-ctl">
-          <select class="select" id="optVoice" style="width:auto;max-width:190px"></select>
-        </div>
-      </div>
 
-      <div class="row">
-        <div class="row-text"><b>Sound effects</b><span>Cues on the TV.</span></div>
-        <div class="row-ctl">
-          <label class="switch"><input type="checkbox" id="optSfx" checked><i></i></label>
-        </div>
-      </div>
-    </section>
+        <details class="help">
+          <summary>Getting it onto the television</summary>
+          <p><b>Laptop → HDMI.</b> Drag the TV window across and press <b>F</b> for fullscreen.</p>
+          <p><b>Chromecast.</b> Chrome menu → Cast → <i>Cast tab</i>, then pick the TV window.</p>
+          <p>Both windows have to be the same browser on the same machine — that is how they talk to each other. There is no server, so it all works offline.</p>
+        </details>
 
-    <details class="help">
-      <summary>Getting it onto the television</summary>
-      <p><b>Laptop → HDMI.</b> Drag the TV window onto the big screen and press <b>F</b> for fullscreen.</p>
-      <p><b>Chromecast.</b> Chrome menu → Cast → <i>Cast tab</i>, then pick the TV window.</p>
-      <p>Both windows have to be the same browser on the same machine — that's how they talk to each other. There's no server, so it all works offline.</p>
-    </details>
+      </section>
+    </div>
   </div>
 
   <div class="start-bar">
-    <div class="wrap">
-      <button type="button" class="btn btn-primary btn-lg btn-block" id="start" disabled>Start the game</button>
-      <p class="start-hint" id="startHint"></p>
+    <div class="start-in">
+      <p class="start-line" id="startHint"></p>
+      <button type="button" class="btn-start" id="start" disabled>Start the game</button>
     </div>
   </div>
 
   <div class="dialog" id="openDialog" hidden>
     <div class="dialog-box" role="dialog" aria-modal="true" aria-labelledby="openTitle">
+      <p class="over">One more thing</p>
       <h3 id="openTitle">Where should the TV open?</h3>
-      <p>This screen becomes the remote either way. Pick whichever is easier to drag onto the television.</p>
+      <p class="dialog-note">This screen becomes the remote either way. Pick whichever is easier to drag onto the television.</p>
       <div class="dialog-actions">
-        <button type="button" class="btn btn-primary btn-lg" id="openWindow">A new window</button>
-        <button type="button" class="btn btn-lg" id="openTab">A new tab</button>
-        <button type="button" class="btn btn-ghost" id="openCancel">Cancel</button>
+        <button type="button" class="btn-solid lg" id="openWindow">A new window</button>
+        <button type="button" class="btn-line lg" id="openTab">A new tab</button>
+        <button type="button" class="btn-bare" id="openCancel">Cancel</button>
       </div>
     </div>
   </div>
 </main>
 
-<!-- ============================== ADMIN ============================== -->
+<!-- ============================== ADMIN ==============================
+     A dark phone in a dark room goes unnoticed. Nothing here flashes,
+     animates or brightens — a screen that lights up when it matters is the
+     tell. One decision per screen, and the roles are sealed until held. -->
 <main id="admin" class="view">
-  <header class="bar">
-    <div class="bar-left">
-      <span class="dot" id="link"></span>
-      <span class="eyebrow" id="linkText">Looking for the TV</span>
-    </div>
-    <div class="bar-right">
-      <button type="button" class="btn btn-ghost" id="reopenTv">TV</button>
-      <button type="button" class="btn btn-ghost" id="quit">Quit</button>
-    </div>
-  </header>
+  <div class="phone">
 
-  <div class="stage">
-    <figure class="scene" id="admScene" hidden></figure>
-    <p class="eyebrow" id="admEyebrow"></p>
-    <h2 id="admTitle">—</h2>
-    <p class="hint" id="admHint"></p>
-
-    <div class="script" id="admScript" hidden>
-      <p class="eyebrow">Read this out</p>
-      <p id="admScriptText"></p>
+    <div class="ph-status">
+      <span id="admTime">—</span>
+      <span id="admWhen">—</span>
     </div>
 
-    <div class="clock-row" id="admClockRow" hidden>
-      <span class="clock" id="admClock">0:00</span>
-      <button type="button" class="btn" id="admPause">Pause</button>
-      <button type="button" class="btn" id="admPlus">+30s</button>
+    <div class="ph-head" id="admHead"></div>
+
+    <div class="ph-body" id="admBody"></div>
+
+    <div class="ph-rail" id="admRail" hidden></div>
+
+    <div class="ph-bar" id="admRosterBar">
+      <span>Roster</span>
+      <span id="rosterHint">Press and hold</span>
     </div>
 
-    <div class="answer" id="admAnswer" hidden></div>
-
-    <div class="panel" id="admPicker" hidden>
-      <div class="panel-head"><p class="eyebrow" id="pickLabel"></p></div>
-      <div class="picks" id="picks"></div>
-    </div>
-
-    <div class="panel" id="admVotes" hidden>
-      <div class="panel-head">
-        <p class="eyebrow" id="voteLabel"></p>
-        <button type="button" class="btn btn-ghost" id="clearVotes">Clear</button>
-      </div>
-      <div class="votes" id="voteSheet"></div>
-    </div>
-
-    <div class="panel" id="admResult" hidden></div>
-
-    <div class="panel" id="admRoster">
-      <div class="panel-head"><p class="eyebrow">The table</p></div>
-      <ul class="roster sealed" id="roster"></ul>
-      <div class="roster-hint"><span id="rosterState">Roles sealed</span><span id="rosterHint">Press and hold</span></div>
+    <div class="ph-actions">
+      <button type="button" class="ph-back" id="admBack">Back</button>
+      <button type="button" class="ph-next" id="admNext">Next</button>
     </div>
   </div>
-
-  <footer class="controls">
-    <button type="button" class="btn" id="admBack">Back</button>
-    <button type="button" class="btn btn-ghost" id="admSkip" hidden>Skip</button>
-    <button type="button" class="btn btn-primary" id="admNext">Next</button>
-  </footer>
 </main>
 
-<!-- =============================== TV =============================== -->
+<!-- =============================== TV ===============================
+     Every size is a percentage of the screen's own width, so 720p and 4K are
+     the same design at two magnifications. No breakpoint, no reflow: a line
+     that breaks after "Seer," breaks there on every panel in every house. -->
 <main id="tv" class="view">
-  <!-- Three rows held apart, the way the frame is drawn: the phase along the
-       top, the one big thing in the middle, the quiet line along the bottom. -->
   <div class="tv-in">
     <div class="tv-top">
-      <p class="tv-eyebrow" id="tvEyebrow"></p>
-      <div class="tv-steps" id="tvSteps" hidden></div>
+      <span id="tvOverL"></span>
+      <span id="tvOverR"></span>
     </div>
-
-    <div class="tv-main">
-      <figure class="tv-scene" id="tvScene" hidden></figure>
-      <h1 class="tv-title" id="tvTitle">The Killer TV</h1>
-      <p id="tvSlabWrap" hidden><span class="tv-death" id="tvSlab"></span></p>
-
-      <div id="tvClockWrap" hidden>
-        <div class="tv-clock" id="tvClock">0:00</div>
-        <div class="tv-track"><i id="tvTrack"></i></div>
-      </div>
-
-      <div class="tv-people" id="tvPeople" hidden></div>
-      <div class="tv-teams" id="tvTeams" hidden></div>
-    </div>
-
+    <div class="tv-mid" id="tvMid"></div>
     <div class="tv-bottom">
-      <p class="tv-body" id="tvBody">Waiting for the remote…</p>
-      <div class="tv-foot" id="tvFoot"></div>
+      <span id="tvUnder"></span>
+      <span id="tvFoot"></span>
     </div>
   </div>
 
