@@ -171,7 +171,9 @@ const Admin = (function () {
   function paintHeld(box) {
     const secs = Math.min(8, Math.floor((Date.now() - heldFrom) / 1000));
     box.querySelectorAll('span').forEach((s, i) => s.classList.toggle('on', i < secs));
-    box.querySelector('em').textContent = secs === 1 ? 'one second held' : word(secs) + ' seconds held';
+    box.querySelector('em').textContent = !secs ? 'just opened'
+      : secs === 1 ? 'one second held'
+      : word(secs) + ' seconds held';
   }
 
   /* ---------- phases ---------- */

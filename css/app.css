@@ -314,9 +314,9 @@ details.help p{font-size:14px;color:var(--day-quiet);margin-top:10px;line-height
 
 /* the head of a night call */
 .ph-call{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
-.ph-call span{
+.ph-call span,.ph-call button{
   font-family:var(--display);font-size:13px;letter-spacing:.24em;
-  text-transform:uppercase;color:var(--night-dim);
+  text-transform:uppercase;color:var(--night-dim);white-space:nowrap;
 }
 .ph-script{font-family:var(--display);font-weight:700;font-size:29px;line-height:1.12;margin-top:14px}
 .ph-sub{font-size:13px;color:var(--night-dim);margin-top:11px;line-height:1.5}
