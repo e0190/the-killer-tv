@@ -175,12 +175,15 @@ const Setup = (function () {
 
   function drawTally() {
     const n = countRoles(roles);
-    const killers = roles.filter((r) => ROLES[r] && ROLES[r].team === 'killers').length;
+    /* The Minion is on the killers' side but is not a killer, so it counts
+       towards the balance of the table and never towards the body count. */
+    const killers = roles.filter((r) => r === 'killer').length;
+    const onTheirSide = roles.filter((r) => ROLES[r] && ROLES[r].team === 'killers').length;
     const dealt = roles.filter((r) => r).length;
 
     $('tallyHead').textContent = (WORDS[count] || count) + ' at the table';
-    $('tallySub').textContent = killers
-      ? killers + (killers === 1 ? ' of them is not' : ' of them are not') + ' who they say they are.'
+    $('tallySub').textContent = onTheirSide
+      ? onTheirSide + (onTheirSide === 1 ? ' of them is not' : ' of them are not') + ' who they say they are.'
       : 'Nobody is a killer yet, so nobody can lose.';
 
     /* One square a seat, filled for the killers' side. The balance of the game
