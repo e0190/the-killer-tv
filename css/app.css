@@ -434,7 +434,10 @@ details.help p{font-size:14px;color:var(--day-quiet);margin-top:10px;line-height
 .tv-bottom #tvFoot{font-family:var(--display);font-size:1.9cqw;letter-spacing:.2em;text-transform:uppercase}
 
 .tv-h{font-family:var(--display);font-weight:900;font-size:11cqw;line-height:.9;letter-spacing:-.01em}
-.tv-h.big{font-size:13cqw;line-height:.9;letter-spacing:-.015em}
+/* 13cqw is the drawn size, but "have the town" has to stay on one line at it —
+   Bodoni 900 sets wider than the mockup's placeholder did, so this is the
+   largest size that still holds the two-line stack the frame was drawn as. */
+.tv-h.big{font-size:11.5cqw;line-height:.9;letter-spacing:-.015em;white-space:nowrap}
 .tv-h.mid{font-size:10cqw;line-height:.94}
 .tv-h.one{font-size:13cqw}
 .tv-kicker{
