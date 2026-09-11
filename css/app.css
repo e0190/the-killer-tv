@@ -476,7 +476,8 @@ details.help p{font-size:14px;color:var(--day-quiet);margin-top:10px;line-height
    italic — the deck's Doppelgänger voice, borrowed. No accent and no slab,
    because nobody is being mourned. It is the punchline. */
 .tv-wry{font-family:var(--display);font-style:italic;font-size:2.6cqw;letter-spacing:.18em;text-transform:uppercase;color:var(--day-quiet)}
-.tv-wry-h{font-family:var(--display);font-style:italic;font-weight:900;font-size:7.5cqw;line-height:1.02;margin-top:2.4cqw;max-width:24ch}
+/* The line breaks are written into the copy, so nothing here may re-wrap it. */
+.tv-wry-h{font-family:var(--display);font-style:italic;font-weight:900;font-size:7.5cqw;line-height:1.02;margin-top:2.4cqw;white-space:nowrap}
 .tv-wry-hair{width:16cqw;border-top:.16cqw solid var(--day-rule);margin:3.4cqw 0}
 .tv-wry-b{font-family:var(--read);font-style:italic;font-size:2.4cqw;line-height:1.45;color:var(--day-quiet)}
 
