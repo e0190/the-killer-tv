@@ -548,8 +548,6 @@ const Admin = (function () {
   function drawVote() {
     const alive = living(S);
     const short = alive.filter((p) => !S.votes[p.id]);
-    if (!voter || !S.votes[voter] === false) { /* keep the current voter */ }
-    if (!voter) voter = (short[0] || alive[0]).id;
 
     head(
       '<div class="ph-title">' + (S.revoted ? 'Tied. Everyone votes again.' : 'Who did each of them accuse?') + '</div>' +
