@@ -366,15 +366,19 @@ const Admin = (function () {
   /* ---------- drawing ---------- */
 
   function draw() {
-    const when = S.phase === 'night' || S.phase === 'dawn'
-      ? 'Night ' + word(S.round)
+    /* The rules and the story happen before there is a first night, so they get
+       neither a day number nor a night one. */
+    const when = S.phase === 'rules' || S.phase === 'story' ? 'Before we start'
+      : S.phase === 'over' ? 'Finished'
+      : S.phase === 'night' || S.phase === 'dawn' ? 'Night ' + word(S.round)
       : 'Day ' + word(S.round);
-    $('admWhen').textContent = S.phase === 'over' ? 'Finished' : when;
+    $('admWhen').textContent = when;
 
     $('admNext').disabled = false;
     nextLabel('Next');
     $('admBack').hidden = false;
     $('admSkip').hidden = true;
+    sealRail();
 
     switch (S.phase) {
       case 'rules':
