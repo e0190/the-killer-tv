@@ -478,6 +478,16 @@ body[data-ui="desktop"] .rail-foot{padding:16px 20px 20px}
 .rail-row .name{flex:1;min-width:0;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rail-row.out .name{text-decoration:line-through;color:var(--night-dim)}
 .rail-row.out .role{color:var(--night-dim)}
+
+/* Sealed, the role column becomes a dot screen — the only greyness in the whole
+   system, and it is made of black dots rather than grey ink. It has to beat the
+   dead-row colour above, or a body's role would stay legible through the seal,
+   which is the one thing this panel exists to prevent. */
+.rail-list.sealed .rail-row .role{
+  color:transparent;
+  background-image:radial-gradient(var(--night-rule) 1.3px,transparent 1.4px);
+  background-size:var(--dot-pitch) var(--dot-pitch);
+}
 .rail-foot{padding:14px 22px 20px}
 .rail-seal{border:1px solid var(--night-text);padding:17px 16px;display:flex;gap:14px;align-items:center}
 .rail-seal span.sq{flex:none;width:14px;height:14px;background:var(--night-text)}
