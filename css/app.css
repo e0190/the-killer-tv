@@ -440,9 +440,11 @@ details.help p{font-size:14px;color:var(--day-quiet);margin-top:10px;line-height
 .tv-bottom #tvFoot{font-family:var(--display);font-size:calc(1.9cqw * var(--tv));letter-spacing:.2em;text-transform:uppercase}
 
 .tv-h{font-family:var(--display);font-weight:900;font-size:calc(11cqw * var(--tv));line-height:.9;letter-spacing:-.01em}
-/* calc(13cqw * var(--tv)) is the drawn size, but "have the town" has to stay on one line at it —
-   Bodoni 900 sets wider than the mockup's placeholder did, so this is the
-   largest size that still holds the two-line stack the frame was drawn as. */
+/* Drawn at 13, but "have the town" has to stay on one line, and Bodoni 900 sets
+   wider than the mockup's placeholder did. This is the largest size that still
+   holds the two-line stack the frame was drawn as.
+   Rules keep their unscaled .16cqw on purpose: that is 2px at 720p, and a
+   hairline any thinner drops out on a cheap panel at distance. */
 .tv-h.big{font-size:calc(11.5cqw * var(--tv));line-height:.9;letter-spacing:-.015em;white-space:nowrap}
 .tv-h.mid{font-size:calc(10cqw * var(--tv));line-height:.94}
 .tv-h.one{font-size:calc(13cqw * var(--tv))}
