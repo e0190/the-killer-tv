@@ -9,9 +9,9 @@
    there on every panel in every house. All of it sits inside a 6% margin, so a
    television still cropping the edges loses nothing.
 
-   No names ever appear here. The television speaks in roles; the room supplies
-   the names out loud. That one rule is what keeps the screen short enough to
-   read from the doorway. */
+   The television names the dead and nobody else. A body is the one thing the
+   whole room has to agree on, so it goes on the screen; every other call is
+   spoken in roles, and the room supplies the names out loud. */
 
 const TV = (function () {
   const $ = (id) => document.getElementById(id);
