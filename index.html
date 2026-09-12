@@ -258,24 +258,34 @@
 
     <div class="ph-status">
       <span id="admTime">—</span>
+      <span class="ph-tools">
+        <button type="button" id="reopenTv">TV</button>
+        <button type="button" id="quit">Quit</button>
+      </span>
       <span id="admWhen">—</span>
     </div>
 
-    <div class="ph-head" id="admHead"></div>
+    <div class="ph-main">
+      <div class="ph-head" id="admHead"></div>
+      <div class="ph-body" id="admBody"></div>
 
-    <div class="ph-body" id="admBody"></div>
+      <div class="ph-bar" id="admRosterBar">
+        <span>Roster</span>
+        <span id="rosterHint">Press and hold</span>
+      </div>
 
+      <div class="ph-actions">
+        <button type="button" class="ph-back" id="admBack">Back<em>⌫</em></button>
+        <button type="button" class="ph-skip" id="admSkip" hidden>Skip</button>
+        <button type="button" class="ph-next" id="admNext">Next<em>space</em></button>
+      </div>
+    </div>
+
+    <!-- On a phone this is a screen that opens over the call. On a laptop — a
+         lid that stands up, four times the area, on a table rather than in a
+         hand — it is a narrow rail down the far edge instead, sealed, opening
+         only while the pointer or R is held. -->
     <div class="ph-rail" id="admRail" hidden></div>
-
-    <div class="ph-bar" id="admRosterBar">
-      <span>Roster</span>
-      <span id="rosterHint">Press and hold</span>
-    </div>
-
-    <div class="ph-actions">
-      <button type="button" class="ph-back" id="admBack">Back</button>
-      <button type="button" class="ph-next" id="admNext">Next</button>
-    </div>
   </div>
 </main>
 
