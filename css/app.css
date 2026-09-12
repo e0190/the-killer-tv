@@ -428,30 +428,30 @@ details.help p{font-size:14px;color:var(--day-quiet);margin-top:10px;line-height
 }
 .tv-top{
   display:flex;justify-content:space-between;align-items:baseline;gap:3cqw;flex:none;
-  font-family:var(--display);font-size:1.9cqw;letter-spacing:.24em;
+  font-family:var(--display);font-size:calc(1.9cqw * var(--tv));letter-spacing:.24em;
   text-transform:uppercase;color:var(--night-dim);
 }
 .tv-mid{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
 .tv-mid.centre{align-items:center;text-align:center}
 .tv-bottom{
   display:flex;justify-content:space-between;align-items:flex-end;gap:3cqw;flex:none;
-  font-family:var(--read);font-size:2.4cqw;line-height:1.4;color:var(--night-dim);
+  font-family:var(--read);font-size:calc(2.4cqw * var(--tv));line-height:1.4;color:var(--night-dim);
 }
-.tv-bottom #tvFoot{font-family:var(--display);font-size:1.9cqw;letter-spacing:.2em;text-transform:uppercase}
+.tv-bottom #tvFoot{font-family:var(--display);font-size:calc(1.9cqw * var(--tv));letter-spacing:.2em;text-transform:uppercase}
 
-.tv-h{font-family:var(--display);font-weight:900;font-size:11cqw;line-height:.9;letter-spacing:-.01em}
-/* 13cqw is the drawn size, but "have the town" has to stay on one line at it —
+.tv-h{font-family:var(--display);font-weight:900;font-size:calc(11cqw * var(--tv));line-height:.9;letter-spacing:-.01em}
+/* calc(13cqw * var(--tv)) is the drawn size, but "have the town" has to stay on one line at it —
    Bodoni 900 sets wider than the mockup's placeholder did, so this is the
    largest size that still holds the two-line stack the frame was drawn as. */
-.tv-h.big{font-size:11.5cqw;line-height:.9;letter-spacing:-.015em;white-space:nowrap}
-.tv-h.mid{font-size:10cqw;line-height:.94}
-.tv-h.one{font-size:13cqw}
+.tv-h.big{font-size:calc(11.5cqw * var(--tv));line-height:.9;letter-spacing:-.015em;white-space:nowrap}
+.tv-h.mid{font-size:calc(10cqw * var(--tv));line-height:.94}
+.tv-h.one{font-size:calc(13cqw * var(--tv))}
 .tv-kicker{
-  font-family:var(--display);font-size:3.2cqw;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--night-dim);margin-bottom:1.6cqw;
+  font-family:var(--display);font-size:calc(3.2cqw * var(--tv));letter-spacing:.2em;
+  text-transform:uppercase;color:var(--night-dim);margin-bottom:calc(1.6cqw * var(--tv));
 }
 #tv[data-face="day"] .tv-kicker{color:var(--day-quiet)}
-.tv-hair{width:22cqw;border-top:.16cqw solid var(--night-rule);margin-top:3.4cqw}
+.tv-hair{width:calc(22cqw * var(--tv));border-top:.16cqw solid var(--night-rule);margin-top:calc(3.4cqw * var(--tv))}
 #tv[data-face="day"] .tv-hair{border-top-color:var(--day-rule)}
 
 /* The accent's only appearance, and its two opposite forms. On paper it is ink
@@ -460,23 +460,23 @@ details.help p{font-size:14px;color:var(--day-quiet);margin-top:10px;line-height
 .slab{
   display:inline-block;background:var(--death);color:var(--death-on);
   font-family:var(--display);font-weight:900;line-height:1;letter-spacing:-.01em;
-  padding:.6cqw 2.2cqw 1.1cqw;
+  padding:.6cqw calc(2.2cqw * var(--tv)) calc(1.1cqw * var(--tv));
 }
-.slab.big{font-size:11.5cqw;padding:.6cqw 2.4cqw 1.2cqw}
-.slab.mid{font-size:10cqw;padding:.5cqw 2cqw 1cqw;margin-top:.5cqw}
-.slab.body{font-size:11.5cqw}
+.slab.big{font-size:calc(11.5cqw * var(--tv));padding:.6cqw calc(2.4cqw * var(--tv)) calc(1.2cqw * var(--tv))}
+.slab.mid{font-size:calc(10cqw * var(--tv));padding:.5cqw calc(2cqw * var(--tv)) calc(1cqw * var(--tv));margin-top:.5cqw}
+.slab.body{font-size:calc(11.5cqw * var(--tv))}
 
 .tv-clock{
-  font-family:var(--display);font-weight:900;font-size:20cqw;line-height:.86;
+  font-family:var(--display);font-weight:900;font-size:calc(20cqw * var(--tv));line-height:.86;
   letter-spacing:-.02em;font-variant-numeric:tabular-nums;
 }
 /* A ruled box that fills with solid ink, not a bar with a colour — the same
    vocabulary as the cards. No accent: the clock running out is not a death. */
-.tv-track{display:flex;height:1.2cqw;margin-top:3.2cqw;border:.16cqw solid currentColor}
+.tv-track{display:flex;height:calc(1.2cqw * var(--tv));margin-top:calc(3.2cqw * var(--tv));border:.16cqw solid currentColor}
 .tv-track i{display:block;height:100%;background:currentColor}
 
-.tv-steps{display:flex;gap:1.1cqw;flex:none}
-.tv-steps span{width:1.3cqw;height:1.3cqw;border:.14cqw solid currentColor;opacity:.5}
+.tv-steps{display:flex;gap:calc(1.1cqw * var(--tv));flex:none}
+.tv-steps span{width:calc(1.3cqw * var(--tv));height:calc(1.3cqw * var(--tv));border:.14cqw solid currentColor;opacity:.5}
 .tv-steps span.done,.tv-steps span.now{background:currentColor;opacity:1}
 
 .tv-rule{width:100%;border-top:.5cqw solid currentColor;border-bottom:.16cqw solid currentColor;height:.5cqw;margin-top:3cqw}
@@ -484,30 +484,30 @@ details.help p{font-size:14px;color:var(--day-quiet);margin-top:10px;line-height
 /* The Tanner's ending: half the size of the other two, centred, and entirely
    italic — the deck's Doppelgänger voice, borrowed. No accent and no slab,
    because nobody is being mourned. It is the punchline. */
-.tv-wry{font-family:var(--display);font-style:italic;font-size:2.6cqw;letter-spacing:.18em;text-transform:uppercase;color:var(--day-quiet)}
+.tv-wry{font-family:var(--display);font-style:italic;font-size:calc(2.6cqw * var(--tv));letter-spacing:.18em;text-transform:uppercase;color:var(--day-quiet)}
 /* The line breaks are written into the copy, so nothing here may re-wrap it. */
-.tv-wry-h{font-family:var(--display);font-style:italic;font-weight:900;font-size:7.5cqw;line-height:1.02;margin-top:2.4cqw;white-space:nowrap}
-.tv-wry-hair{width:16cqw;border-top:.16cqw solid var(--day-rule);margin:3.4cqw 0}
-.tv-wry-b{font-family:var(--read);font-style:italic;font-size:2.4cqw;line-height:1.45;color:var(--day-quiet)}
+.tv-wry-h{font-family:var(--display);font-style:italic;font-weight:900;font-size:calc(7.5cqw * var(--tv));line-height:1.02;margin-top:calc(2.4cqw * var(--tv));white-space:nowrap}
+.tv-wry-hair{width:calc(16cqw * var(--tv));border-top:.16cqw solid var(--day-rule);margin:calc(3.4cqw * var(--tv)) 0}
+.tv-wry-b{font-family:var(--read);font-style:italic;font-size:calc(2.4cqw * var(--tv));line-height:1.45;color:var(--day-quiet)}
 
 .tv-cast{display:flex;flex-wrap:wrap;justify-content:center;gap:.9cqw;margin-top:3cqw}
-.tv-cast div{border:.16cqw solid currentColor;padding:.8cqw 1.6cqw}
-.tv-cast b{display:block;font-family:var(--display);font-size:1.9cqw;font-weight:700}
-.tv-cast i{display:block;font-style:italic;font-size:1.5cqw;opacity:.7}
+.tv-cast div{border:.16cqw solid currentColor;padding:.8cqw calc(1.6cqw * var(--tv))}
+.tv-cast b{display:block;font-family:var(--display);font-size:calc(1.9cqw * var(--tv));font-weight:700}
+.tv-cast i{display:block;font-style:italic;font-size:calc(1.5cqw * var(--tv));opacity:.7}
 .tv-cast div.out{opacity:.45}
 .tv-cast div.out b{text-decoration:line-through}
 
-.tv-scene{width:11cqw;max-width:190px;margin-bottom:2cqw;opacity:.75}
+.tv-scene{width:calc(11cqw * var(--tv));max-width:190px;margin-bottom:calc(2cqw * var(--tv));opacity:.75}
 .tv-scene svg{width:100%;height:auto;display:block}
 
 .tv-wake{
   position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:2.4cqw;
+  align-items:center;justify-content:center;gap:calc(2.4cqw * var(--tv));
   background:var(--night-ground);width:100%;color:var(--night-text);
 }
 .tv-wake.gone{display:none}
-.tv-wake b{font-family:var(--display);font-weight:900;font-size:8cqw}
-.tv-wake span{font-size:2cqw;color:var(--night-dim);font-style:italic}
+.tv-wake b{font-family:var(--display);font-weight:900;font-size:calc(8cqw * var(--tv))}
+.tv-wake span{font-size:calc(2cqw * var(--tv));color:var(--night-dim);font-style:italic}
 
 @media (max-width:620px){
   .cols{grid-template-columns:1fr;gap:34px}
