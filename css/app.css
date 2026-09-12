@@ -312,16 +312,23 @@ details.help p{font-size:14px;color:var(--day-quiet);margin-top:10px;line-height
   font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--night-dim);
   user-select:none;cursor:pointer;
 }
-.ph-actions{display:flex;gap:10px;padding:14px 22px 20px;padding-bottom:max(20px,env(safe-area-inset-bottom))}
-.ph-back{
+.ph-actions{
+  display:flex;gap:10px;padding:14px 22px 20px;flex:none;
+  padding-bottom:max(20px,env(safe-area-inset-bottom));
+}
+.ph-back,.ph-skip{
   flex:0 0 96px;background:transparent;border:1px solid var(--night-rule);color:var(--night-dim);
   padding:19px 0;font-family:var(--display);font-size:15px;letter-spacing:.18em;text-transform:uppercase;
 }
+.ph-skip{flex:1 1 auto;font-size:13px}
 .ph-next{
   flex:1;background:var(--night-text);border:1px solid var(--night-text);color:var(--night-ground);
   padding:19px 0;font-family:var(--display);font-weight:700;font-size:17px;
   letter-spacing:.18em;text-transform:uppercase;
 }
+/* Every action carries its key, so a laptop host can run a whole night without
+   looking down — which is the actual fix for a screen everybody can see. */
+.ph-actions em{display:none}
 /* Not a disabled button — a counter that becomes a button when it reaches zero. */
 .ph-next:disabled{
   background:transparent;border:1px dashed var(--night-rule);color:var(--night-dim);
