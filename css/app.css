@@ -408,7 +408,13 @@ details.help p{font-size:14px;color:var(--day-quiet);margin-top:10px;line-height
 .phone{position:relative}
 
 /* ================================ tv ================================ */
+/* The sizes below are the drawn ones, as percentages of the screen's own width.
+   `--tv` scales all of them together, so the whole frame stays in proportion and
+   there is exactly one number to turn. Drawn at 1; 0.7 is what a real living
+   room wants, because the mockups were read at arm's length on a laptop and a
+   television is across a room, where the same type feels shouted. */
 #tv{
+  --tv:.7;
   position:fixed;inset:0;container-type:inline-size;
   background:var(--night-ground);color:var(--night-text);
 }
