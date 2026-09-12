@@ -98,7 +98,10 @@ const Admin = (function () {
        looking down — which is the actual fix for a screen everybody can see. */
     document.addEventListener('keydown', (e) => {
       if (document.body.dataset.view !== 'admin') return;
-      if (e.target.matches('input,select,textarea')) return;
+      /* The target is not always an element — a key pressed with nothing focused
+         arrives on the document, which has no matches(). */
+      const t = e.target;
+      if (t && t.matches && t.matches('input,select,textarea')) return;
       if (e.code === 'Space' || e.code === 'ArrowRight') { e.preventDefault(); next(); }
       else if (e.code === 'Backspace' || e.code === 'ArrowLeft') { e.preventDefault(); back(); }
       else if (e.key === 'r' || e.key === 'R') { if (!e.repeat) openRail(); }
