@@ -405,8 +405,71 @@ details.help p{font-size:14px;color:var(--day-quiet);margin-top:10px;line-height
 .vote-row .to.waiting{color:var(--night-dim);border-bottom:1px dashed var(--night-rule)}
 .vote-row.picking .who{font-weight:700}
 
+/* ---- the same six on a laptop ----
+
+   A laptop is worse for secrets than a phone: the lid stands up, the screen is
+   four times the area, and it sits on a table rather than in a hand. So the
+   roster does not get a screen of its own here — it lives in a narrow rail down
+   the far edge, sealed, and opens only while it is held.
+
+   In exchange, a laptop has a keyboard. Type does not shrink because the screen
+   grew: the script stays at announcement size, the grid gets wider rather than
+   denser, and the rail is the only place small type appears — under a hand, at
+   the edge furthest from the room. */
+body[data-ui="desktop"] #admin{padding:20px}
+body[data-ui="desktop"] .phone{
+  max-width:1100px;height:min(720px,calc(100dvh - 40px));
+  flex-direction:row;flex-wrap:wrap;align-content:stretch;
+  border:1px solid var(--night-rule);
+}
+body[data-ui="desktop"] .ph-status{flex:1 0 100%;padding:16px 32px 12px;border-bottom:1px solid var(--night-rule)}
+body[data-ui="desktop"] .ph-main{flex:1 1 340px;min-width:0}
+body[data-ui="desktop"] .ph-head{padding:30px 32px 18px}
+body[data-ui="desktop"] .ph-body{padding:0 32px 24px}
+body[data-ui="desktop"] .ph-script{font-size:min(44px,3.6vw);line-height:1.1;max-width:20ch;margin-top:16px}
+body[data-ui="desktop"] .ph-sub{font-size:14px;margin-top:16px}
+body[data-ui="desktop"] .ph-bar{display:none}
+body[data-ui="desktop"] .ph-actions{
+  border-top:1px solid var(--night-rule);padding:16px 32px;align-items:center;
+}
+body[data-ui="desktop"] .ph-back,body[data-ui="desktop"] .ph-skip{flex:none;padding:14px 24px;font-size:14px}
+body[data-ui="desktop"] .ph-next{flex:none;padding:14px 34px;font-size:15px}
+body[data-ui="desktop"] .ph-actions em{
+  display:inline;font-style:normal;color:var(--night-rule);margin-left:9px;letter-spacing:.1em;
+}
+/* The grid gets wider rather than denser, and gains a number per name. */
+body[data-ui="desktop"] .picks{grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:10px}
+body[data-ui="desktop"] .pick{
+  padding:16px;min-height:0;justify-content:flex-start;align-items:baseline;gap:11px;font-size:19px;
+}
+body[data-ui="desktop"] .pick .key{font-family:var(--display);font-size:13px;color:var(--night-dim);flex:none}
+body[data-ui="desktop"] .pick[aria-pressed="true"] .key{color:inherit}
+body[data-ui="desktop"] .ph-note{
+  flex:1;text-align:right;font-size:13px;margin:0;align-self:center;
+}
+body[data-ui="desktop"] .ph-clock{font-size:96px}
+
 /* the roster — names stay put, only the left column changes */
 .ph-rail{position:absolute;inset:0;background:var(--night-ground);display:flex;flex-direction:column;z-index:3}
+body[data-ui="desktop"] .ph-rail{
+  position:static;flex:1 1 232px;max-width:300px;min-width:0;
+  border-left:1px solid var(--night-rule);cursor:pointer;user-select:none;
+}
+body[data-ui="desktop"] .rail-head{padding:24px 20px 16px;border-bottom:0}
+body[data-ui="desktop"] .rail-head b{font-size:11px;font-weight:400;letter-spacing:.2em;text-transform:uppercase;color:var(--night-dim)}
+body[data-ui="desktop"] .rail-list{padding:0 20px}
+body[data-ui="desktop"] .rail-row{padding:7px 0;gap:9px}
+body[data-ui="desktop"] .rail-row .role{flex:0 0 74px;font-size:11px;letter-spacing:.1em}
+body[data-ui="desktop"] .rail-row .name{font-size:13px}
+body[data-ui="desktop"] .rail-foot{padding:16px 20px 20px}
+
+/* Sealed, the role column becomes a dot screen — the only greyness in the whole
+   system, and it is made of black dots rather than grey ink. */
+.rail-list.sealed .role{
+  color:transparent;
+  background-image:radial-gradient(var(--night-rule) 1.3px,transparent 1.4px);
+  background-size:var(--dot-pitch) var(--dot-pitch);
+}
 .rail-head{
   padding:22px 22px 14px;border-bottom:1px solid var(--night-rule);
   display:flex;justify-content:space-between;align-items:baseline;
