@@ -463,13 +463,6 @@ body[data-ui="desktop"] .rail-row .role{flex:0 0 74px;font-size:11px;letter-spac
 body[data-ui="desktop"] .rail-row .name{font-size:13px}
 body[data-ui="desktop"] .rail-foot{padding:16px 20px 20px}
 
-/* Sealed, the role column becomes a dot screen — the only greyness in the whole
-   system, and it is made of black dots rather than grey ink. */
-.rail-list.sealed .role{
-  color:transparent;
-  background-image:radial-gradient(var(--night-rule) 1.3px,transparent 1.4px);
-  background-size:var(--dot-pitch) var(--dot-pitch);
-}
 .rail-head{
   padding:22px 22px 14px;border-bottom:1px solid var(--night-rule);
   display:flex;justify-content:space-between;align-items:baseline;
