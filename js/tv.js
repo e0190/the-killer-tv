@@ -221,8 +221,8 @@ const TV = (function () {
         frame({
           left: 'Day the ' + ord(S.round), right: word(living(S).length) + ' remain',
           mid: '<div class="tv-kicker">In the night, somebody died</div>' +
-               '<div><span class="slab body">' + esc(reveal(S, S.deaths[0]).text) + '</span></div>' +
-               '<div class="tv-h" style="font-size:11.5cqw;line-height:1;margin-top:.4cqw">is dead</div>',
+               '<div class="tv-h">' + esc(nameOf(S, S.deaths[0])) + ' is dead</div>' +
+               '<div><span class="slab body">' + esc(reveal(S, S.deaths[0]).text) + '</span></div>',
           under: gone(S.deaths[0]),
         });
         break;
@@ -232,7 +232,7 @@ const TV = (function () {
         frame({
           left: 'Day the ' + ord(S.round), right: 'One shot left',
           mid: '<div class="tv-kicker">The Hunter is going down</div>' +
-               '<div class="tv-h mid">Not alone</div>',
+               '<div class="tv-h mid">' + esc(nameOf(S, S.hunter)) + '<br>is not going alone</div>',
           under: 'They are taking somebody with them.',
         });
         break;
@@ -278,7 +278,7 @@ const TV = (function () {
           left: 'Day the ' + ord(S.round),
           right: 'The vote' + (split ? ' · ' + split.toLowerCase() : ''),
           mid: '<div class="tv-kicker">The town has chosen</div>' +
-               '<div class="tv-h mid">They hanged</div>' +
+               '<div class="tv-h mid">They hanged ' + esc(nameOf(S, S.deaths[0])) + '</div>' +
                '<div><span class="slab mid">' + esc(reveal(S, S.deaths[0]).text) + '</span></div>',
           under: word(living(S).length) + ' remain. Night falls again.',
         });
