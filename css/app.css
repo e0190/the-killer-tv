@@ -51,6 +51,16 @@ body{
   font-family:var(--read);font-size:16px;line-height:1.55;
   -webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;
   overscroll-behavior:none;text-wrap:pretty;
+
+  /* Bodoni Moda is a variable font whose optical-size axis thins the hairlines
+     as it climbs — by its own account the display face is only safe at 900
+     weight above 7% of screen width. Left to itself the browser raises opsz
+     with the type size, and at a 68px masthead the thin strokes disappear
+     entirely: the letters break into disconnected slabs. Pinning opsz low keeps
+     the text-grade hairlines at every size, which is the whole point of the
+     axis. Libre Baskerville has no opsz, so this costs it nothing. */
+  font-optical-sizing:none;
+  font-variation-settings:'opsz' 11;
 }
 h1,h2,h3{margin:0;font-family:var(--display);font-weight:700;line-height:1.1}
 p{margin:0}
