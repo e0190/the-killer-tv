@@ -372,12 +372,22 @@ const Admin = (function () {
     $('admWhen').textContent = S.phase === 'over' ? 'Finished' : when;
 
     $('admNext').disabled = false;
-    $('admNext').textContent = 'Next';
+    nextLabel('Next');
     $('admBack').hidden = false;
+    $('admSkip').hidden = true;
 
     switch (S.phase) {
-      case 'rules':   drawSheet(RULES[S.step], 'How to play', RULES.length); break;
-      case 'story':   drawSheet(STORY[S.step], 'Before we start', STORY.length, true); break;
+      case 'rules':
+        drawSheet(RULES[S.step], 'How to play', RULES.length);
+        skip('Skip the rules', () => {
+          if (S.settings.showStory) { S.phase = 'story'; S.step = 0; } else startNight();
+          push(); draw();
+        });
+        break;
+      case 'story':
+        drawSheet(STORY[S.step], 'Before we start', STORY.length, true);
+        skip('Skip the story', () => { startNight(); push(); draw(); });
+        break;
       case 'night':   drawBeat(); break;
       case 'dawn':    drawDeath('The night is over', 'Say who it was out loud.'); break;
       case 'hunter':  drawHunter(); break;
@@ -500,12 +510,16 @@ const Admin = (function () {
      would redraw the board every night and cost the host a second hunting for a
      name that moved. */
   function picks(ids, chosen) {
-    return '<div class="picks">' + S.players.map((p) => {
+    return '<div class="picks">' + S.players.map((p, i) => {
       const can = ids.indexOf(p.id) !== -1;
       const cls = can ? '' : (p.alive ? ' off' : ' dead');
+      /* The dead keep their seat but lose their key, so the numbers under the
+         host's fingers never move and a dead seat cannot be typed by mistake. */
+      const key = desk ? '<span class="key">' + (can ? (i + 1) % 10 : '—') + '</span>' : '';
       return '<button type="button" class="pick' + cls + '" data-id="' + p.id +
         '" aria-pressed="' + (chosen.indexOf(p.id) !== -1) + '"' + (can ? '' : ' disabled') + '>' +
-        (p.alive ? esc(p.name) : '<b>' + esc(p.name) + '</b>') + '</button>';
+        key + (p.alive ? '<span>' + esc(p.name) + '</span>' : '<b>' + esc(p.name) + '</b>') +
+        '</button>';
     }).join('') + '</div>';
   }
 
