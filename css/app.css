@@ -320,7 +320,9 @@ details.help p{font-size:14px;color:var(--day-quiet);margin-top:10px;line-height
   flex:0 0 96px;background:transparent;border:1px solid var(--night-rule);color:var(--night-dim);
   padding:19px 0;font-family:var(--display);font-size:15px;letter-spacing:.18em;text-transform:uppercase;
 }
-.ph-skip{flex:1 1 auto;font-size:13px}
+/* Skip only shows on the rules and the story, and it must never crowd Next out
+   of being the obvious thing to press. */
+.ph-skip{flex:0 1 auto;padding-left:14px;padding-right:14px;font-size:12px;letter-spacing:.14em}
 .ph-next{
   flex:1;background:var(--night-text);border:1px solid var(--night-text);color:var(--night-ground);
   padding:19px 0;font-family:var(--display);font-weight:700;font-size:17px;
