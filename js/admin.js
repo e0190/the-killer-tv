@@ -91,27 +91,35 @@ const Admin = (function () {
   function wire() {
     $('admNext').addEventListener('click', next);
     $('admBack').addEventListener('click', back);
+    $('reopenTv').addEventListener('click', openTvWindow);
+    $('quit').addEventListener('click', quit);
 
+    /* Every action carries its key, so the host can run a whole night without
+       looking down — which is the actual fix for a screen everybody can see. */
     document.addEventListener('keydown', (e) => {
       if (document.body.dataset.view !== 'admin') return;
       if (e.target.matches('input,select,textarea')) return;
       if (e.code === 'Space' || e.code === 'ArrowRight') { e.preventDefault(); next(); }
       else if (e.code === 'Backspace' || e.code === 'ArrowLeft') { e.preventDefault(); back(); }
       else if (e.key === 'r' || e.key === 'R') { if (!e.repeat) openRail(); }
+      else if (/^[1-9]$/.test(e.key)) hitKey(Number(e.key));
+      else if (e.key === '0') hitKey(10);
     });
     document.addEventListener('keyup', (e) => {
       if (e.key === 'r' || e.key === 'R') sealRail();
     });
 
     /* Press and hold to read the roles; let go and it seals. No timeout to
-       forget about, and no state in which the phone is dangerous lying down. */
-    const bar = $('admRosterBar');
-    bar.addEventListener('pointerdown', (e) => { e.preventDefault(); openRail(); });
-    ['pointerup', 'pointerleave', 'pointercancel'].forEach((ev) =>
-      bar.addEventListener(ev, sealRail));
-    $('admRail').addEventListener('pointerup', sealRail);
-    $('admRail').addEventListener('pointerleave', sealRail);
+       forget about, and no state in which the screen is dangerous lying down. */
+    const hold = (el) => {
+      el.addEventListener('pointerdown', (e) => { e.preventDefault(); openRail(); });
+      ['pointerup', 'pointerleave', 'pointercancel'].forEach((ev) =>
+        el.addEventListener(ev, sealRail));
+    };
+    hold($('admRosterBar'));
+    hold($('admRail'));
     window.addEventListener('blur', sealRail);
+    deskQuery.addEventListener('change', () => { setUi(); draw(); });
 
     Bus.on((msg) => { if (msg.type === 'hello') push(); });
     window.addEventListener('beforeunload', () => {
@@ -119,14 +127,24 @@ const Admin = (function () {
     });
   }
 
+  /* A number key is the same as tapping that name. Numbering follows the seats,
+     and the dead keep their number so nothing shifts under the host's fingers. */
+  function hitKey(n) {
+    const p = S && S.players[n - 1];
+    if (!p) return;
+    const btn = $('admBody').querySelector('.pick[data-id="' + p.id + '"]:not([disabled])');
+    if (btn) btn.click();
+  }
+
   function openRail() {
     if (!S) return;
-    drawRail();
+    drawRail(false);
     $('admRail').hidden = false;
     $('rosterHint').textContent = 'Let go to seal';
   }
   function sealRail() {
-    $('admRail').hidden = true;
+    if (desk) drawRail(true);
+    else $('admRail').hidden = true;
     $('rosterHint').textContent = 'Press and hold';
   }
 
@@ -651,18 +669,21 @@ const Admin = (function () {
 
   /* Names stay put; only the left column changes. Nothing moves, so the host's
      eye already knows where the answer is going to appear. */
-  function drawRail() {
+  function drawRail(sealed) {
     $('admRail').innerHTML =
-      '<div class="rail-head"><b>The roster</b><span>' +
-        word(living(S).length) + ' alive</span></div>' +
-      '<div class="rail-list">' + S.players.map((p) =>
+      '<div class="rail-head"><b>' + (desk ? 'Roster' : 'The roster') + '</b><span>' +
+        (desk ? (sealed ? 'Hold R' : 'Let go') : word(living(S).length) + ' alive') + '</span></div>' +
+      '<div class="rail-list' + (sealed ? ' sealed' : '') + '">' + S.players.map((p) =>
         '<div class="rail-row' + (p.alive ? '' : ' out') + '">' +
           '<span class="role">' + ROLES[p.role].name + '</span>' +
           '<span class="name">' + esc(p.name) + '</span>' +
-          (cardStale(p) ? '<span class="role" style="flex:none;opacity:.6">card: ' + ROLES[p.card].name + '</span>' : '') +
+          (!sealed && cardStale(p)
+            ? '<span class="role" style="flex:none;opacity:.6">card: ' + ROLES[p.card].name + '</span>'
+            : '') +
         '</div>').join('') + '</div>' +
-      '<div class="rail-foot"><div class="rail-seal">' +
-        '<span class="sq"></span><p>Open. Let go.</p></div></div>';
+      (desk ? '' :
+        '<div class="rail-foot"><div class="rail-seal">' +
+          '<span class="sq"></span><p>Open. Let go.</p></div></div>');
   }
 
   const esc = (v) => String(v).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
