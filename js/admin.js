@@ -19,6 +19,21 @@ const Admin = (function () {
   let wired = false;
   let voter = null;          // whose vote is being recorded
   let heldFrom = 0;          // when the current empty call was opened
+  let desk = false;          // laptop layout: rail down the side, keys for everything
+
+  /* Which of the two moderator screens this device gets. A fine pointer on a
+     wide screen is a laptop on a table; anything else is a phone in a hand, and
+     a phone in a hand is the safer of the two for a screen full of secrets. */
+  const deskQuery = window.matchMedia('(min-width:900px) and (pointer:fine)');
+
+  function setUi() {
+    desk = deskQuery.matches;
+    document.body.dataset.ui = desk ? 'desktop' : 'phone';
+    /* On a laptop the rail is always on screen and always sealed; on a phone it
+       is a screen of its own that only exists while held. */
+    $('admRail').hidden = !desk;
+    if (desk && S) drawRail(true);
+  }
 
   /* ---------- lifecycle ---------- */
 
@@ -41,6 +56,7 @@ const Admin = (function () {
     if (location.hash !== '#admin') history.replaceState(null, '', '#admin');
 
     if (!wired) { wire(); wired = true; }
+    setUi();
 
     Link.start('admin', (up) => {
       $('admWhen').dataset.link = up ? 'on' : 'off';
