@@ -401,6 +401,19 @@ const Admin = (function () {
   function head(html) { $('admHead').innerHTML = html; }
   function body(html) { $('admBody').innerHTML = html; }
 
+  /* The button keeps its key hint, so the label is set beside it rather than
+     over it. */
+  function nextLabel(text) {
+    $('admNext').innerHTML = esc(text) + '<em>space</em>';
+  }
+
+  function skip(label, fn) {
+    const b = $('admSkip');
+    b.hidden = false;
+    b.textContent = label;
+    b.onclick = fn;
+  }
+
   function drawSheet(item, kicker, total, narrated) {
     head(
       '<div class="ph-call"><span>' + kicker + '</span><span>' +
@@ -411,7 +424,7 @@ const Admin = (function () {
         '<div class="k">' + (narrated ? 'The television reads this' : 'On the screen') + '</div>' +
         '<div class="t">' + esc(narrated ? lineText(item.id) : item.body) + '</div>' +
       '</div></div>');
-    $('admNext').textContent = S.step === total - 1 ? 'Begin' : 'Next';
+    nextLabel(S.step === total - 1 ? 'Begin' : 'Next');
   }
 
   function drawBeat() {
@@ -503,7 +516,7 @@ const Admin = (function () {
     });
 
     $('admNext').disabled = !b.done;
-    if (!b.done) $('admNext').textContent = need === 2 ? 'Pick two' : 'Pick a name';
+    if (!b.done) nextLabel(need === 2 ? 'Pick two' : 'Pick a name');
   }
 
   /* Everyone is drawn, always, in the order they were dealt. Taking the dead out
@@ -543,7 +556,7 @@ const Admin = (function () {
       (dead ? '<div class="u">Their card comes off the table. Everything else stays where it is.</div>' : '') +
       '</div></div>');
 
-    $('admNext').textContent = S.phase === 'dawn' ? 'Start the day' : 'Nightfall';
+    nextLabel(S.phase === 'dawn' ? 'Start the day' : 'Nightfall');
   }
 
   function drawHunter() {
@@ -564,7 +577,7 @@ const Admin = (function () {
     });
 
     $('admNext').disabled = !S.hunterTarget;
-    $('admNext').textContent = S.hunterTarget ? 'Fire' : 'Pick a name';
+    nextLabel(S.hunterTarget ? 'Fire' : 'Pick a name');
   }
 
   /* The one screen the host does not have to read: the clock is already on the
@@ -589,7 +602,7 @@ const Admin = (function () {
       $('admPause').addEventListener('click', togglePause);
       $('admPlus').addEventListener('click', () => addTime(30000));
     }
-    $('admNext').textContent = 'Call the vote';
+    nextLabel('Call the vote');
   }
 
   /* Go round the table: tap a name, then tap who they pointed at. The button is
@@ -638,9 +651,9 @@ const Admin = (function () {
     }
 
     $('admNext').disabled = short.length > 0;
-    $('admNext').textContent = short.length
+    nextLabel(short.length
       ? word(short.length) + (short.length === 1 ? ' still to vote' : ' still to vote')
-      : 'Lock it in';
+      : 'Lock it in');
   }
 
   function drawOver() {
@@ -666,7 +679,7 @@ const Admin = (function () {
     $('again').addEventListener('click', playAgain);
     $('toSetup').addEventListener('click', quit);
     $('admNext').disabled = true;
-    $('admNext').textContent = 'Finished';
+    nextLabel('Finished');
     $('admBack').hidden = true;
   }
 
